@@ -6,9 +6,16 @@
   </head>
   <body>
     <div class="wrapper">
-     <header class="header"><h2>Some header data</h2></header>
+      <header class="header">
+	  <div class="nav">
+		  <a href="./main.html" class="nav-link">Главная</a>
+          <a href="./product-list.html" class="nav-link">Список товаров</a>
+          <a href="./bin.html" class="nav-link">Корзина</a> 
+		  <a class="active" style="float:right" href="./login.html" class="nav-link">Log In</a> 
+      </nav>
+	  </header>
      <main class="main">
-      <form class="form" action="">
+      <form class="login-form" action="">
         <div class="form-group">         
             <label class="form-label" for"user-name" class="icon icon-user">Name</label>
             <input class="form-control" type="text" id="user-name"/>
@@ -28,9 +35,15 @@
         <div class="form-group">
           <input class="btn btn-primary" type="submit" value="Submit"/>
         </div>
-      </form>
+      </login-form>
       </main>
-      <footer class="footer"><h2>Some footer data</h2></footer>
+      <footer class="footer">
+        <div class="socials">
+          <a href="" class="socials-btn btn-telegram"><img class="socials-img" src="./img/telegram.png"></a>
+          <a href="" class="socials socials-twitter"><img class="socials-img" src="./img/twitter.png"></a>
+          <a href="" class="socials-btn btn-slack"><img class="socials-img" src="./img/instagram1.png"></a>
+        </div>
+      </footer>
     </div>
   </body>
 </html>
