@@ -30,7 +30,7 @@ func main() {
 	//User
 	userRepo := database.NewUserRepository(conn)
 	userRepo.Insert(models.User{
-		Email:        "Email",
+		Email:        "Email2",
 		PasswordHash: "Password",
 		Name:         "Name",
 	})
@@ -41,11 +41,17 @@ func main() {
 	//Supplier
 	supplierRepo := database.NewSupplierRepository(conn)
 
-	supplierRepo.Insert(models.Supplier{
+	/*	supplierRepo.Insert(models.Supplier{
 		Name:    "ATB",
 		Address: "abc",
-	})
+	})*/
 	newSupplier, err := supplierRepo.GetById(1)
 	fmt.Println(newSupplier)
+
+	userRepo.Update(models.User{
+		Email:        "NewEmail1",
+		PasswordHash: "NewPass",
+		Name:         "NewName",
+	}, "Email1")
 
 }

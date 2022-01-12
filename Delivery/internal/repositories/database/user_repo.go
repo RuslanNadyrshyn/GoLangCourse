@@ -31,11 +31,12 @@ func (r UserDBRepository) Insert(u models.User) (int, error) {
 		}
 		return id, err
 	}
+
 	_, err := r.DB.Exec("INSERT users(name, email, password_hash) VALUES(?, ?, ?)", u.Name, u.Email, u.PasswordHash)
 
 	if err != nil {
 		fmt.Println(err)
-		return 0, err
+		return id, err
 	}
 
 	return id, err
@@ -50,6 +51,31 @@ func (r UserDBRepository) GetByEmail(email string) (models.User, error) {
 	}
 
 	return user, nil
+}
+
+func (r UserDBRepository) Update(u models.User, email string) (int, error) {
+	var id int
+
+	if r.TX != nil {
+		err := r.TX.QueryRow("UPDATE users SET name=?, email=?, password_hash=? WHERE email = ? RETURNING id", u.Name, u.Email, u.PasswordHash, email).Scan(&id)
+		if err != nil {
+			_ = r.TX.Rollback()
+		}
+		err = r.TX.Commit()
+		if err != nil {
+			_ = r.TX.Rollback()
+		}
+		return id, err
+	}
+
+	_, err := r.DB.Exec("UPDATE users SET name=?, email=?, password_hash=? WHERE email = ?", u.Name, u.Email, u.PasswordHash, email)
+
+	if err != nil {
+		fmt.Println(err)
+		return id, err
+	}
+
+	return id, err
 }
 
 func (r UserDBRepository) Delete(email string) error {
