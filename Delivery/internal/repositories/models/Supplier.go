@@ -10,14 +10,7 @@ type Supplier struct {
 		Opening string `json:"opening"`
 		Closing string `json:"closing"`
 	} `json:"workingHours"`
-	Menu []struct {
-		Id          int      `json:"id"`
-		Name        string   `json:"name"`
-		Price       float64  `json:"price"`
-		Image       string   `json:"image"`
-		Type        string   `json:"type"`
-		Ingredients []string `json:"ingredients"`
-	} `json:"menu"`
+	Menu      []Product `json:"menu"`
 	CreatedAt string
 	UpdatedAt string
 }

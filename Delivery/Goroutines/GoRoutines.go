@@ -39,6 +39,8 @@ func (grt GoRoutinesRepository) Insert(jsonFile string) (supplier models.Supplie
 		panic(err)
 	}
 
+	//fmt.Println(supplier, "\n\n\n")
+	//
 	//fmt.Println("id:", supplier.Id,
 	//	"\nname:", supplier.Name,
 	//	"\ntype:", supplier.Type,
@@ -51,6 +53,7 @@ func (grt GoRoutinesRepository) Insert(jsonFile string) (supplier models.Supplie
 	//		"\n\tName:", supplier.Menu[i].Name,
 	//		"\n\tPrice:", supplier.Menu[i].Price,
 	//		"\n\tImage:", supplier.Menu[i].Image,
+	//		"\n\tType:", supplier.Menu[i].Type,
 	//		"\n\tIngredients:")
 	//	for j := range supplier.Menu[i].Ingredients {
 	//		fmt.Println("\t", supplier.Menu[i].Ingredients[j])

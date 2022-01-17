@@ -33,7 +33,6 @@ func (r UserDBRepository) Insert(u models.User) (int, error) {
 	}
 
 	_, err := r.DB.Exec("INSERT users(name, email, password_hash) VALUES(?, ?, ?)", u.Name, u.Email, u.PasswordHash)
-
 	if err != nil {
 		fmt.Println(err)
 		return id, err
