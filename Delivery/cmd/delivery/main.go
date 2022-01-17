@@ -9,6 +9,7 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
+	"strconv"
 )
 
 func main() {
@@ -44,8 +45,13 @@ func main() {
 
 	///////Goroutines
 	test := Goroutines.GoRoutinesRepository{}
-	sup := test.Insert("./Goroutines/Data/1.json")
-	supplierRepo.Insert(sup)
+
+	var sup []models.Supplier
+	for i := 0; i < 7; i++ {
+		sup = append(sup, test.Insert("./Goroutines/Data/"+strconv.Itoa(i+1)+".json"))
+		fmt.Println("sup =", sup[i])
+		supplierRepo.Insert(sup[i])
+	}
 
 	//////
 

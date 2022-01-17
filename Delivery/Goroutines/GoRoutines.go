@@ -39,22 +39,22 @@ func (grt GoRoutinesRepository) Insert(jsonFile string) (supplier models.Supplie
 		panic(err)
 	}
 
-	fmt.Println("id:", supplier.Id,
-		"\nname:", supplier.Name,
-		"\ntype:", supplier.Type,
-		"\nimage:", supplier.Image,
-		"\nopening:", supplier.WorkingHours.Opening,
-		"\nclosing:", supplier.WorkingHours.Closing,
-		"\nMenu:")
-	for i := range supplier.Menu {
-		fmt.Println("\n\tId:", supplier.Menu[i].Id,
-			"\n\tName:", supplier.Menu[i].Name,
-			"\n\tPrice:", supplier.Menu[i].Price,
-			"\n\tImage:", supplier.Menu[i].Image,
-			"\n\tIngredients:")
-		for j := range supplier.Menu[i].Ingredients {
-			fmt.Println("\t", supplier.Menu[i].Ingredients[j])
-		}
-	}
+	//fmt.Println("id:", supplier.Id,
+	//	"\nname:", supplier.Name,
+	//	"\ntype:", supplier.Type,
+	//	"\nimage:", supplier.Image,
+	//	"\nopening:", supplier.WorkingHours.Opening,
+	//	"\nclosing:", supplier.WorkingHours.Closing,
+	//	"\nMenu:")
+	//for i := range supplier.Menu {
+	//	fmt.Println("\n\tId:", supplier.Menu[i].Id,
+	//		"\n\tName:", supplier.Menu[i].Name,
+	//		"\n\tPrice:", supplier.Menu[i].Price,
+	//		"\n\tImage:", supplier.Menu[i].Image,
+	//		"\n\tIngredients:")
+	//	for j := range supplier.Menu[i].Ingredients {
+	//		fmt.Println("\t", supplier.Menu[i].Ingredients[j])
+	//	}
+	//}
 	return supplier
 }

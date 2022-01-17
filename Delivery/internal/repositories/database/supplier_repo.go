@@ -46,8 +46,8 @@ func (r SupplierDBRepository) Insert(s models.Supplier) (int, error) {
 		return id, err
 	}
 
-	_, err := r.DB.Exec("INSERT suppliers(name, type, address, image, opening, closing) VALUES(?, ?,?, ?,?, ?)",
-		s.Name, s.Type, s.Address, s.Image, s.WorkingHours.Opening, s.WorkingHours.Closing)
+	_, err := r.DB.Exec("INSERT suppliers(id, name, type, address, image, opening, closing) VALUES(?, ?, ?, ?, ?, ?, ?)",
+		s.Id, s.Name, s.Type, s.Address, s.Image, s.WorkingHours.Opening, s.WorkingHours.Closing)
 
 	if err != nil {
 		log.Panic(err)
