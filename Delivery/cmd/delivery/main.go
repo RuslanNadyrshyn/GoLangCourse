@@ -1,6 +1,7 @@
 package main
 
 import (
+	"awesomeProject/Goroutines"
 	"awesomeProject/internal/repositories/database"
 	"awesomeProject/internal/repositories/database/Connection"
 	"awesomeProject/internal/repositories/filesystem"
@@ -41,17 +42,20 @@ func main() {
 	//Supplier
 	supplierRepo := database.NewSupplierRepository(conn)
 
-	/*	supplierRepo.Insert(models.Supplier{
-		Name:    "ATB",
-		Address: "abc",
-	})*/
-	newSupplier, err := supplierRepo.GetById(1)
-	fmt.Println(newSupplier)
+	///////Goroutines
+	test := Goroutines.GoRoutinesRepository{}
+	sup := test.Insert("./Goroutines/Data/1.json")
+	supplierRepo.Insert(sup)
 
-	userRepo.Update(models.User{
-		Email:        "NewEmail1",
-		PasswordHash: "NewPass",
-		Name:         "NewName",
-	}, "Email1")
+	//////
+
+	//newSupplier, err := supplierRepo.GetById(1)
+	//fmt.Println(newSupplier)
+	//
+	//userRepo.Update(models.User{
+	//	Email:        "NewEmail1",
+	//	PasswordHash: "NewPass",
+	//	Name:         "NewName",
+	//}, "Email1")
 
 }

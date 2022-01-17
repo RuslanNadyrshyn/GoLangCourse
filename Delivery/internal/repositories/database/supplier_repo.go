@@ -3,6 +3,7 @@ package database
 import (
 	"awesomeProject/internal/repositories/models"
 	"database/sql"
+	"fmt"
 	"log"
 )
 
@@ -19,19 +20,34 @@ func NewSupplierRepository(conn *sql.DB) SupplierDBRepository {
 
 func (r SupplierDBRepository) Insert(s models.Supplier) (int, error) {
 	var id int
+	productRepo := NewProductRepository(r.DB)
+	var newProduct models.Product
 
 	if r.TX != nil {
-		err := r.TX.QueryRow("INSERT suppliers(name, address) VALUES(?, ?) RETURNING id", s.Name, s.Address).Scan(&id)
+		err := r.TX.QueryRow("INSERT suppliers(id, name, type, address, image, opening, closing) VALUES(?, ?, ?,?, ?,?, ?) RETURNING id",
+			s.Id, s.Name, s.Type, s.Address, s.Image, s.WorkingHours.Opening, s.WorkingHours.Closing).Scan(&id)
 		if err != nil {
 			_ = r.TX.Rollback()
 		}
+
+		//
+		for i := range s.Menu {
+			newProduct.Name, newProduct.Type, newProduct.Price, newProduct.Image =
+				s.Menu[i].Name, s.Menu[i].Type, s.Menu[i].Price, s.Menu[i].Image
+			productRepo.Insert(newProduct)
+			fmt.Println("Added menu")
+
+		}
+
 		err = r.TX.Commit()
 		if err != nil {
 			_ = r.TX.Rollback()
 		}
 		return id, err
 	}
-	_, err := r.DB.Exec("INSERT suppliers(name, address) VALUES(?, ?)", s.Name, s.Address)
+
+	_, err := r.DB.Exec("INSERT suppliers(name, type, address, image, opening, closing) VALUES(?, ?,?, ?,?, ?)",
+		s.Name, s.Type, s.Address, s.Image, s.WorkingHours.Opening, s.WorkingHours.Closing)
 
 	if err != nil {
 		log.Panic(err)
