@@ -21,8 +21,8 @@ func (r ProductDBRepository) Insert(p models.Product) (int, error) {
 	var productId int
 
 	if r.TX != nil {
-		err := r.TX.QueryRow("INSERT products(name, price, image, type) VALUES(?, ?, ?, ?) RETURNING product_id",
-			p.Name, p.Price, p.Image, p.Type).Scan(&productId)
+		err := r.TX.QueryRow("INSERT products(menu_id, name, price, image, type) VALUES(?, ?, ?, ?, ?) RETURNING product_id",
+			p.MenuId, p.Name, p.Price, p.Image, p.Type).Scan(&productId)
 		if err != nil {
 			_ = r.TX.Rollback()
 		}
@@ -33,8 +33,8 @@ func (r ProductDBRepository) Insert(p models.Product) (int, error) {
 		}
 		return productId, err
 	}
-	_, err := r.DB.Exec("INSERT products(name, price, image, type) VALUES(?, ?, ?, ?)",
-		p.Name, p.Price, p.Image, p.Type)
+	_, err := r.DB.Exec("INSERT products(menu_id,name, price, image, type) VALUES(?, ?, ?, ?, ?)",
+		p.MenuId, p.Name, p.Price, p.Image, p.Type)
 
 	if err != nil {
 		log.Panic(err)

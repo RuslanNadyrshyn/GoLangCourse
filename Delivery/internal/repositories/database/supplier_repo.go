@@ -20,7 +20,8 @@ func NewSupplierRepository(conn *sql.DB) SupplierDBRepository {
 
 func (r SupplierDBRepository) Insert(s models.Supplier) (int, error) {
 	var id int
-	productRepo := NewProductRepository(r.DB)
+	var menuId int
+	//productRepo := NewProductRepository(r.DB)
 	var newProduct models.Product
 
 	if r.TX != nil {
@@ -32,12 +33,27 @@ func (r SupplierDBRepository) Insert(s models.Supplier) (int, error) {
 
 		//
 		for i := range s.Menu {
-			newProduct.Name, newProduct.Type, newProduct.Price, newProduct.Image =
-				s.Menu[i].Name, s.Menu[i].Type, s.Menu[i].Price, s.Menu[i].Image
-			productRepo.Insert(newProduct)
-			fmt.Println("Added menu")
+			fmt.Println("Menu:", i)
+			err := r.TX.QueryRow("INSERT menus(id) VALUES(?) RETURING id", s.Id)
+			if err != nil {
+				_ = r.TX.Rollback()
+			}
 
+			err = r.TX.QueryRow("INSERT products(id, menu_id, name, type, price, image) VALUES(?, ?, ?, ?, ?, ?)",
+				s.Menu[i].Id, s.Id, s.Menu[i].Name, s.Menu[i].Type, s.Menu[i].Price, s.Menu[i].Image)
+
+			newProduct.Id, newProduct.Name, newProduct.Type, newProduct.Price, newProduct.Image =
+				s.Menu[i].Id, s.Menu[i].Name, s.Menu[i].Type, s.Menu[i].Price, s.Menu[i].Image
+			//productRepo.Insert(newProduct)
+			fmt.Println("Added menu")
 		}
+
+		//for i := range s.Menu {
+		//	newProduct.Name, newProduct.Type, newProduct.Price, newProduct.Image =
+		//		s.Menu[i].Name, s.Menu[i].Type, s.Menu[i].Price, s.Menu[i].Image
+		//	productRepo.Insert(newProduct)
+		//	fmt.Println("Added menu")
+		//}
 
 		err = r.TX.Commit()
 		if err != nil {
@@ -53,6 +69,20 @@ func (r SupplierDBRepository) Insert(s models.Supplier) (int, error) {
 		log.Panic(err)
 		return 0, err
 	}
+
+	fmt.Println(menuId, id)
+	_, err = r.DB.Exec("INSERT menus(id, supplier_id) VALUES(?,?)", s.Id, s.Id)
+	if err != nil {
+		log.Panic(err)
+		return 0, err
+	}
+
+	//_, err = r.DB.Exec("INSERT products(id, name, type, price, image) VALUES(?, ?, ?, ?, ?)",
+	//	newProduct.Id, newProduct.Name, newProduct.Type, newProduct.Price, newProduct.Image)
+	//if err != nil {
+	//	log.Panic(err)
+	//	return 0, err
+	//}
 
 	return id, err
 }

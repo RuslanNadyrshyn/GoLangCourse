@@ -49,7 +49,7 @@ func main() {
 	var sup []models.Supplier
 	for i := 0; i < 7; i++ {
 		sup = append(sup, test.Insert("./Goroutines/Data/"+strconv.Itoa(i+1)+".json"))
-		fmt.Println("sup =", sup[i])
+		//fmt.Println("sup =", sup[i])
 		supplierRepo.Insert(sup[i])
 	}
 
