@@ -11,7 +11,7 @@ import (
 type GoRoutinesRepository struct {
 }
 
-func (grt GoRoutinesRepository) Insert(jsonFile string) (supplier models.Supplier) {
+func (grt GoRoutinesRepository) ParseJson(jsonFile string) (supplier models.Supplier) {
 	supplierData := []byte{}
 
 	file, err := os.Open(jsonFile)
@@ -39,25 +39,27 @@ func (grt GoRoutinesRepository) Insert(jsonFile string) (supplier models.Supplie
 		panic(err)
 	}
 
-	//fmt.Println(supplier, "\n\n\n")
-	//
-	//fmt.Println("id:", supplier.Id,
-	//	"\nname:", supplier.Name,
-	//	"\ntype:", supplier.Type,
-	//	"\nimage:", supplier.Image,
-	//	"\nopening:", supplier.WorkingHours.Opening,
-	//	"\nclosing:", supplier.WorkingHours.Closing,
-	//	"\nMenu:")
-	//for i := range supplier.Menu {
-	//	fmt.Println("\n\tId:", supplier.Menu[i].Id,
-	//		"\n\tName:", supplier.Menu[i].Name,
-	//		"\n\tPrice:", supplier.Menu[i].Price,
-	//		"\n\tImage:", supplier.Menu[i].Image,
-	//		"\n\tType:", supplier.Menu[i].Type,
-	//		"\n\tIngredients:")
-	//	for j := range supplier.Menu[i].Ingredients {
-	//		fmt.Println("\t", supplier.Menu[i].Ingredients[j])
-	//	}
-	//}
+	PrintSupplier(supplier)
 	return supplier
+}
+
+func PrintSupplier(supplier models.Supplier) {
+	fmt.Println("id:", supplier.Id,
+		"\nname:", supplier.Name,
+		"\ntype:", supplier.Type,
+		"\nimage:", supplier.Image,
+		"\nopening:", supplier.WorkingHours.Opening,
+		"\nclosing:", supplier.WorkingHours.Closing,
+		"\nMenu:")
+	for i := range supplier.Menu {
+		fmt.Println("\tId:", supplier.Menu[i].Id,
+			"\n\tName:", supplier.Menu[i].Name,
+			"\n\tPrice:", supplier.Menu[i].Price,
+			"\n\tImage:", supplier.Menu[i].Image,
+			"\n\tType:", supplier.Menu[i].Type,
+			"\n\tIngredients:")
+		for j := range supplier.Menu[i].Ingredients {
+			fmt.Println("\t", supplier.Menu[i].Ingredients[j])
+		}
+	}
 }

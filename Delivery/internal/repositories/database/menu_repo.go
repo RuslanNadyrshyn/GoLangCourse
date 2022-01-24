@@ -21,27 +21,58 @@ func (r MenuDBRepository) Insert(s models.Supplier, supId int) (int, error) {
 	var menuId int64
 
 	if r.TX != nil {
-		productRepo := NewProductRepository(r.DB)
-
-		productRepo.TX = r.TX
-
 		result, err := r.TX.Exec("INSERT INTO menus(supplier_id) VALUES(?)", supId)
 		if err != nil {
 			log.Println(err)
 			return int(menuId), err
 		}
-
 		menuId, err = result.LastInsertId()
 		for i := range s.Menu {
 			s.Menu[i].MenuId = int(menuId)
-			productRepo.Insert(s.Menu[i])
+			//productRepo.Insert(s.Menu[i])
 			if err != nil {
 				log.Println(err)
 				return int(menuId), err
 			}
 		}
-
 		return int(menuId), err
 	}
 	return 0, nil
+}
+
+func (r *MenuDBRepository) BeginTx() error {
+	tx, err := r.DB.Begin()
+	if err != nil {
+		return err
+	}
+	r.TX = tx
+	return nil
+}
+
+func (r *MenuDBRepository) CommitTx() error {
+	defer func() {
+		r.TX = nil
+	}()
+	if r.TX != nil {
+		return r.CommitTx()
+	}
+	return nil
+}
+
+func (r *MenuDBRepository) RollbackTx() error {
+	defer func() {
+		r.TX = nil
+	}()
+	if r.TX != nil {
+		return r.RollbackTx()
+	}
+	return nil
+}
+
+func (r *MenuDBRepository) GetTx() *sql.Tx {
+	return r.TX
+}
+
+func (r *MenuDBRepository) SetTx(tx *sql.Tx) {
+	r.TX = tx
 }

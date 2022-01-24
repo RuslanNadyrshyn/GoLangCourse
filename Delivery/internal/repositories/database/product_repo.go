@@ -21,11 +21,6 @@ func (r ProductDBRepository) Insert(p models.Product) (int, error) {
 	var productId int64
 
 	if r.TX != nil {
-		ingredientRepo := NewIngredientRepository(r.DB)
-		productIngredientRepo := NewProductIngredientRepository(r.DB)
-		ingredientRepo.TX = r.TX
-		productIngredientRepo.TX = r.TX
-
 		result, err := r.TX.Exec("INSERT products(menu_id, name, type, price, image) VALUES(?, ?, ?, ?, ?)",
 			p.MenuId, p.Name, p.Type, p.Price, p.Image)
 		if err != nil {
@@ -34,21 +29,44 @@ func (r ProductDBRepository) Insert(p models.Product) (int, error) {
 		}
 		productId, err = result.LastInsertId()
 
-		for i := range p.Ingredients {
-			ingredientId, err := ingredientRepo.Insert(p.Ingredients[i])
-			if err != nil {
-				log.Println(err)
-				return int(productId), err
-			}
-			if ingredientId != 0 {
-				_, err = productIngredientRepo.Insert(int(productId), ingredientId)
-				if err != nil {
-					log.Println(err)
-					return int(productId), err
-				}
-			}
-		}
 		return int(productId), err
 	}
 	return 0, nil
+}
+
+func (r *ProductDBRepository) BeginTx() error {
+	tx, err := r.DB.Begin()
+	if err != nil {
+		return err
+	}
+	r.TX = tx
+	return nil
+}
+
+func (r *ProductDBRepository) CommitTx() error {
+	defer func() {
+		r.TX = nil
+	}()
+	if r.TX != nil {
+		return r.CommitTx()
+	}
+	return nil
+}
+
+func (r *ProductDBRepository) RollbackTx() error {
+	defer func() {
+		r.TX = nil
+	}()
+	if r.TX != nil {
+		return r.RollbackTx()
+	}
+	return nil
+}
+
+func (r *ProductDBRepository) GetTx() *sql.Tx {
+	return r.TX
+}
+
+func (r *ProductDBRepository) SetTx(tx *sql.Tx) {
+	r.TX = tx
 }

@@ -18,11 +18,8 @@ func NewSupplierRepository(conn *sql.DB) SupplierDBRepository {
 }
 
 func (r SupplierDBRepository) Insert(s models.Supplier) (int, error) {
-	var id int64
-	menuRepo := NewMenuRepository(r.DB)
 	if r.TX != nil {
-		menuRepo.TX = r.TX
-
+		var id int64
 		result, err := r.TX.Exec("INSERT INTO suppliers(name, type, address, image, opening, closing) VALUES(?, ?, ?, ?, ?, ?)",
 			s.Name, s.Type, s.Address, s.Image, s.WorkingHours.Opening, s.WorkingHours.Closing)
 		if err != nil {
@@ -30,7 +27,6 @@ func (r SupplierDBRepository) Insert(s models.Supplier) (int, error) {
 			return int(id), err
 		}
 		id, err = result.LastInsertId()
-		_, err = menuRepo.Insert(s, int(id))
 		if err != nil {
 			log.Println(err)
 			return int(id), err
@@ -58,4 +54,43 @@ func (r SupplierDBRepository) Delete(name string) error {
 	}
 
 	return nil
+}
+
+func (r *SupplierDBRepository) BeginTx() error {
+	tx, err := r.DB.Begin()
+	if err != nil {
+		return err
+	}
+	r.TX = tx
+	return nil
+}
+
+func (r *SupplierDBRepository) CommitTx() error {
+	defer func() {
+		r.TX = nil
+	}()
+	if r.TX != nil {
+		return nil
+		//return r.CommitTx()
+	}
+	return nil
+}
+
+func (r *SupplierDBRepository) RollbackTx() error {
+	defer func() {
+		r.TX = nil
+	}()
+	if r.TX != nil {
+		return nil
+		//return r.RollbackTx()
+	}
+	return nil
+}
+
+func (r *SupplierDBRepository) GetTx() *sql.Tx {
+	return r.TX
+}
+
+func (r *SupplierDBRepository) SetTx(tx *sql.Tx) {
+	r.TX = tx
 }
