@@ -18,64 +18,37 @@ func NewProductRepository(conn *sql.DB) ProductDBRepository {
 }
 
 func (r ProductDBRepository) Insert(p models.Product) (int, error) {
-	var productId int
-	var ingredientId int
-	var productIngredientId int
+	var productId int64
 
 	if r.TX != nil {
-		err := r.TX.QueryRow("INSERT products(id, menu_id, name, type, price, image) VALUES(?, ?, ?, ?, ?, ?) RETURNING id",
-			p.Id, p.MenuId, p.Name, p.Type, p.Price, p.Image).Scan(&productId)
+		ingredientRepo := NewIngredientRepository(r.DB)
+		productIngredientRepo := NewProductIngredientRepository(r.DB)
+		ingredientRepo.TX = r.TX
+		productIngredientRepo.TX = r.TX
+
+		result, err := r.TX.Exec("INSERT products(menu_id, name, type, price, image) VALUES(?, ?, ?, ?, ?)",
+			p.MenuId, p.Name, p.Type, p.Price, p.Image)
 		if err != nil {
-			_ = r.TX.Rollback()
+			log.Println(err)
+			return int(productId), err
 		}
+		productId, err = result.LastInsertId()
 
 		for i := range p.Ingredients {
-			err = r.DB.QueryRow("INSERT IGNORE INTO ingredients(name) values (?) RETURNING id",
-				p.Ingredients[i]).Scan(&ingredientId)
+			ingredientId, err := ingredientRepo.Insert(p.Ingredients[i])
 			if err != nil {
-				_ = r.TX.Rollback()
+				log.Println(err)
+				return int(productId), err
 			}
-
-			err = r.DB.QueryRow("INSERT INTO product_ingredients(product_id, ingredient_id)"+
-				"VALUES (?, (SELECT id FROM ingredients WHERE name=(?)))", p.Id, p.Ingredients[i]).Scan(&productIngredientId)
-			if err != nil {
-				_ = r.TX.Rollback()
+			if ingredientId != 0 {
+				_, err = productIngredientRepo.Insert(int(productId), ingredientId)
+				if err != nil {
+					log.Println(err)
+					return int(productId), err
+				}
 			}
 		}
-
-		err = r.TX.Commit()
-		if err != nil {
-			_ = r.TX.Rollback()
-		}
-		return productId, err
+		return int(productId), err
 	}
-
-	_, err := r.DB.Exec("INSERT products(id, menu_id, name, type, price, image) VALUES(?, ?, ?, ?, ?, ?)",
-		p.Id, p.MenuId, p.Name, p.Type, p.Price, p.Image)
-	if err != nil {
-		log.Panic(err)
-		return productId, err
-	}
-
-	for i := range p.Ingredients {
-		_, err = r.DB.Exec("INSERT IGNORE INTO ingredients(name) values (?)",
-			p.Ingredients[i])
-		if err != nil {
-			log.Panic(err)
-			return productId, err
-		}
-
-		_, err = r.DB.Exec("INSERT INTO product_ingredients(product_id, ingredient_id)"+
-			"VALUES (?, (SELECT id FROM ingredients WHERE name=(?)))", p.Id, p.Ingredients[i])
-		if err != nil {
-			log.Panic(err)
-			return productId, err
-		}
-	}
-	if err != nil {
-		log.Panic(err)
-		return productId, err
-	}
-
-	return productId, err
+	return 0, nil
 }

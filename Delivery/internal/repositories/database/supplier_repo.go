@@ -18,50 +18,26 @@ func NewSupplierRepository(conn *sql.DB) SupplierDBRepository {
 }
 
 func (r SupplierDBRepository) Insert(s models.Supplier) (int, error) {
-	var id int
-	var menuId int
-	productRepo := NewProductRepository(r.DB)
-
+	var id int64
+	menuRepo := NewMenuRepository(r.DB)
 	if r.TX != nil {
-		err := r.TX.QueryRow("INSERT suppliers(id, name, type, address, image, opening, closing) VALUES(?, ?, ?,?, ?,?, ?) RETURNING id",
-			s.Id, s.Name, s.Type, s.Address, s.Image, s.WorkingHours.Opening, s.WorkingHours.Closing).Scan(&id)
-		if err != nil {
-			_ = r.TX.Rollback()
-		}
-		err = r.TX.QueryRow("INSERT menus(id) VALUES(?) RETURING id", s.Id).Scan(&menuId)
-		if err != nil {
-			_ = r.TX.Rollback()
-		}
+		menuRepo.TX = r.TX
 
-		err = r.TX.Commit()
+		result, err := r.TX.Exec("INSERT INTO suppliers(name, type, address, image, opening, closing) VALUES(?, ?, ?, ?, ?, ?)",
+			s.Name, s.Type, s.Address, s.Image, s.WorkingHours.Opening, s.WorkingHours.Closing)
 		if err != nil {
-			_ = r.TX.Rollback()
+			log.Println(err)
+			return int(id), err
 		}
-		return id, err
+		id, err = result.LastInsertId()
+		_, err = menuRepo.Insert(s, int(id))
+		if err != nil {
+			log.Println(err)
+			return int(id), err
+		}
+		return int(id), err
 	}
-
-	_, err := r.DB.Exec("INSERT suppliers(id, name, type, address, image, opening, closing) VALUES(?, ?, ?, ?, ?, ?, ?)",
-		s.Id, s.Name, s.Type, s.Address, s.Image, s.WorkingHours.Opening, s.WorkingHours.Closing)
-	if err != nil {
-		log.Panic(err)
-		return id, err
-	}
-
-	for i := range s.Menu {
-		_, err = r.DB.Exec("INSERT IGNORE INTO menus(id, supplier_id) VALUES(?,?)", s.Id, s.Id)
-		if err != nil {
-			log.Panic(err)
-			return id, err
-		}
-		s.Menu[i].MenuId = s.Id
-		productRepo.Insert(s.Menu[i])
-		if err != nil {
-			log.Panic(err)
-			return id, err
-		}
-	}
-
-	return id, err
+	return 0, nil
 }
 
 func (r SupplierDBRepository) GetById(id int) (models.Supplier, error) {

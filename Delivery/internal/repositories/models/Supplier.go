@@ -10,7 +10,5 @@ type Supplier struct {
 		Opening string `json:"opening"`
 		Closing string `json:"closing"`
 	} `json:"workingHours"`
-	Menu      []Product `json:"menu"`
-	CreatedAt string
-	UpdatedAt string
+	Menu []Product `json:"menu"`
 }

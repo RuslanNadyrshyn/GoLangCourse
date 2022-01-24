@@ -27,8 +27,8 @@ type OrdersRepositoryInterface interface {
 	Add(ProductId int) (orders models2.Orders, err error)
 }
 
-type OrderProductsRepositoryInterface interface {
-	GetAll() (orderList models2.OrderProducts, err error)
-	GetByOrderId(orderProductsId int) (orderProducts models2.OrderProducts, err error)
-	GetByUserId(userId int) (orderProducts []*models2.OrderProducts, err error)
-}
+//type OrderProductsRepositoryInterface interface {
+//	GetAll() (orderList models2.OrderProducts, err error)
+//	GetByOrderId(orderProductsId int) (orderProducts models2.OrderProducts, err error)
+//	GetByUserId(userId int) (orderProducts []*models2.OrderProducts, err error)
+//}
