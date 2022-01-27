@@ -18,8 +18,9 @@ func NewSupplierRepository(conn *sql.DB) SupplierDBRepository {
 }
 
 func (r SupplierDBRepository) Insert(s models.Supplier) (int, error) {
+	var id int64
+
 	if r.TX != nil {
-		var id int64
 		result, err := r.TX.Exec("INSERT INTO suppliers(name, type, address, image, opening, closing) VALUES(?, ?, ?, ?, ?, ?)",
 			s.Name, s.Type, s.Address, s.Image, s.WorkingHours.Opening, s.WorkingHours.Closing)
 		if err != nil {
@@ -33,7 +34,19 @@ func (r SupplierDBRepository) Insert(s models.Supplier) (int, error) {
 		}
 		return int(id), err
 	}
-	return 0, nil
+
+	result, err := r.DB.Exec("INSERT INTO suppliers(name, type, address, image, opening, closing) VALUES(?, ?, ?, ?, ?, ?)",
+		s.Name, s.Type, s.Address, s.Image, s.WorkingHours.Opening, s.WorkingHours.Closing)
+	if err != nil {
+		log.Println(err)
+		return int(id), err
+	}
+	id, err = result.LastInsertId()
+	if err != nil {
+		log.Println(err)
+		return int(id), err
+	}
+	return int(id), err
 }
 
 func (r SupplierDBRepository) GetById(id int) (models.Supplier, error) {

@@ -19,7 +19,7 @@ func NewProductIngredientRepository(conn *sql.DB) ProductIngredientDBRepository 
 func (r ProductIngredientDBRepository) Insert(productId int, ingredientId int) (int, error) {
 	var ProductIngredientId int64
 	if r.TX != nil {
-		result, err := r.DB.Exec("INSERT INTO product_ingredients(product_id, ingredient_id)"+
+		result, err := r.TX.Exec("INSERT INTO product_ingredients(product_id, ingredient_id)"+
 			"VALUES (?, ?)", productId, ingredientId)
 		if err != nil {
 			log.Println(err)
@@ -32,7 +32,18 @@ func (r ProductIngredientDBRepository) Insert(productId int, ingredientId int) (
 		}
 		return int(ProductIngredientId), err
 	}
-	return 0, nil
+	result, err := r.DB.Exec("INSERT INTO product_ingredients(product_id, ingredient_id)"+
+		"VALUES (?, ?)", productId, ingredientId)
+	if err != nil {
+		log.Println(err)
+		return int(ProductIngredientId), err
+	}
+	ProductIngredientId, err = result.LastInsertId()
+	if err != nil {
+		log.Println(err)
+		return int(ProductIngredientId), err
+	}
+	return int(ProductIngredientId), err
 }
 func (r *ProductIngredientDBRepository) BeginTx() error {
 	tx, err := r.DB.Begin()

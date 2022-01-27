@@ -19,7 +19,7 @@ func NewIngredientRepository(conn *sql.DB) IngredientDBRepository {
 func (r IngredientDBRepository) Insert(p string) (int, error) {
 	var ingredientId int64
 	if r.TX != nil {
-		result, err := r.DB.Exec("INSERT IGNORE INTO ingredients(name) VALUES (?);", p)
+		result, err := r.TX.Exec("INSERT IGNORE INTO ingredients(name) VALUES (?);", p)
 		if err != nil {
 			log.Println(err)
 			return 0, err
@@ -32,7 +32,6 @@ func (r IngredientDBRepository) Insert(p string) (int, error) {
 
 		if ingredientId == 0 {
 			err = r.DB.QueryRow("SELECT id FROM ingredients WHERE ingredients.name = (?)", p).Scan(&ingredientId)
-
 			if err != nil {
 				log.Println(err)
 				return 0, err
@@ -40,7 +39,26 @@ func (r IngredientDBRepository) Insert(p string) (int, error) {
 		}
 		return int(ingredientId), err
 	}
-	return 0, nil
+
+	result, err := r.DB.Exec("INSERT IGNORE INTO ingredients(name) VALUES (?);", p)
+	if err != nil {
+		log.Println(err)
+		return 0, err
+	}
+	ingredientId, err = result.LastInsertId()
+	if err != nil {
+		log.Println(err)
+		return 0, err
+	}
+
+	if ingredientId == 0 {
+		err = r.DB.QueryRow("SELECT id FROM ingredients WHERE ingredients.name = (?)", p).Scan(&ingredientId)
+		if err != nil {
+			log.Println(err)
+			return 0, err
+		}
+	}
+	return int(ingredientId), err
 }
 
 func (r *IngredientDBRepository) BeginTx() error {

@@ -17,7 +17,7 @@ func NewMenuRepository(conn *sql.DB) MenuDBRepository {
 	}
 }
 
-func (r MenuDBRepository) Insert(s models.Supplier, supId int) (int, error) {
+func (r MenuDBRepository) Insert(menu []models.Product, supId int) (int, error) {
 	var menuId int64
 
 	if r.TX != nil {
@@ -27,17 +27,23 @@ func (r MenuDBRepository) Insert(s models.Supplier, supId int) (int, error) {
 			return int(menuId), err
 		}
 		menuId, err = result.LastInsertId()
-		for i := range s.Menu {
-			s.Menu[i].MenuId = int(menuId)
-			//productRepo.Insert(s.Menu[i])
-			if err != nil {
-				log.Println(err)
-				return int(menuId), err
-			}
+		if err != nil {
+			log.Println(err)
+			return int(menuId), err
 		}
 		return int(menuId), err
 	}
-	return 0, nil
+	result, err := r.DB.Exec("INSERT INTO menus(supplier_id) VALUES(?)", supId)
+	if err != nil {
+		log.Println(err)
+		return int(menuId), err
+	}
+	menuId, err = result.LastInsertId()
+	if err != nil {
+		log.Println(err)
+		return int(menuId), err
+	}
+	return int(menuId), err
 }
 
 func (r *MenuDBRepository) BeginTx() error {

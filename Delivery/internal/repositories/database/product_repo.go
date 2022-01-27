@@ -28,10 +28,26 @@ func (r ProductDBRepository) Insert(p models.Product) (int, error) {
 			return int(productId), err
 		}
 		productId, err = result.LastInsertId()
+		if err != nil {
+			log.Println(err)
+			return int(productId), err
+		}
 
 		return int(productId), err
 	}
-	return 0, nil
+	result, err := r.DB.Exec("INSERT products(menu_id, name, type, price, image) VALUES(?, ?, ?, ?, ?)",
+		p.MenuId, p.Name, p.Type, p.Price, p.Image)
+	if err != nil {
+		log.Println(err)
+		return int(productId), err
+	}
+	productId, err = result.LastInsertId()
+	if err != nil {
+		log.Println(err)
+		return int(productId), err
+	}
+
+	return int(productId), err
 }
 
 func (r *ProductDBRepository) BeginTx() error {

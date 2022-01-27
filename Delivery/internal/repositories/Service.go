@@ -26,8 +26,7 @@ func NewSupplierService(conn *sql.DB) SupplierService {
 	}
 }
 
-func (ss SupplierService) CreateSupplier(sup models.Supplier) {
-
+func (ss SupplierService) CreateSupplierTX(sup models.Supplier) {
 	//Supplier TX
 	err := ss.SupplierRepo.BeginTx()
 	supId, err := ss.SupplierRepo.Insert(sup)
@@ -43,7 +42,7 @@ func (ss SupplierService) CreateSupplier(sup models.Supplier) {
 
 	//Menu TX
 	err = ss.MenuRepo.BeginTx()
-	menuId, err := ss.MenuRepo.Insert(sup, supId)
+	menuId, err := ss.MenuRepo.Insert(sup.Menu, supId)
 	if err != nil {
 		log.Println("MenuRepo error:", err)
 		ss.SupplierRepo.TX.Rollback()
@@ -57,7 +56,7 @@ func (ss SupplierService) CreateSupplier(sup models.Supplier) {
 	//Products TX
 	for i := range sup.Menu {
 		err = ss.ProductRepo.BeginTx()
-		sup.Menu[i].MenuId = int(menuId)
+		sup.Menu[i].MenuId = menuId
 		productId, err := ss.ProductRepo.Insert(sup.Menu[i])
 		if err != nil {
 			fmt.Println(err)
@@ -83,6 +82,83 @@ func (ss SupplierService) CreateSupplier(sup models.Supplier) {
 				ss.ProductIngredientRepo.TX.Rollback()
 			}
 			ss.ProductIngredientRepo.TX.Commit()
+		}
+	}
+}
+
+func (ss SupplierService) CreateSupplier(sup models.Supplier) {
+	//Supplier
+	supId, err := ss.SupplierRepo.Insert(sup)
+	if err != nil {
+		log.Println("SupplierRepo error:", err)
+		return
+	}
+
+	//Menu
+	menuId, err := ss.MenuRepo.Insert(sup.Menu, supId)
+	if err != nil {
+		log.Println("MenuRepo error:", err)
+		return
+	}
+
+	//Products TX
+	for i := range sup.Menu {
+		sup.Menu[i].MenuId = menuId
+		productId, err := ss.ProductRepo.Insert(sup.Menu[i])
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		//Ingredients TX
+		for j := range sup.Menu[i].Ingredients {
+			ingredientId, err := ss.IngredientRepo.Insert(sup.Menu[i].Ingredients[j])
+			if err != nil {
+				log.Println(err)
+				return
+			}
+
+			//ProductIngredients TX
+			_, err = ss.ProductIngredientRepo.Insert(int(productId), ingredientId)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+		}
+	}
+}
+
+func (ss SupplierService) CreateMenu(sup models.Supplier, supId int) {
+	//Menu
+	menuId, err := ss.MenuRepo.Insert(sup.Menu, supId)
+	if err != nil {
+		log.Println("MenuRepo error:", err)
+		return
+	}
+
+	//Products TX
+	for i := range sup.Menu {
+		sup.Menu[i].MenuId = menuId
+		productId, err := ss.ProductRepo.Insert(sup.Menu[i])
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		//Ingredients TX
+		for j := range sup.Menu[i].Ingredients {
+			ingredientId, err := ss.IngredientRepo.Insert(sup.Menu[i].Ingredients[j])
+			if err != nil {
+				log.Println(err)
+				return
+			}
+
+			//ProductIngredients TX
+			_, err = ss.ProductIngredientRepo.Insert(int(productId), ingredientId)
+			if err != nil {
+				log.Println(err)
+				return
+			}
 		}
 	}
 }
