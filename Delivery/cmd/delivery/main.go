@@ -35,6 +35,7 @@ func main() {
 		sup = append(sup, test.ParseJson("./Goroutines/Data/"+strconv.Itoa(i+1)+".json"))
 		pool.DataSource <- sup[i]
 	}
+
 	pool.Stop()
 }
 
@@ -49,6 +50,7 @@ func (c worker) Do(data interface{}, _ int) {
 	}
 	supplierService := repositories.NewSupplierService(c.DB)
 
+	//supplierService.CreateSupplierTX(sup)
 	supplierService.CreateSupplier(sup)
 }
 
