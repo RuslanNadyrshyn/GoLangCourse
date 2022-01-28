@@ -45,6 +45,7 @@ func (r IngredientDBRepository) Insert(p string) (int, error) {
 		log.Println(err)
 		return 0, err
 	}
+
 	ingredientId, err = result.LastInsertId()
 	if err != nil {
 		log.Println(err)
@@ -59,6 +60,41 @@ func (r IngredientDBRepository) Insert(p string) (int, error) {
 		}
 	}
 	return int(ingredientId), err
+}
+
+func (r IngredientDBRepository) GetByProductId(ProductId int) (ingredients []string, err error) {
+	var ingr string
+	rows, err := r.DB.Query("SELECT name FROM ingredients WHERE id IN "+
+		"(SELECT ingredient_id FROM product_ingredients WHERE product_id = (?))", ProductId)
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		err = rows.Scan(&ingr)
+		if err != nil {
+			panic(err)
+		}
+		ingredients = append(ingredients, ingr)
+	}
+	return ingredients, nil
+}
+
+func (r IngredientDBRepository) DeleteAll() error {
+	_, err := r.DB.Exec("DELETE FROM ingredients")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r IngredientDBRepository) DeleteByName(name string) error {
+	_, err := r.DB.Exec("DELETE FROM ingredients WHERE name = ?", name)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (r *IngredientDBRepository) BeginTx() error {

@@ -31,6 +31,8 @@ func (w *WorkerPool) Stop() {
 	for i := 0; i < w.WorkerCount; i++ {
 		w.stop <- struct{}{}
 	}
+	close(w.DataSource)
+	close(w.stop)
 }
 
 func (w *WorkerPool) Run() {

@@ -97,3 +97,7 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Only GET method is allowed", http.StatusMethodNotAllowed)
 	}
 }
+
+func Refresh(w http.ResponseWriter, r *http.Request) {
+
+}

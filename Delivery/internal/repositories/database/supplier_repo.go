@@ -49,10 +49,29 @@ func (r SupplierDBRepository) Insert(s models.Supplier) (int, error) {
 	return int(id), err
 }
 
-func (r SupplierDBRepository) GetById(id int) (models.Supplier, error) {
-	var supplier models.Supplier
+func (r SupplierDBRepository) GetAll() (suppliers []models.Supplier, err error) {
+	var sup models.Supplier
+	rows, err := r.DB.Query("SELECT id, name, type, address, image, opening, closing FROM suppliers")
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
 
-	err := r.DB.QueryRow("SELECT id, name, address FROM suppliers WHERE id = ?", id).Scan(&supplier.Id, &supplier.Name, &supplier.Address)
+	for rows.Next() {
+		err = rows.Scan(&sup.Id, &sup.Name, &sup.Type, &sup.Address,
+			&sup.Image, &sup.WorkingHours.Opening, &sup.WorkingHours.Closing)
+		if err != nil {
+			panic(err)
+		}
+		suppliers = append(suppliers, sup)
+	}
+	return suppliers, nil
+}
+
+func (r SupplierDBRepository) GetById(id int) (supplier models.Supplier, err error) {
+	err = r.DB.QueryRow("SELECT id, name, type, address, image, opening, closing FROM suppliers "+
+		"WHERE id = ?", id).Scan(&supplier.Id, &supplier.Name, &supplier.Type, &supplier.Address,
+		&supplier.Image, &supplier.WorkingHours.Opening, &supplier.WorkingHours.Closing)
 	if err != nil {
 		return supplier, err
 	}
@@ -60,12 +79,99 @@ func (r SupplierDBRepository) GetById(id int) (models.Supplier, error) {
 	return supplier, nil
 }
 
-func (r SupplierDBRepository) Delete(name string) error {
+func (r SupplierDBRepository) GetByName(name string) (suppliers []models.Supplier, err error) {
+	var sup models.Supplier
+	rows, err := r.DB.Query("SELECT id, name, type, address, image, opening, closing FROM suppliers "+
+		"WHERE name = ?", name)
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		err = rows.Scan(&sup.Id, &sup.Name, &sup.Type, &sup.Address,
+			&sup.Image, &sup.WorkingHours.Opening, &sup.WorkingHours.Closing)
+		if err != nil {
+			panic(err)
+		}
+		suppliers = append(suppliers, sup)
+	}
+	return suppliers, nil
+}
+
+func (r SupplierDBRepository) GetByType(t string) (suppliers []models.Supplier, err error) {
+	var sup models.Supplier
+	rows, err := r.DB.Query("SELECT id, name, type, address, image, opening, closing FROM suppliers "+
+		"WHERE type = ?", t)
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		err = rows.Scan(&sup.Id, &sup.Name, &sup.Type, &sup.Address,
+			&sup.Image, &sup.WorkingHours.Opening, &sup.WorkingHours.Closing)
+		if err != nil {
+			panic(err)
+		}
+		suppliers = append(suppliers, sup)
+	}
+	return suppliers, nil
+}
+
+func (r SupplierDBRepository) GetByAddress(address string) (suppliers []models.Supplier, err error) {
+	var sup models.Supplier
+	rows, err := r.DB.Query("SELECT id, name, type, address, image, opening, closing FROM suppliers "+
+		"WHERE address LIKE '%(?)%", address)
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		err = rows.Scan(&sup.Id, &sup.Name, &sup.Type, &sup.Address,
+			&sup.Image, &sup.WorkingHours.Opening, &sup.WorkingHours.Closing)
+		if err != nil {
+			panic(err)
+		}
+		suppliers = append(suppliers, sup)
+	}
+	return suppliers, nil
+}
+
+func (r SupplierDBRepository) GetByWorkingTime(workingTime string) (suppliers []models.Supplier, err error) {
+	var sup models.Supplier
+	rows, err := r.DB.Query("SELECT id, name, type, address, image, opening, closing FROM suppliers "+
+		"WHERE opening <= (?) AND closing >= (?)", workingTime, workingTime)
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		err = rows.Scan(&sup.Id, &sup.Name, &sup.Type, &sup.Address,
+			&sup.Image, &sup.WorkingHours.Opening, &sup.WorkingHours.Closing)
+		if err != nil {
+			panic(err)
+		}
+		suppliers = append(suppliers, sup)
+	}
+	return suppliers, nil
+}
+
+func (r SupplierDBRepository) DeleteAll() error {
+	_, err := r.DB.Exec("DELETE FROM suppliers")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r SupplierDBRepository) DeleteByName(name string) error {
 	_, err := r.DB.Exec("DELETE FROM suppliers WHERE name = ?", name)
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 

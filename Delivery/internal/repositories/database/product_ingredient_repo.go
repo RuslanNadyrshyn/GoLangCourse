@@ -45,6 +45,15 @@ func (r ProductIngredientDBRepository) Insert(productId int, ingredientId int) (
 	}
 	return int(ProductIngredientId), err
 }
+
+func (r ProductIngredientDBRepository) DeleteAll() error {
+	_, err := r.DB.Exec("DELETE FROM product_ingredients")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (r *ProductIngredientDBRepository) BeginTx() error {
 	tx, err := r.DB.Begin()
 	if err != nil {

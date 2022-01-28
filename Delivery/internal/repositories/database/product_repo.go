@@ -50,6 +50,38 @@ func (r ProductDBRepository) Insert(p models.Product) (int, error) {
 	return int(productId), err
 }
 
+func (r ProductDBRepository) GetByType(t string) (products []models.Product, err error) {
+	var prod models.Product
+
+	rows, err := r.DB.Query("SELECT id, menu_id, name, price, image, type FROM products WHERE type = (?)", t)
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		err = rows.Scan(&prod.Id, &prod.MenuId, &prod.Name, &prod.Price, &prod.Image, &prod.Type)
+		if err != nil {
+			panic(err)
+		}
+		products = append(products, prod)
+	}
+	IngredientRepo := NewIngredientRepository(r.DB)
+
+	for i := range products {
+		products[i].Ingredients, err = IngredientRepo.GetByProductId(products[i].Id)
+	}
+	return products, nil
+}
+
+func (r ProductDBRepository) DeleteAll() error {
+	_, err := r.DB.Exec("DELETE FROM products")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (r *ProductDBRepository) BeginTx() error {
 	tx, err := r.DB.Begin()
 	if err != nil {

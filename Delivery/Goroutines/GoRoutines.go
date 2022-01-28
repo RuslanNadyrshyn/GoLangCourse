@@ -39,7 +39,7 @@ func (grt GoRoutinesRepository) ParseJson(jsonFile string) (supplier models.Supp
 		panic(err)
 	}
 
-	PrintSupplier(supplier)
+	//PrintSupplier(supplier)
 	return supplier
 }
 

@@ -90,14 +90,14 @@ func (ss SupplierService) CreateSupplier(sup models.Supplier) {
 	//Supplier
 	supId, err := ss.SupplierRepo.Insert(sup)
 	if err != nil {
-		log.Println("SupplierRepo error:", err)
+		log.Println(err)
 		return
 	}
 
 	//Menu
 	menuId, err := ss.MenuRepo.Insert(sup.Menu, supId)
 	if err != nil {
-		log.Println("MenuRepo error:", err)
+		log.Println(err)
 		return
 	}
 
@@ -126,6 +126,35 @@ func (ss SupplierService) CreateSupplier(sup models.Supplier) {
 			}
 		}
 	}
+}
+
+func (ss SupplierService) DeleteAll() error {
+	err := ss.ProductIngredientRepo.DeleteAll()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	err = ss.IngredientRepo.DeleteAll()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	err = ss.ProductRepo.DeleteAll()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	err = ss.MenuRepo.DeleteAll()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	err = ss.SupplierRepo.DeleteAll()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
 }
 
 func (ss SupplierService) CreateMenu(sup models.Supplier, supId int) {
@@ -162,3 +191,19 @@ func (ss SupplierService) CreateMenu(sup models.Supplier, supId int) {
 		}
 	}
 }
+
+//func (ss SupplierService) GetProductsByType(ProductType string) (products []models.Product, err error) {
+//	products, err = ss.ProductRepo.GetByType(ProductType)
+//	if err != nil {
+//		log.Print(err)
+//		return nil, err
+//	}
+//	for i := range products {
+//		products[i].Ingredients, err = ss.IngredientRepo.GetByProductId(products[i].Id)
+//	if err != nil {
+//		log.Print(err)
+//		return nil, err
+//	}
+//	}
+//	return products, nil
+//}

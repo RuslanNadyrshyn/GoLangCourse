@@ -46,6 +46,14 @@ func (r MenuDBRepository) Insert(menu []models.Product, supId int) (int, error) 
 	return int(menuId), err
 }
 
+func (r MenuDBRepository) DeleteAll() error {
+	_, err := r.DB.Exec("DELETE FROM menus")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (r *MenuDBRepository) BeginTx() error {
 	tx, err := r.DB.Begin()
 	if err != nil {
