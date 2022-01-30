@@ -3,6 +3,7 @@ package database
 import (
 	"awesomeProject/internal/repositories/models"
 	"database/sql"
+	"fmt"
 	"log"
 )
 
@@ -21,8 +22,8 @@ func (r ProductDBRepository) Insert(p models.Product) (int, error) {
 	var productId int64
 
 	if r.TX != nil {
-		result, err := r.TX.Exec("INSERT products(menu_id, name, type, price, image) VALUES(?, ?, ?, ?, ?)",
-			p.MenuId, p.Name, p.Type, p.Price, p.Image)
+		result, err := r.TX.Exec("INSERT products(id, menu_id, name, type, price, image) VALUES(?, ?, ?, ?, ?, ?)",
+			p.Id, p.MenuId, p.Name, p.Type, p.Price, p.Image)
 		if err != nil {
 			log.Println(err)
 			return int(productId), err
@@ -35,8 +36,8 @@ func (r ProductDBRepository) Insert(p models.Product) (int, error) {
 
 		return int(productId), err
 	}
-	result, err := r.DB.Exec("INSERT products(menu_id, name, type, price, image) VALUES(?, ?, ?, ?, ?)",
-		p.MenuId, p.Name, p.Type, p.Price, p.Image)
+	result, err := r.DB.Exec("INSERT products(id, menu_id, name, type, price, image) VALUES(?, ?, ?, ?, ?, ?)",
+		p.Id, p.MenuId, p.Name, p.Type, p.Price, p.Image)
 	if err != nil {
 		log.Println(err)
 		return int(productId), err
@@ -44,6 +45,36 @@ func (r ProductDBRepository) Insert(p models.Product) (int, error) {
 	productId, err = result.LastInsertId()
 	if err != nil {
 		log.Println(err)
+		return int(productId), err
+	}
+
+	return int(productId), err
+}
+
+func (r ProductDBRepository) UpdatePrice(p models.Product) (int, error) {
+	var productId int64
+
+	if r.TX != nil {
+		result, err := r.TX.Exec("UPDATE products SET price=? WHERE id=?", p.Price, p.Id)
+		if err != nil {
+			fmt.Println(err)
+			return int(productId), err
+		}
+		productId, err = result.LastInsertId()
+		if err != nil {
+			fmt.Println(err)
+			return int(productId), err
+		}
+		return int(productId), err
+	}
+	result, err := r.DB.Exec("UPDATE products SET price=? WHERE id=?", p.Price, p.Id)
+	if err != nil {
+		fmt.Println(err)
+		return int(productId), err
+	}
+	productId, err = result.LastInsertId()
+	if err != nil {
+		fmt.Println(err)
 		return int(productId), err
 	}
 
