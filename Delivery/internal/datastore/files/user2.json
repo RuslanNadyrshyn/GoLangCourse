@@ -1,1 +1,1 @@
-{"Id":0,"Email":"blabla@gmail.com","PasswordHash":"123","Name":"Name"}
+{"Id":0,"Name":"Name","Email":"blabla@gmail.com","PasswordHash":"123","CreatedAt":"0001-01-01T00:00:00Z","UpdatedAt":"0001-01-01T00:00:00Z"}

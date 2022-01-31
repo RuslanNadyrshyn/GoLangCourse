@@ -18,33 +18,60 @@ func NewSupplierRepository(conn *sql.DB) SupplierDBRepository {
 }
 
 func (r SupplierDBRepository) Insert(s models.Supplier) (int, error) {
-	var id int
+	var id int64
 
 	if r.TX != nil {
-		err := r.TX.QueryRow("INSERT suppliers(name, address) VALUES(?, ?) RETURNING id", s.Name, s.Address).Scan(&id)
+		result, err := r.TX.Exec("INSERT INTO suppliers(id, name, type, image, opening, closing) "+
+			"VALUES(?, ?, ?, ?, ?, ?)", s.Id, s.Name, s.Type, s.Image, s.WorkingHours.Opening, s.WorkingHours.Closing)
 		if err != nil {
-			_ = r.TX.Rollback()
+			log.Println(err)
+			return int(id), err
 		}
-		err = r.TX.Commit()
+		id, err = result.LastInsertId()
 		if err != nil {
-			_ = r.TX.Rollback()
+			log.Println(err)
+			return int(id), err
 		}
-		return id, err
+		return int(id), err
 	}
-	_, err := r.DB.Exec("INSERT suppliers(name, address) VALUES(?, ?)", s.Name, s.Address)
 
+	result, err := r.DB.Exec("INSERT INTO suppliers(id, name, type, image, opening, closing) "+
+		"VALUES(?, ?, ?, ?, ?, ?)", s.Id, s.Name, s.Type, s.Image, s.WorkingHours.Opening, s.WorkingHours.Closing)
 	if err != nil {
-		log.Panic(err)
-		return 0, err
+		log.Println(err)
+		return int(id), err
 	}
-
-	return id, err
+	id, err = result.LastInsertId()
+	if err != nil {
+		log.Println(err)
+		return int(id), err
+	}
+	return int(id), err
 }
 
-func (r SupplierDBRepository) GetById(id int) (models.Supplier, error) {
-	var supplier models.Supplier
+func (r SupplierDBRepository) GetAll() (suppliers []models.Supplier, err error) {
+	var sup models.Supplier
+	rows, err := r.DB.Query("SELECT id, name, type, image, opening, closing FROM suppliers")
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
 
-	err := r.DB.QueryRow("SELECT id, name, address FROM suppliers WHERE id = ?", id).Scan(&supplier.Id, &supplier.Name, &supplier.Address)
+	for rows.Next() {
+		err = rows.Scan(&sup.Id, &sup.Name, &sup.Type, &sup.Image,
+			&sup.WorkingHours.Opening, &sup.WorkingHours.Closing)
+		if err != nil {
+			panic(err)
+		}
+		suppliers = append(suppliers, sup)
+	}
+	return suppliers, nil
+}
+
+func (r SupplierDBRepository) GetById(id int) (supplier models.Supplier, err error) {
+	err = r.DB.QueryRow("SELECT id, name, type, image, opening, closing FROM suppliers "+
+		"WHERE id = ?", id).Scan(&supplier.Id, &supplier.Name, &supplier.Type, &supplier.Image,
+		&supplier.WorkingHours.Opening, &supplier.WorkingHours.Closing)
 	if err != nil {
 		return supplier, err
 	}
@@ -52,11 +79,117 @@ func (r SupplierDBRepository) GetById(id int) (models.Supplier, error) {
 	return supplier, nil
 }
 
-func (r SupplierDBRepository) Delete(name string) error {
+func (r SupplierDBRepository) GetByName(name string) (suppliers []models.Supplier, err error) {
+	var sup models.Supplier
+	rows, err := r.DB.Query("SELECT id, name, type, image, opening, closing FROM suppliers "+
+		"WHERE name = ?", name)
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		err = rows.Scan(&sup.Id, &sup.Name, &sup.Type, &sup.Image,
+			&sup.WorkingHours.Opening, &sup.WorkingHours.Closing)
+		if err != nil {
+			panic(err)
+		}
+		suppliers = append(suppliers, sup)
+	}
+	return suppliers, nil
+}
+
+func (r SupplierDBRepository) GetByType(t string) (suppliers []models.Supplier, err error) {
+	var sup models.Supplier
+	rows, err := r.DB.Query("SELECT id, name, type, image, opening, closing FROM suppliers "+
+		"WHERE type = ?", t)
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		err = rows.Scan(&sup.Id, &sup.Name, &sup.Type,
+			&sup.Image, &sup.WorkingHours.Opening, &sup.WorkingHours.Closing)
+		if err != nil {
+			panic(err)
+		}
+		suppliers = append(suppliers, sup)
+	}
+	return suppliers, nil
+}
+
+func (r SupplierDBRepository) GetByWorkingTime(workingTime string) (suppliers []models.Supplier, err error) {
+	var sup models.Supplier
+	rows, err := r.DB.Query("SELECT id, name, type, address, image, opening, closing FROM suppliers "+
+		"WHERE opening <= (?) AND closing >= (?)", workingTime, workingTime)
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		err = rows.Scan(&sup.Id, &sup.Name, &sup.Type, &sup.Image,
+			&sup.WorkingHours.Opening, &sup.WorkingHours.Closing)
+		if err != nil {
+			panic(err)
+		}
+		suppliers = append(suppliers, sup)
+	}
+	return suppliers, nil
+}
+
+func (r SupplierDBRepository) DeleteAll() error {
+	_, err := r.DB.Exec("DELETE FROM suppliers")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r SupplierDBRepository) DeleteByName(name string) error {
 	_, err := r.DB.Exec("DELETE FROM suppliers WHERE name = ?", name)
 	if err != nil {
 		return err
 	}
-
 	return nil
+}
+
+func (r *SupplierDBRepository) BeginTx() error {
+	tx, err := r.DB.Begin()
+	if err != nil {
+		return err
+	}
+	r.TX = tx
+	return nil
+}
+
+func (r *SupplierDBRepository) CommitTx() error {
+	defer func() {
+		r.TX = nil
+	}()
+	if r.TX != nil {
+		return nil
+		//return r.CommitTx()
+	}
+	return nil
+}
+
+func (r *SupplierDBRepository) RollbackTx() error {
+	defer func() {
+		r.TX = nil
+	}()
+	if r.TX != nil {
+		return nil
+		//return r.RollbackTx()
+	}
+	return nil
+}
+
+func (r *SupplierDBRepository) GetTx() *sql.Tx {
+	return r.TX
+}
+
+func (r *SupplierDBRepository) SetTx(tx *sql.Tx) {
+	r.TX = tx
 }

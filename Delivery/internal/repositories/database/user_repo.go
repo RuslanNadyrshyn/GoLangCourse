@@ -33,7 +33,6 @@ func (r UserDBRepository) Insert(u models.User) (int, error) {
 	}
 
 	_, err := r.DB.Exec("INSERT users(name, email, password_hash) VALUES(?, ?, ?)", u.Name, u.Email, u.PasswordHash)
-
 	if err != nil {
 		fmt.Println(err)
 		return id, err
@@ -46,6 +45,17 @@ func (r UserDBRepository) GetByEmail(email string) (models.User, error) {
 	var user models.User
 
 	err := r.DB.QueryRow("SELECT id, email, name FROM users WHERE email = ?", email).Scan(&user.Id, &user.Email, &user.Name)
+	if err != nil {
+		return user, err
+	}
+
+	return user, nil
+}
+
+func (r UserDBRepository) GetById(id int) (models.User, error) {
+	var user models.User
+
+	err := r.DB.QueryRow("SELECT id, email, name FROM users WHERE id = ?", id).Scan(&user.Id, &user.Email, &user.Name)
 	if err != nil {
 		return user, err
 	}

@@ -1,12 +1,13 @@
 package models
 
-import "time"
-
 type Supplier struct {
-	Id        string
-	Name      string
-	Address   string
-	Type      string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	Id           int    `json:"id"`
+	Name         string `json:"name"`
+	Type         string `json:"type"`
+	Image        string `json:"image"`
+	WorkingHours struct {
+		Opening string `json:"opening"`
+		Closing string `json:"closing"`
+	} `json:"workingHours"`
+	Menu []Product `json:"menu"`
 }
