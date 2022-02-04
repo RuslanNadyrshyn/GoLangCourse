@@ -127,25 +127,6 @@ func (ss SupplierService) CreateSupplier(sup models.Supplier) models.Supplier {
 			}
 		}
 	}
-	//fmt.Println("id:", sup.Id,
-	//	"\nname:", sup.Name,
-	//	"\ntype:", sup.Type,
-	//	"\nimage:", sup.Image,
-	//	"\nopening:", sup.WorkingHours.Opening,
-	//	"\nclosing:", sup.WorkingHours.Closing,
-	//	"\nMenu:")
-	//for i := range sup.Menu {
-	//	fmt.Println("\tId:", sup.Menu[i].Id,
-	//		"\n\tMenuId:", sup.Menu[i].MenuId,
-	//		"\n\tName:", sup.Menu[i].Name,
-	//		"\n\tPrice:", sup.Menu[i].Price,
-	//		"\n\tImage:", sup.Menu[i].Image,
-	//		"\n\tType:", sup.Menu[i].Type,
-	//		"\n\tIngredients:")
-	//	for j := range sup.Menu[i].Ingredients {
-	//		fmt.Println("\t", sup.Menu[i].Ingredients[j])
-	//	}
-	//}
 	return sup
 }
 
@@ -212,19 +193,3 @@ func (ss SupplierService) CreateMenu(sup models.Supplier) {
 		}
 	}
 }
-
-//func (ss SupplierService) GetProductsByType(ProductType string) (products []models.Product, err error) {
-//	products, err = ss.ProductRepo.GetByType(ProductType)
-//	if err != nil {
-//		log.Print(err)
-//		return nil, err
-//	}
-//	for i := range products {
-//		products[i].Ingredients, err = ss.IngredientRepo.GetByProductId(products[i].Id)
-//	if err != nil {
-//		log.Print(err)
-//		return nil, err
-//	}
-//	}
-//	return products, nil
-//}

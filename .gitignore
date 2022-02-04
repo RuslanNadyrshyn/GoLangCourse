@@ -1,4 +1,6 @@
 .idea
-.vscode 
+.vscode
+cfg/.env
+cfg/database.env
 /Delivery/go.mod
 /Delivery/go.sum
