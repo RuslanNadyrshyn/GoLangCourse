@@ -98,15 +98,10 @@ func (s *TokenService) ParseToken(tokenString, secret string) (claims *helper.Jw
 	if claims, ok := token.Claims.(*helper.JwtCustomClaims); ok && token.Valid {
 		return claims, nil
 	}
-	return nil, nil
+	return nil, errors.New("failed to parse token claims")
 }
 
 func (s *TokenService) RefreshToken(accessToken, refreshToken, accessSecret, refreshSecret string) (string, string, error) {
-	//claims, err := s.ParseToken(tokenString, secret)
-	//if err != nil {
-	//	return "", errors.New("not authorized")
-	//}
-
 	accToken, err := s.ParseToken(accessToken, accessSecret)
 	if err != nil {
 		return "", "", errors.New("not authorized")

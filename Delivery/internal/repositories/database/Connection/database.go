@@ -15,14 +15,13 @@ func Connect() (*sql.DB, error) {
 		log.Println("Error loading .env file")
 	}
 	dataSource := os.Getenv("DB_USER") + ":" + os.Getenv("PASS") + "@tcp(127.0.0.1:3306)/" + os.Getenv("DB")
-	fmt.Println(dataSource)
 
 	db, err := sql.Open(
 		"mysql",
 		dataSource,
 	)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	err = db.Ping()

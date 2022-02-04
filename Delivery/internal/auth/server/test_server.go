@@ -5,15 +5,16 @@ import (
 	"awesomeProject/internal/auth/repositories"
 	"awesomeProject/internal/auth/server/handlers"
 	"awesomeProject/internal/auth/services"
+	"database/sql"
 	"log"
 	"net/http"
 )
 
-func Start(cfg *config.Config) {
+func Start(cfg *config.Config, conn *sql.DB) {
 	userRepository := repositories.NewUserRepository()
 	tokenService := services.NewTokenService(cfg)
 
-	authHandler := handlers.NewAuthHandler(cfg)
+	authHandler := handlers.NewAuthHandler(cfg, conn)
 	userHandler := handlers.NewUserHandler(tokenService, userRepository)
 
 	mux := http.NewServeMux()
