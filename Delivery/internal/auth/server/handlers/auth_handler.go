@@ -46,17 +46,6 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		//user, err := repositories.NewUserRepository().GetUserByEmail(req.Email)
-		//if err != nil {
-		//	http.Error(w, "Invalid credentials", http.StatusUnauthorized)
-		//	return
-		//}
-		//
-		//if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
-		//	http.Error(w, "Invalid credentials", http.StatusUnauthorized)
-		//	return
-		//}
-
 		tokenService := services.NewTokenService(h.cfg)
 		accessString, err := tokenService.GenerateAccessToken(user.Id)
 		if err != nil {

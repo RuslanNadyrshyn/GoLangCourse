@@ -4,6 +4,7 @@ import (
 	"awesomeProject/internal/repositories/models"
 	"database/sql"
 	"fmt"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserDBRepository struct {
@@ -17,8 +18,11 @@ func NewUserRepository(conn *sql.DB) UserDBRepository {
 	}
 }
 
-func (r UserDBRepository) Insert(u models.User) (int, error) {
-	var id int
+func (r UserDBRepository) Insert(u *models.User) (int, error) {
+	var id int64
+
+	PasswordHash, err := bcrypt.GenerateFromPassword([]byte(u.PasswordHash), bcrypt.DefaultCost)
+	u.PasswordHash = string(PasswordHash)
 
 	if r.TX != nil {
 		err := r.TX.QueryRow("INSERT users(name, email, password_hash) VALUES(?, ?, ?) RETURNING id", u.Name, u.Email, u.PasswordHash).Scan(&id)
@@ -29,16 +33,21 @@ func (r UserDBRepository) Insert(u models.User) (int, error) {
 		if err != nil {
 			_ = r.TX.Rollback()
 		}
-		return id, err
+		return int(id), err
 	}
 
-	_, err := r.DB.Exec("INSERT users(name, email, password_hash) VALUES(?, ?, ?)", u.Name, u.Email, u.PasswordHash)
+	result, err := r.DB.Exec("INSERT users(name, email, password_hash) VALUES(?, ?, ?)", u.Name, u.Email, u.PasswordHash)
 	if err != nil {
 		fmt.Println(err)
-		return id, err
+		return int(id), err
+	}
+	id, err = result.LastInsertId()
+	if err != nil {
+		fmt.Println(err)
+		return int(id), err
 	}
 
-	return id, err
+	return int(id), err
 }
 
 func (r UserDBRepository) GetByEmail(email string) (models.User, error) {
@@ -66,6 +75,8 @@ func (r UserDBRepository) GetById(id int) (models.User, error) {
 
 func (r UserDBRepository) Update(u models.User, email string) (int, error) {
 	var id int
+	PasswordHash, err := bcrypt.GenerateFromPassword([]byte(u.PasswordHash), bcrypt.DefaultCost)
+	u.PasswordHash = string(PasswordHash)
 
 	if r.TX != nil {
 		err := r.TX.QueryRow("UPDATE users SET name=?, email=?, password_hash=? WHERE email = ? RETURNING id", u.Name, u.Email, u.PasswordHash, email).Scan(&id)
@@ -79,7 +90,7 @@ func (r UserDBRepository) Update(u models.User, email string) (int, error) {
 		return id, err
 	}
 
-	_, err := r.DB.Exec("UPDATE users SET name=?, email=?, password_hash=? WHERE email = ?", u.Name, u.Email, u.PasswordHash, email)
+	_, err = r.DB.Exec("UPDATE users SET name=?, email=?, password_hash=? WHERE email = ?", u.Name, u.Email, u.PasswordHash, email)
 
 	if err != nil {
 		fmt.Println(err)

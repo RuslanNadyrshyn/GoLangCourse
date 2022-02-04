@@ -15,11 +15,13 @@ func Start(cfg *config.Config, conn *sql.DB) {
 	tokenService := services.NewTokenService(cfg)
 
 	authHandler := handlers.NewAuthHandler(cfg, conn)
-	userHandler := handlers.NewUserHandler(tokenService, userRepository)
+	userHandler := handlers.NewUserHandler(tokenService, userRepository, conn)
 
 	mux := http.NewServeMux()
+	mux.HandleFunc("/sign_in", userHandler.SignIn)
 	mux.HandleFunc("/login", authHandler.Login)
 	mux.HandleFunc("/profile", userHandler.GetProfile)
+	mux.HandleFunc("/refresh", authHandler.Refresh)
 
 	log.Fatal(http.ListenAndServe(cfg.Port, mux))
 }

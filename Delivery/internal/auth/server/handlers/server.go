@@ -14,7 +14,7 @@ func Start(cfg *config.Config, conn *sql.DB) *httptest.Server {
 	tokenService := services.NewTokenService(cfg)
 
 	authHandler := NewAuthHandler(cfg, conn)
-	userHandler := NewUserHandler(tokenService, userRepository)
+	userHandler := NewUserHandler(tokenService, userRepository, conn)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/login", authHandler.Login)

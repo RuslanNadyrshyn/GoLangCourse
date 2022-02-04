@@ -5,6 +5,7 @@ import (
 	"awesomeProject/internal/auth/repositories"
 	"awesomeProject/internal/auth/services"
 	"awesomeProject/internal/auth/tests/helpers"
+	"awesomeProject/internal/repositories/database/Connection"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"net/http"
@@ -27,11 +28,12 @@ func (suite *UserHandlerTestSuite) SetupSuite() {
 		AccessLifetimeMinutes: 1,
 	}
 	tokenService := services.NewTokenService(cfg)
+	conn, _ := Connection.Connect()
 
-	suite.userHandler = NewUserHandler(tokenService, repositories.NewUserRepositoryMock())
+	suite.userHandler = NewUserHandler(tokenService, repositories.NewUserRepositoryMock(), conn)
 	suite.accessToken, _ = tokenService.GenerateAccessToken(userID)
 
-	suite.testSrv = Start()
+	suite.testSrv = Start(cfg, conn)
 }
 
 func TestUserHandlerTestSuite(t *testing.T) {
