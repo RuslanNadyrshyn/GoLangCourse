@@ -4,11 +4,7 @@ import (
 	"github.com/joho/godotenv"
 	"log"
 	"os"
-)
-
-const (
-	accessLifetimeMinutes  = 5
-	refreshLifetimeMinutes = 60
+	"strconv"
 )
 
 type Config struct {
@@ -24,6 +20,9 @@ func NewConfig(forTesting bool) *Config {
 	if forTesting {
 		envName = "./../../.env.testing"
 	}
+
+	accessLifetimeMinutes, _ := strconv.Atoi(os.Getenv("ACCESS_LIFETIME_MINUTES"))
+	refreshLifetimeMinutes, _ := strconv.Atoi(os.Getenv("REFRESH_LIFETIME_MINUTES"))
 
 	err := godotenv.Load(envName)
 	if err != nil {

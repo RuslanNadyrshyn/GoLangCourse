@@ -9,12 +9,14 @@ import (
 )
 
 func Connect() (*sql.DB, error) {
-	envName := "cfg/database.env"
+	envName := "cfg/.env"
 	err := godotenv.Load(envName)
 	if err != nil {
 		log.Println("Error loading .env file")
 	}
-	dataSource := os.Getenv("DB_USER") + ":" + os.Getenv("PASS") + "@tcp(127.0.0.1:3306)/" + os.Getenv("DB")
+	//dataSource := os.Getenv("DB_LINK")
+	dataSource := os.Getenv("DB_USER") + ":" + os.Getenv("PASS") +
+		"@tcp(" + os.Getenv("HOST") + os.Getenv("DB_PORT") + ")/" + os.Getenv("DB")
 
 	db, err := sql.Open(
 		"mysql",
