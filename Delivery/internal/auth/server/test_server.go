@@ -5,14 +5,19 @@ import (
 	"awesomeProject/internal/auth/repositories"
 	"awesomeProject/internal/auth/server/handlers"
 	"awesomeProject/internal/auth/services"
-	"database/sql"
+	"awesomeProject/internal/repositories/database/Connection"
+	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"net/http"
 )
 
-func Start(cfg *config.Config, conn *sql.DB) {
+func Start(cfg *config.Config) {
 	userRepository := repositories.NewUserRepository()
 	tokenService := services.NewTokenService(cfg)
+	conn, err := Connection.Connect()
+	if err != nil {
+		log.Println(err)
+	}
 
 	authHandler := handlers.NewAuthHandler(cfg, conn)
 	userHandler := handlers.NewUserHandler(tokenService, userRepository, conn)

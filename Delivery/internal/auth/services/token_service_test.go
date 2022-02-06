@@ -133,3 +133,54 @@ func (suite *TokenServiceTestSuite) TestValidateAccessToken() {
 		})
 	}
 }
+
+func (suite *TokenServiceTestSuite) TestRefreshToken() {
+	accessToken, _ := suite.tokenService.GenerateAccessToken(userID)
+	refreshToken, _ := suite.tokenService.GenerateRefreshToken(userID)
+
+	testCases := []helpers.TestCaseRefresh{
+		{
+			Name:         "Generated new valid refresh tokens",
+			AccessToken:  accessToken,
+			RefreshToken: refreshToken,
+			WantError:    false,
+			WantErrorMsg: "",
+			WantID:       userID,
+		},
+	}
+
+	for _, testCase := range testCases {
+		suite.T().Run(testCase.Name, func(t *testing.T) {
+			time.Sleep(500 * time.Millisecond)
+			newAccToken, newRefToken, err := suite.tokenService.RefreshToken(
+				testCase.AccessToken,
+				testCase.RefreshToken,
+				suite.cfg.AccessSecret,
+				suite.cfg.RefreshSecret,
+			)
+			token, err := jwt.ParseWithClaims(newAccToken, &helper.JwtCustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+				return []byte(suite.cfg.AccessSecret), nil
+			})
+			assert.NoError(suite.T(), err)
+			claims, ok := token.Claims.(*helper.JwtCustomClaims)
+			assert.True(suite.T(), ok)
+			assert.True(suite.T(), token.Valid)
+			got := claims.ID
+			assert.Equal(suite.T(), userID, got)
+
+			token, err = jwt.ParseWithClaims(newRefToken, &helper.JwtCustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+				return []byte(suite.cfg.RefreshSecret), nil
+			})
+			assert.NoError(suite.T(), err)
+			claims, ok = token.Claims.(*helper.JwtCustomClaims)
+			assert.True(suite.T(), ok)
+			assert.True(suite.T(), token.Valid)
+			got = claims.ID
+			assert.Equal(suite.T(), userID, got)
+			_, err = suite.tokenService.ValidateAccessToken(newAccToken)
+			assert.NoError(suite.T(), err)
+			_, err = suite.tokenService.ValidateRefreshToken(newRefToken)
+			assert.NoError(suite.T(), err)
+		})
+	}
+}

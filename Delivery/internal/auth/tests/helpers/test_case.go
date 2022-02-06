@@ -38,6 +38,17 @@ type TestCaseHandler struct {
 	Want        ExpectedResponse
 }
 
+type TestCaseRefresh struct {
+	Name             string
+	AccessToken      string
+	RefreshToken     string
+	WantError        bool
+	WantErrorMsg     string
+	WantID           int
+	WantAccessToken  string
+	WantRefreshToken string
+}
+
 func PrepareHandlerTestCase(test TestCaseHandler) (request *http.Request, recorder *httptest.ResponseRecorder) {
 	request = httptest.NewRequest(test.Request.Method, test.Request.Url, strings.NewReader(""))
 

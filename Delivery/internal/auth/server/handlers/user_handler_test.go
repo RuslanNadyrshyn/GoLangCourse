@@ -20,6 +20,7 @@ type UserHandlerTestSuite struct {
 	accessToken string
 	userHandler *UserHandler
 	testSrv     *httptest.Server
+	//user        *models.User
 }
 
 func (suite *UserHandlerTestSuite) SetupSuite() {
@@ -30,6 +31,12 @@ func (suite *UserHandlerTestSuite) SetupSuite() {
 	tokenService := services.NewTokenService(cfg)
 	conn, _ := Connection.Connect()
 
+	//suite.user = &models.User{
+	//	Name:         "TestName",
+	//	Email:        "TestEmail",
+	//	PasswordHash: "TestPassword",
+	//}
+
 	suite.userHandler = NewUserHandler(tokenService, repositories.NewUserRepositoryMock(), conn)
 	suite.accessToken, _ = tokenService.GenerateAccessToken(userID)
 
@@ -38,6 +45,27 @@ func (suite *UserHandlerTestSuite) SetupSuite() {
 
 func TestUserHandlerTestSuite(t *testing.T) {
 	suite.Run(t, new(UserHandlerTestSuite))
+}
+
+func (suite *UserHandlerTestSuite) TestWalkUserHandlerSignIn() {
+	//t := suite.T()
+	//handlerFunc := suite.userHandler.SignIn
+	//
+	//cases := []helpers.TestCaseHandler{
+	//	{
+	//		TestName: "Successfully sign in user profile",
+	//		Request: helpers.Request{
+	//			Method:    http.MethodPost,
+	//			Url:       "/sign_in",
+	//			AuthToken: "",
+	//		},
+	//		HandlerFunc: handlerFunc,
+	//		Want: helpers.ExpectedSingInResponse{
+	//			StatusCode: 200,
+	//			User:       suite.user,
+	//		},
+	//	},
+	//}
 }
 
 func (suite *UserHandlerTestSuite) TestWalkUserHandlerGetProfile() {
