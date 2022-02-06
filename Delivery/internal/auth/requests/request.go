@@ -6,7 +6,7 @@ type LoginRequest struct {
 }
 
 type RefreshRequest struct {
-	UserID       int
-	AccessToken  string
-	RefreshToken string
+	UserID       int    `json:"user_id"`
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
 }

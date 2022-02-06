@@ -99,3 +99,7 @@ func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
 	}
 }
+
+func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
+
+}

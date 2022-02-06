@@ -21,10 +21,10 @@ func NewConfig(forTesting bool) *Config {
 		envName = "./../../.env.testing"
 	}
 
+	err := godotenv.Load(envName)
 	accessLifetimeMinutes, _ := strconv.Atoi(os.Getenv("ACCESS_LIFETIME_MINUTES"))
 	refreshLifetimeMinutes, _ := strconv.Atoi(os.Getenv("REFRESH_LIFETIME_MINUTES"))
 
-	err := godotenv.Load(envName)
 	if err != nil {
 		log.Println(err)
 		log.Println("Error loading .env file")

@@ -24,7 +24,7 @@ func main() {
 	}
 	cfg := config2.NewConfig(false)
 
-	server.Start(cfg, conn)
+	server.Start(cfg)
 
 	///Goroutines
 	poolConst := func() worker_pool.Worker {

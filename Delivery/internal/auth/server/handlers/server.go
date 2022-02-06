@@ -20,6 +20,7 @@ func Start(cfg *config.Config, conn *sql.DB) *httptest.Server {
 	mux.HandleFunc("/login", authHandler.Login)
 	mux.HandleFunc("/profile", userHandler.GetProfile)
 	mux.HandleFunc("/refresh", authHandler.Refresh)
+	mux.HandleFunc("/sign_in", userHandler.SignIn)
 
 	return httptest.NewServer(mux)
 }
