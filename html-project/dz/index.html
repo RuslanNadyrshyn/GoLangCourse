@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../dz/css/style.css">
+    <title>Shop loader</title>
+</head>
+<body>
+<h1>Product list</h1>
+<div class="intro_block">
+    <div class="intro_nav">
+        <a class="intro_nav_type" href="#">All</a>
+        <a class="intro_nav_type_active" href="#">Pizza</a>
+        <a class="intro_nav_type" href="#">Burger</a>
+        <a class="intro_nav_type" href="#">Sushi</a>
+    </div>
+    <div class="list"></div>
+</div>
+
+<form class="add_product_form" action="">
+    <h4>Добавить новый товар:</h4>
+    <div class="form-group">
+        <label class="form-label">Id</label>
+        <input class="form-control" type="number" min="1" id="product_id" />
+    </div>
+    <div class="form-group">
+        <label class="form-label">Name</label>
+        <input class="form-control" type="text" id="product_name" />
+    </div>
+    <div class="form-group">
+        <label class="form-label">Price</label>
+        <input class="form-control" type="number" min="0" id="product_price" />
+    </div>
+    <div class="form-group">
+        <label class="form-label">Image link</label>
+        <input class="form-control" type="text" id="product_image" />
+    </div>
+    <div class="form-group">
+        <label class="form-label">Type</label>
+        <input class="form-control" type="text" id="product_type" />
+    </div>
+    <div class="form-group">
+        <label class="form-label">Ingredients</label>
+        <input class="form-control" type="text" id="product_ingredients" />
+    </div>
+    <div class="form-group">
+        <input class="btn btn-primary" onclick="addProduct()" type="submit" value="Add" />
+    </div>
+</form>
+
+
+<script defer src="index.js"></script>
+</body>
+</html>
+
