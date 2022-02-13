@@ -20,7 +20,7 @@ var (
 func main() {
 	server := http.NewServeMux()
 	server.HandleFunc("/get_products", GetProducts)
-	//server.HandleFunc("/add_product", AddProduct)
+	server.HandleFunc("/add_product", AddProduct)
 
 	http.ListenAndServe(":8080", server)
 }
@@ -54,6 +54,7 @@ func AddProduct(resp http.ResponseWriter, req *http.Request) {
 
 		resp.WriteHeader(http.StatusOK)
 		json.NewEncoder(resp).Encode(response)
+		resp.Header().Add("Access-Control-Allow-Origin", "*")
 	default:
 		http.Error(resp, "Only POST method is allowed", http.StatusMethodNotAllowed)
 	}
@@ -73,6 +74,4 @@ func GetProducts(resp http.ResponseWriter, req *http.Request) {
 	data, _ := json.Marshal(products)
 	resp.Header().Add("Access-Control-Allow-Origin", "*")
 	fmt.Fprintln(resp, string(data))
-	//resp.Header().Add("Test", "Hello from keys man")
-
 }

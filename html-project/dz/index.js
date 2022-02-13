@@ -38,8 +38,8 @@ const loadElements = () => new Promise((res) =>{
     }).then(data => data.json().then(json_data => res(json_data)))
 })
 
-const addProduct = () => new Promise( (res) => {
-    let newId = document.getElementById('product_id').value;
+const addProduct = async () => {
+    let newMenuId = document.getElementById('product_menu_id').value;
     let newName= document.getElementById('product_name').value;
     let newPrice = document.getElementById('product_price').value;
     let newImage = document.getElementById('product_image').value;
@@ -47,28 +47,29 @@ const addProduct = () => new Promise( (res) => {
     let newIngredients = document.getElementById('product_ingredients').value;
     newIngredients = JSON.stringify(newIngredients);
     let ingredients = newIngredients.split(' ');
-    console.log(newId, newName, newPrice, newImage, newType, newIngredients);
-    // try {
-        const response = fetch("http://localhost:8080/add_product", {
+    console.log(newMenuId, newName, newPrice, newImage, newType, newIngredients);
+    try {
+        const response = await fetch("http://localhost:8080/add_product", {
             method: "POST",
             body: JSON.stringify({
-                id: newId,
-                name: newName,
-                price: newPrice,
-                image: newImage,
-                type: newType,
-                ingredients: ingredients
+                MenuId: newMenuId,
+                Name: newName,
+                Price: newPrice,
+                Image: newImage,
+                Type: newType,
+                Ingredients: ingredients
             }),
             headers: {
                 'Content-type': 'application/json; charset=UTF-8',
             },
         })
-        const json = response.json();
+        const json = await response.json();
         console.log('Успех:', JSON.stringify(json));
-    // } catch (error) {
-    //     console.error('Ошибка:', error);
-    // }
-})
+        return json;
+    } catch (error) {
+        console.error('Ошибка:', error);
+    }
+}
 
 const main = async () => {
     let array = await loadElements();
