@@ -33,10 +33,10 @@ function displayProducts(array, start) {
 }
 
 const main = async () => {
-    let array = await fetch("http://localhost:8080/get_products", { method: "GET"
-    }).then((response) => response.json())
-
-    clearProducts();                 // Очищаем вывод
+    let response = await fetch("http://localhost:8080/get_products", { method: "GET"
+    })
+    let array = response.json();
+    
     displayProducts(array, 0); // Отображаем всё заново
 }
 
