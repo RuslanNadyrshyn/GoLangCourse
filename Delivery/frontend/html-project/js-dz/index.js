@@ -1,13 +1,3 @@
-
-function clearProducts() {
-    let list = document.querySelector('.list');
-    if (list != null) {
-        while (list.hasChildNodes()) {
-            list.removeChild(list.firstChild);
-        }
-    }
-}
-
 function displayProducts(array, start) {
     let list = document.querySelector('.list');
     for (let i = start; i < array.length; i++) {
@@ -33,9 +23,9 @@ function displayProducts(array, start) {
 }
 
 const main = async () => {
-    let response = await fetch("http://localhost:8080/get_products", { method: "GET"
+    let array = await fetch("http://localhost:8080/get_products", { method: "GET"
     })
-    let array = response.json();
+    array = await array.json();
     
     displayProducts(array, 0); // Отображаем всё заново
 }
