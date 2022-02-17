@@ -2,6 +2,8 @@ package main
 
 import (
 	"awesomeProject/Goroutines"
+	config2 "awesomeProject/internal/auth/config"
+	"awesomeProject/internal/auth/server"
 	"awesomeProject/internal/repositories"
 	"awesomeProject/internal/repositories/database/Connection"
 	"awesomeProject/internal/repositories/models"
@@ -10,6 +12,7 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
+	"strconv"
 )
 
 func main() {
@@ -19,6 +22,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	cfg := config2.NewConfig(false)
+
+	server.Start(cfg)
 
 	///Goroutines
 	poolConst := func() worker_pool.Worker {
@@ -38,21 +44,21 @@ func main() {
 		fmt.Println(err)
 	}
 
-	var sup1 []models.Supplier
-	sup1 = test.ParseHTTP("http://foodapi.true-tech.php.nixdev.co/suppliers")
-
-	for i := range sup1 {
-		//test.PrintSupplier(sup1[i])
-		pool.DataSource <- sup1[i]
-	}
-
-	test.UpdateHTTP(sup1, conn)
-
-	//var sup []models.Supplier
-	//for i := 0; i < 7; i++ {
-	//	sup = append(sup, test.ParseJson("./Goroutines/Data/"+strconv.Itoa(i+1)+".json"))
-	//	pool.DataSource <- sup[i]
+	//var sup1 []models.Supplier
+	//sup1 = test.ParseHTTP("http://foodapi.true-tech.php.nixdev.co/suppliers")
+	//
+	//for i := range sup1 {
+	//	//test.PrintSupplier(sup1[i])
+	//	pool.DataSource <- sup1[i]
 	//}
+	//
+	//test.UpdateHTTP(sup1, conn)
+
+	var sup []models.Supplier
+	for i := 0; i < 7; i++ {
+		sup = append(sup, test.ParseJson("./Goroutines/Data/"+strconv.Itoa(i+1)+".json"))
+		pool.DataSource <- sup[i]
+	}
 	pool.Stop()
 
 	// TESTS
