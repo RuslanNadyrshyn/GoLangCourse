@@ -1,22 +1,29 @@
 <template>
   <div>
-    <div v-if="loaded">
+    <div v-if="$store.state.products.loaded">
       <template v-if="errors.length">
         <div v-for="(error, index) in errors" :key="index">
           {{ error }}
         </div>
       </template>
-      <Header></Header>
+      <HeaderItem></HeaderItem>
       <div class="intro">
         <div class="section">
           <div class="container">
             <div class="product_list_block">
-              <div v-for="product in products" :key="product.id">
-                <ProductListNav :type="product.type"></ProductListNav>
+              <div class="product_list_nav">
+                <div v-for="type in productTypes" :key="type">
+                  <ProductListNavItem :type="type">
+                    {{ productTypes }}
+                  </ProductListNavItem>
+                </div>
               </div>
               <div class="Product_list">
-                <div v-for="product in products" :key="product.id">
-                  <Product
+                <div
+                  v-for="product in $store.state.products.products"
+                  :key="product.id"
+                >
+                  <ProductItem
                     :id="product.id"
                     :name="product.name"
                     :image="product.image"
@@ -25,7 +32,7 @@
                     :ingredients="product.ingredients"
                   >
                     {{ products }}
-                  </Product>
+                  </ProductItem>
                 </div>
               </div>
             </div>
@@ -38,49 +45,35 @@
 </template>
 
 <script>
-import Product from "@/components/Product";
-import axios from "axios";
-import Header from "@/components/Header";
-import ProductListNav from "@/components/ProductListNav";
+import HeaderItem from "@/components/Header";
+import ProductListNavItem from "@/components/ProductListNavItem";
+import ProductItem from "@/components/ProductItem";
 
 export default {
   name: "ProductList",
-  components: { ProductListNav, Header, Product },
+  components: { ProductItem, ProductListNavItem, HeaderItem },
   data() {
     return {
       suppliers: [],
-      products: [],
+      products: this.$store.dispatch("products/fetchProducts"),
+      productTypes: [],
+      selectedProductType: {},
       loaded: false,
       errors: [],
     };
   },
   mounted() {
-    // const suppliers_url = "http://localhost:8082/get_supppliers";
-    // axios
-    //     .get(suppliers_url)
-    //     .then((res) => {
-    //       this.suppliers = res.data;
-    //       console.log(this.suppliers);
-    //     })
-    //     .catch((err) => {
-    //       this.errors.push(err);
-    //     })
-    //     .finally(() => {
-    //       this.loaded = true;
-    //     });
-    const url = "http://localhost:8082/get_products";
-    axios
-      .get(url)
-      .then((res) => {
-        this.products = res.data;
-        console.log(this.products);
-      })
-      .catch((err) => {
-        this.errors.push(err);
-      })
-      .finally(() => {
-        this.loaded = true;
-      });
+    this.$store.dispatch("products/fetchProducts");
+    // this.$store.dispatch("suppliers/fetchSuppliers");
+
+    let products = this.$store.getters["products/getProducts"];
+    this.productTypes.push("ALL");
+    for (let i = 0; i < products.length; i++) {
+      if (this.productTypes.includes(products[i].type) == false) {
+        this.productTypes.push(products[i].type);
+      }
+    }
+    console.log("fetched");
   },
 };
 </script>
@@ -94,6 +87,12 @@ export default {
   background-color: #ffcfb4;
   background-size: cover;
 }
+.list_title {
+  display: flex;
+  justify-content: center;
+  color: #222;
+  padding: 5px 5px 5px 0;
+}
 .product_list_block {
   display: flex;
   flex-direction: column;
@@ -105,8 +104,10 @@ export default {
 .product_list_nav {
   display: flex;
   font-size: 20px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 700;
+  flex-wrap: wrap;
   background-color: coral;
-  min-height: 50px;
   border-radius: 14px 10px 0 0;
 }
 .container {

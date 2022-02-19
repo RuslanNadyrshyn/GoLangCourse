@@ -1,5 +1,5 @@
 <template>
-  <div class="Product_item">
+  <div class="Product_item" @click="$router.push({ name: 'HomeView' })">
     <div class="Product_img">
       <img class="Product_logo" :src="image" alt="" />
     </div>

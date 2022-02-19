@@ -1,8 +1,7 @@
 <template>
-  <a class="product_list_nav_type"
-     @click="$router.push({name: 'Products'})">
+  <div class="product_list_nav_item">
     {{ type }}
-  </a>
+  </div>
 </template>
 
 <script>
@@ -17,11 +16,17 @@ export default {
 </script>
 
 <style scoped>
-.product_list_nav_type {
-  padding: 5px 20px;
+.product_list_nav_item {
+  padding: 10px;
   background-color: coral;
   color: #333;
   text-decoration: none;
   border-radius: 10px 10px 0 0;
+  margin: 0px;
+  text-transform: uppercase;
+}
+.product_list_nav_item:hover {
+  background-color: rgb(245, 208, 195);
+  cursor: pointer;
 }
 </style>

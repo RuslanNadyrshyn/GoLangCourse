@@ -1,11 +1,9 @@
 <template>
-  <div class="list_title">
-    <div class="list_title_item">
-      <div class="list_title_img">
-        <img class="list_logo" :src="image" , alt="" />
-      </div>
-      <div class="list_title_text">{{ text }}</div>
+  <div class="list_title_item">
+    <div class="list_title_img">
+      <img class="list_logo" :src="image" , alt="" />
     </div>
+    <div class="list_title_text">{{ text }}</div>
   </div>
 </template>
 
@@ -24,13 +22,6 @@ export default {
 </script>
 
 <style scoped>
-.list_title {
-  display: flex;
-  justify-content: center;
-  color: #222;
-  padding: 5px 5px 5px 0;
-}
-
 .list_title_item {
   display: flex;
   flex-direction: row;
