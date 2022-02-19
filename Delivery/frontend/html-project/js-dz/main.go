@@ -11,15 +11,30 @@ import (
 )
 
 var (
-	conn, err       = Connection.Connect()
+	conn, _         = Connection.Connect()
 	supplierService = repositories.NewSupplierService(conn)
 )
 
 func main() {
 	server := http.NewServeMux()
 	server.HandleFunc("/get_products", GetProducts)
+	server.HandleFunc("/get_suppliers", GetSuppliers)
 
 	http.ListenAndServe(":8080", server)
+}
+func GetSuppliers(resp http.ResponseWriter, req *http.Request) {
+	if req.Method != http.MethodGet {
+		http.Error(resp, "not allowed", http.StatusMethodNotAllowed)
+	}
+
+	suppliers, err := supplierService.SupplierRepo.GetAll()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	data, _ := json.Marshal(suppliers)
+	resp.Header().Add("Access-Control-Allow-Origin", "*")
+	fmt.Fprintln(resp, string(data))
 }
 
 func GetProducts(resp http.ResponseWriter, req *http.Request) {
