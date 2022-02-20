@@ -87,12 +87,6 @@ export default {
   background-color: #ffcfb4;
   background-size: cover;
 }
-.list_title {
-  display: flex;
-  justify-content: center;
-  color: #222;
-  padding: 5px 5px 5px 0;
-}
 .product_list_block {
   display: flex;
   flex-direction: column;

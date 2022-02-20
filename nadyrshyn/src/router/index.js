@@ -2,7 +2,7 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import ProductList from "@/views/ProductList";
-import product from "@/components/ProductItem";
+import ProductView from "@/views/ProductView";
 
 Vue.use(VueRouter);
 
@@ -29,7 +29,7 @@ const routes = [
   {
     path: "/product/:id",
     name: "Product",
-    component: product,
+    component: ProductView,
   },
 ];
 
