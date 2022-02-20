@@ -41,6 +41,9 @@ const getters = {
   getProducts: (state) => {
     return state.products;
   },
+  getProductsByType: (state) => {
+    return state.products.filter((type) => type === state.products.type);
+  },
 };
 
 export default {
