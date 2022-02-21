@@ -1,7 +1,6 @@
 package database
 
 import (
-	"awesomeProject/internal/repositories/models"
 	"database/sql"
 	"log"
 )
@@ -17,7 +16,7 @@ func NewMenuRepository(conn *sql.DB) MenuDBRepository {
 	}
 }
 
-func (r MenuDBRepository) Insert(menu []models.Product, supId int) (int, error) {
+func (r MenuDBRepository) Insert(supId int) (int, error) {
 	var menuId int64
 
 	if r.TX != nil {
