@@ -1,17 +1,17 @@
 <template>
-  <div class="Product_item" @click="$router.push({ path: `/product/${id}` })">
-    <div class="Product_img">
-      <img class="Product_logo" :src="image" alt="" />
+  <div class="Supplier_item">
+    <div class="Supplier_img">
+      <img class="Supplier_logo" :src="image" alt="" />
     </div>
-    <div class="Product_text">
+    <div class="Supplier_text">
       {{ name }}
-      <div class="Product_price">{{ price }} {{ supplier }}</div>
     </div>
   </div>
 </template>
+
 <script>
 export default {
-  name: "ProductItem",
+  name: "SupplierItem",
   props: {
     id: {
       type: Number,
@@ -19,66 +19,54 @@ export default {
     name: {
       type: String,
     },
-    menuId: {
-      type: Number,
-    },
-    price: {
-      type: Number,
-    },
     image: {
       type: String,
     },
     type: {
       type: String,
     },
-    ingredients: {
+    workingHours: {
       type: Array,
-    },
-    supplier: {
-      type: String,
     },
   },
 };
 </script>
 
 <style scoped>
-.Product_item {
+.Supplier_item {
   display: flex;
   flex-direction: column;
   color: #222;
-  text-align: end;
-  max-width: 250px;
-  height: 350px;
+  text-align: center;
+  max-width: 300px;
+  height: 150px;
   margin: 10px;
 }
-
-.Product_item:hover {
+.Supplier_item:hover {
   opacity: 0.9;
   cursor: pointer;
 }
-
-.Product_img {
+.Supplier_img {
   display: flex;
   max-width: 100%;
   height: 250px;
   align-items: center;
 }
 
-.Product_logo {
+.Supplier_logo {
   display: block;
   border-radius: 20%;
-  max-width: 100%;
+  max-width: 100px;
+  margin: auto;
   transition: transform 0.2s;
 }
 
-.Product_logo:hover {
+.Supplier_logo:hover {
   transform: scale(1.05);
 }
-
-.Product_text {
+.Supplier_text {
   font-size: 20px;
   font-weight: 700;
   text-transform: uppercase;
-  margin-top: 10px;
 }
 </style>

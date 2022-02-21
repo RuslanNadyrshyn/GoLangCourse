@@ -6,8 +6,8 @@
         <nav class="nav">
           <a class="nav_link" href="/"> Главная </a>
           <a class="nav_link_active" href="/products"> Список товаров </a>
-          <a class="nav_link" href="/"> Корзина </a>
-          <a class="nav_link" href="/"> Войти </a>
+          <a class="nav_link" href="/basket"> Корзина </a>
+          <a class="nav_link" href="/login"> Войти </a>
         </nav>
       </div>
     </div>

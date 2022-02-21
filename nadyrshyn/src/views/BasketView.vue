@@ -13,8 +13,8 @@
             <div class="basket_title">Basket</div>
             <div class="basket_block">
               <div
-                  v-for="product in $store.state.basket.products"
-                  :key="product.id"
+                v-for="product in $store.state.basket.products"
+                :key="product.id"
               >
                 <BasketItem
                   :id="product.id"
@@ -26,12 +26,11 @@
                   :ingredients="product.ingredients"
                 >
                   {{ products }}
-                  <button class="product_button" v-on:click="counter++">Add</button>
-                  <div>{{ counter }}</div>
                 </BasketItem>
               </div>
             </div>
-            <div class="basket_total_price_block">Всего:
+            <div class="basket_total_price_block">
+              Всего:
               <div class="basket_total_price">
                 {{ $store.state.basket.price }}
               </div>

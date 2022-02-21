@@ -11,7 +11,7 @@
         <div class="product_price_block">
           <div class="product_price">
             {{ price }}
-            <div class="product_price_grn">грн</div>
+            <div class="product_price_grn">$</div>
           </div>
           <button class="product_button">Add</button>
         </div>
@@ -35,6 +35,14 @@
 <script>
 export default {
   name: "ProductBlock",
+  methods: {
+    addToBracket() {
+      this.counter++;
+    },
+    increment() {
+      this.counter++;
+    },
+  },
   props: {
     id: {
       type: Number,

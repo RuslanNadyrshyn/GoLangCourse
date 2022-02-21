@@ -1,12 +1,12 @@
 <template>
-  <div class="product_list_nav_item">
+  <div class="list_nav_item">
     {{ type }}
   </div>
 </template>
 
 <script>
 export default {
-  name: "ProductListNavItem",
+  name: "ListNavItem",
   props: {
     type: {
       type: String,
@@ -16,7 +16,7 @@ export default {
 </script>
 
 <style scoped>
-.product_list_nav_item {
+.list_nav_item {
   padding: 10px;
   background-color: coral;
   color: #333;
@@ -25,7 +25,7 @@ export default {
   margin: 0px;
   text-transform: uppercase;
 }
-.product_list_nav_item:hover {
+.list_nav_item:hover {
   background-color: rgb(245, 208, 195);
   cursor: pointer;
 }

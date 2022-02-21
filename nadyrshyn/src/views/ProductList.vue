@@ -10,21 +10,47 @@
       <div class="intro">
         <div class="section">
           <div class="container">
-            <div class="product_list_block">
-              <div class="product_list_nav">
-                <div v-for="type in productTypes" :key="type">
-                  <ProductListNavItem :type="type">
-                    {{ productTypes }}
-                  </ProductListNavItem>
+            <div class="list_block">
+              <div class="list_nav">
+                <div v-for="type in suppliersTypes" :key="type">
+                  <ListNavItem :type="type">
+                    {{ suppliersTypes }}
+                  </ListNavItem>
                 </div>
               </div>
-              <div class="Product_list">
+              <div class="list">
+                <div
+                  v-for="supplier in $store.state.suppliers.suppliers"
+                  :key="supplier.id"
+                >
+                  <SupplierItem
+                    :id="supplier.id"
+                    :name="supplier.name"
+                    :type="supplier.type"
+                    :image="supplier.image"
+                    :workingHours="supplier.workingHours"
+                  >
+                    {{ suppliers }}
+                  </SupplierItem>
+                </div>
+              </div>
+            </div>
+            <div class="list_block">
+              <div class="list_nav">
+                <div v-for="type in productsTypes" :key="type">
+                  <ListNavItem :type="type">
+                    {{ productsTypes }}
+                  </ListNavItem>
+                </div>
+              </div>
+              <div class="list">
                 <div
                   v-for="product in $store.state.products.products"
                   :key="product.id"
                 >
                   <ProductItem
                     :id="product.id"
+                    :menuId="product.menuId"
                     :name="product.name"
                     :image="product.image"
                     :price="product.price"
@@ -46,34 +72,52 @@
 
 <script>
 import HeaderItem from "@/components/Header";
-import ProductListNavItem from "@/components/ProductListNavItem";
+import ListNavItem from "@/components/ListNavItem";
 import ProductItem from "@/components/ProductItem";
+import SupplierItem from "@/components/SupplierItem";
 
 export default {
   name: "ProductList",
-  components: { ProductItem, ProductListNavItem, HeaderItem },
+  components: { SupplierItem, ProductItem, ListNavItem, HeaderItem },
   data() {
     return {
       suppliers: [],
-      products: this.$store.dispatch("products/fetchProducts"),
-      productTypes: [],
-      selectedProductType: {},
+      products: [],
+      productsTypes: [],
+      suppliersTypes: [],
       loaded: false,
       errors: [],
     };
   },
-  mounted() {
+  methods: {
+    getProductTypes() {
+      return this.$store.state.products.products.type.filter((type) =>
+        this.$store.state.products.products.type.includes(type)
+      );
+    },
+  },
+  created() {
     this.$store.dispatch("products/fetchProducts");
-    // this.$store.dispatch("suppliers/fetchSuppliers");
-
+    this.$store.dispatch("suppliers/fetchSuppliers");
+  },
+  mounted() {
     let products = this.$store.getters["products/getProducts"];
-    this.productTypes.push("ALL");
+    let suppliers = this.$store.getters["suppliers/getSuppliers"];
+    this.productsTypes.push("ALL");
+    this.suppliersTypes.push("ALL");
     for (let i = 0; i < products.length; i++) {
-      if (this.productTypes.includes(products[i].type) == false) {
-        this.productTypes.push(products[i].type);
+      if (this.productsTypes.includes(products[i].type) === false) {
+        this.productsTypes.push(products[i].type);
       }
     }
+    for (let i = 0; i < suppliers.length; i++) {
+      if (this.suppliersTypes.includes(suppliers[i].type) === false) {
+        this.suppliersTypes.push(suppliers[i].type);
+      }
+    }
+
     console.log("fetched");
+    console.log(this.$store.state.suppliers.suppliers);
   },
 };
 </script>
@@ -87,7 +131,7 @@ export default {
   background-color: #ffcfb4;
   background-size: cover;
 }
-.product_list_block {
+.list_block {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -95,7 +139,7 @@ export default {
   border-radius: 20px;
   margin-top: 10px;
 }
-.product_list_nav {
+.list_nav {
   display: flex;
   font-size: 20px;
   font-family: Arial, Helvetica, sans-serif;
@@ -109,7 +153,7 @@ export default {
   max-width: 1200px;
   margin: 0 auto;
 }
-.Product_list {
+.list {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
