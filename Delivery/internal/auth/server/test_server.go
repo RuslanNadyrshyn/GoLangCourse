@@ -5,16 +5,23 @@ import (
 	"awesomeProject/internal/auth/repositories"
 	"awesomeProject/internal/auth/server/handlers"
 	"awesomeProject/internal/auth/services"
+	repos "awesomeProject/internal/repositories"
 	"awesomeProject/internal/repositories/database/Connection"
+	"encoding/json"
+	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"net/http"
 )
 
+var (
+	conn, err       = Connection.Connect()
+	supplierService = repos.NewSupplierService(conn)
+)
+
 func Start(cfg *config.Config) {
 	userRepository := repositories.NewUserRepository()
 	tokenService := services.NewTokenService(cfg)
-	conn, err := Connection.Connect()
 	if err != nil {
 		log.Println(err)
 	}
@@ -28,5 +35,38 @@ func Start(cfg *config.Config) {
 	mux.HandleFunc("/profile", userHandler.GetProfile)
 	mux.HandleFunc("/refresh", authHandler.Refresh)
 
+	mux.HandleFunc("/get_products", GetProducts)
+	mux.HandleFunc("/get_suppliers", GetSuppliers)
+
 	log.Fatal(http.ListenAndServe(cfg.Port, mux))
+}
+
+func GetSuppliers(resp http.ResponseWriter, req *http.Request) {
+	if req.Method != http.MethodGet {
+		http.Error(resp, "not allowed", http.StatusMethodNotAllowed)
+	}
+
+	suppliers, err := supplierService.SupplierRepo.GetAll()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	data, _ := json.Marshal(suppliers)
+	resp.Header().Add("Access-Control-Allow-Origin", "*")
+	fmt.Fprintln(resp, string(data))
+}
+
+func GetProducts(resp http.ResponseWriter, req *http.Request) {
+	if req.Method != http.MethodGet {
+		http.Error(resp, "not allowed", http.StatusMethodNotAllowed)
+	}
+
+	products, err := supplierService.ProductRepo.GetAll()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	data, _ := json.Marshal(products)
+	resp.Header().Add("Access-Control-Allow-Origin", "*")
+	fmt.Fprintln(resp, string(data))
 }

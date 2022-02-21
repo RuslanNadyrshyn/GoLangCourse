@@ -12,7 +12,6 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
-	"strconv"
 )
 
 func main() {
@@ -44,21 +43,21 @@ func main() {
 		fmt.Println(err)
 	}
 
-	//var sup1 []models.Supplier
-	//sup1 = test.ParseHTTP("http://foodapi.true-tech.php.nixdev.co/suppliers")
-	//
-	//for i := range sup1 {
-	//	//test.PrintSupplier(sup1[i])
-	//	pool.DataSource <- sup1[i]
-	//}
-	//
-	//test.UpdateHTTP(sup1, conn)
+	var sup1 []models.Supplier
+	sup1 = test.ParseHTTP("http://foodapi.true-tech.php.nixdev.co/suppliers")
 
-	var sup []models.Supplier
-	for i := 0; i < 7; i++ {
-		sup = append(sup, test.ParseJson("./Goroutines/Data/"+strconv.Itoa(i+1)+".json"))
-		pool.DataSource <- sup[i]
+	for i := range sup1 {
+		//test.PrintSupplier(sup1[i])
+		pool.DataSource <- sup1[i]
 	}
+
+	test.UpdateHTTP(sup1, conn)
+
+	//var sup []models.Supplier
+	//for i := 0; i < 7; i++ {
+	//	sup = append(sup, test.ParseJson("./Goroutines/Data/"+strconv.Itoa(i+1)+".json"))
+	//	pool.DataSource <- sup[i]
+	//}
 	pool.Stop()
 
 	// TESTS
