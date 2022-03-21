@@ -1,8 +1,8 @@
 package main
 
 import (
-	config2 "awesomeProject/internal/auth/config"
-	"awesomeProject/internal/auth/server"
+	config2 "Delivery/Delivery/internal/auth/config"
+	"Delivery/Delivery/internal/auth/server"
 )
 
 func main() {

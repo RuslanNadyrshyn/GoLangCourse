@@ -1,8 +1,8 @@
 package services
 
 import (
-	"awesomeProject/internal/auth/config"
-	"awesomeProject/internal/auth/helper"
+	"Delivery/Delivery/internal/auth/config"
+	"Delivery/Delivery/internal/auth/helper"
 	"errors"
 	"fmt"
 	"github.com/golang-jwt/jwt"

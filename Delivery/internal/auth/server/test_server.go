@@ -1,12 +1,12 @@
 package server
 
 import (
-	"awesomeProject/internal/auth/config"
-	"awesomeProject/internal/auth/repositories"
-	"awesomeProject/internal/auth/server/handlers"
-	"awesomeProject/internal/auth/services"
-	repos "awesomeProject/internal/repositories"
-	"awesomeProject/internal/repositories/database/Connection"
+	"Delivery/Delivery/internal/auth/config"
+	"Delivery/Delivery/internal/auth/repositories"
+	"Delivery/Delivery/internal/auth/server/handlers"
+	"Delivery/Delivery/internal/auth/services"
+	repos "Delivery/Delivery/internal/repositories"
+	"Delivery/Delivery/internal/repositories/database/Connection"
 	"encoding/json"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"

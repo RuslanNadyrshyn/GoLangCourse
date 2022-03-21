@@ -1,8 +1,8 @@
 package repositories
 
 import (
-	"awesomeProject/internal/repositories/database"
-	"awesomeProject/internal/repositories/models"
+	"Delivery/Delivery/internal/repositories/database"
+	"Delivery/Delivery/internal/repositories/models"
 	"database/sql"
 	"fmt"
 	"log"

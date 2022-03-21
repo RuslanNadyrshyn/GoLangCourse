@@ -1,8 +1,8 @@
 package Goroutines
 
 import (
-	"awesomeProject/internal/repositories"
-	"awesomeProject/internal/repositories/models"
+	"Delivery/Delivery/internal/repositories"
+	"Delivery/Delivery/internal/repositories/models"
 	"context"
 	"database/sql"
 	"encoding/json"

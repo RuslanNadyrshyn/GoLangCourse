@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	"awesomeProject/internal/auth/models"
+	"Delivery/Delivery/internal/auth/models"
 	"errors"
 	"golang.org/x/crypto/bcrypt"
 )

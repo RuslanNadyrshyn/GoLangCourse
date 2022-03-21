@@ -1,7 +1,7 @@
 package database
 
 import (
-	"awesomeProject/internal/repositories/models"
+	"Delivery/Delivery/internal/repositories/models"
 	"database/sql"
 	"fmt"
 	"golang.org/x/crypto/bcrypt"

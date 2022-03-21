@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"awesomeProject/internal/auth/repositories"
-	"awesomeProject/internal/auth/responses"
-	"awesomeProject/internal/auth/services"
-	"awesomeProject/internal/repositories/database"
-	"awesomeProject/internal/repositories/models"
+	"Delivery/Delivery/internal/auth/repositories"
+	"Delivery/Delivery/internal/auth/responses"
+	"Delivery/Delivery/internal/auth/services"
+	"Delivery/Delivery/internal/repositories/database"
+	"Delivery/Delivery/internal/repositories/models"
 	"database/sql"
 	"encoding/json"
 	"log"

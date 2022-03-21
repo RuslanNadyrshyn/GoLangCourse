@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"awesomeProject/internal/auth/config"
-	"awesomeProject/internal/auth/requests"
-	"awesomeProject/internal/auth/responses"
-	"awesomeProject/internal/auth/services"
-	"awesomeProject/internal/repositories/database"
+	"Delivery/Delivery/internal/auth/config"
+	"Delivery/Delivery/internal/auth/requests"
+	"Delivery/Delivery/internal/auth/responses"
+	"Delivery/Delivery/internal/auth/services"
+	"Delivery/Delivery/internal/repositories/database"
 	"database/sql"
 	"encoding/json"
 	"golang.org/x/crypto/bcrypt"

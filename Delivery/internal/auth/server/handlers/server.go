@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"awesomeProject/internal/auth/config"
-	"awesomeProject/internal/auth/repositories"
-	"awesomeProject/internal/auth/services"
+	"Delivery/Delivery/internal/auth/config"
+	"Delivery/Delivery/internal/auth/repositories"
+	"Delivery/Delivery/internal/auth/services"
 	"database/sql"
 	"net/http"
 	"net/http/httptest"

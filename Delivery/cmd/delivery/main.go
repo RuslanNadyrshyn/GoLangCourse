@@ -1,15 +1,13 @@
 package main
 
 import (
-	"awesomeProject/Goroutines"
-	config2 "awesomeProject/internal/auth/config"
-	"awesomeProject/internal/auth/server"
-	"awesomeProject/internal/repositories"
-	"awesomeProject/internal/repositories/database/Connection"
-	"awesomeProject/internal/repositories/models"
-	"awesomeProject/internal/worker_pool"
+	config2 "Delivery/Delivery/internal/auth/config"
+	"Delivery/Delivery/internal/auth/server"
+	"Delivery/Delivery/internal/repositories"
+	"Delivery/Delivery/internal/repositories/database/Connection"
+	"Delivery/Delivery/internal/repositories/models"
+	"Delivery/Delivery/internal/worker_pool"
 	"database/sql"
-	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
 )
@@ -35,23 +33,23 @@ func main() {
 	pool := worker_pool.NewPool(4, poolConst)
 	go pool.Run()
 
-	test := Goroutines.GoRoutinesRepository{}
+	//test := Goroutines.GoRoutinesRepository{}
 
-	supplierService := repositories.NewSupplierService(conn)
-	err = supplierService.SupplierRepo.DeleteAll()
-	if err != nil {
-		fmt.Println(err)
-	}
+	//supplierService := repositories.NewSupplierService(conn)
+	//err = supplierService.SupplierRepo.DeleteAll()
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
 
-	var sup1 []models.Supplier
-	sup1 = test.ParseHTTP("http://foodapi.true-tech.php.nixdev.co/suppliers")
-
-	for i := range sup1 {
-		//test.PrintSupplier(sup1[i])
-		pool.DataSource <- sup1[i]
-	}
-
-	test.UpdateHTTP(sup1, conn)
+	//var sup1 []models.Supplier
+	//sup1 = test.ParseHTTP("http://foodapi.true-tech.php.nixdev.co/suppliers")
+	//
+	//for i := range sup1 {
+	//	//test.PrintSupplier(sup1[i])
+	//	pool.DataSource <- sup1[i]
+	//}
+	//
+	//test.UpdateHTTP(sup1, conn)
 
 	//var sup []models.Supplier
 	//for i := 0; i < 7; i++ {

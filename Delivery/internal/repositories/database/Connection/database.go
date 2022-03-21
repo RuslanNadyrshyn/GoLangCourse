@@ -9,7 +9,7 @@ import (
 )
 
 func Connect() (*sql.DB, error) {
-	envName := "cfg/.env"
+	envName := "Delivery/cfg/.env"
 	err := godotenv.Load(envName)
 	if err != nil {
 		log.Println("Error loading .env file")
