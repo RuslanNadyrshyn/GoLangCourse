@@ -16,7 +16,7 @@ type Config struct {
 }
 
 func NewConfig(forTesting bool) *Config {
-	envName := "cfg/.env"
+	envName := "Delivery/cfg/.env"
 	if forTesting {
 		envName = "./../../.env.testing"
 	}
