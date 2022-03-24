@@ -1,2 +1,3 @@
-name: Ruslan Nadyrshyn
-project name: GoLangCourse
+Name: Ruslan Nadyrshyn
+
+Project name: GoLangCourse/Delivery
