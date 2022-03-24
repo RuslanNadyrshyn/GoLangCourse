@@ -1,6 +1,5 @@
 .idea
 .vscode
-cfg/.env
 /Delivery/go.mod
 /Delivery/go.sum
-/go.mod
+/Delivery/cfg/.env
