@@ -3,7 +3,8 @@ import axios from "axios";
 const state = {
   url: "http://localhost:8080/get_suppliers",
   suppliers: [],
-  selectedSupplier: { Number, String },
+  suppliersTypes: [],
+  selectedSupplier: { id: Number, name: String, image: String },
   errors: [],
   loaded: false,
 };
@@ -11,6 +12,9 @@ const state = {
 const mutations = {
   setSuppliers(state, suppliers) {
     state.suppliers = suppliers;
+  },
+  setSuppliersTypes(state, suppliersTypes) {
+    state.suppliersTypes = suppliersTypes;
   },
   setErrors(state, errors) {
     state.errors = errors;
@@ -34,6 +38,13 @@ const actions = {
       .get(context.getters.getSupplierURL)
       .then((res) => {
         context.commit("setSuppliers", res.data);
+        let types = [];
+        for (let i = 0; i < res.data.length; i++) {
+          if (types.includes(res.data[i].type) === false) {
+            types.push(res.data[i].type);
+          }
+        }
+        context.commit("setSuppliersTypes", types);
       })
       .catch((err) => [context.commit("setErrors", [err])])
       .finally(() => {

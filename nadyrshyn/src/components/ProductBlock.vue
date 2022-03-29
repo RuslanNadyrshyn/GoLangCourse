@@ -13,7 +13,7 @@
             {{ price }}
             <div class="product_price_grn">$</div>
           </div>
-          <button class="product_button">Add</button>
+          <button class="product_button" v-on:click="addToBasket()">Add</button>
         </div>
       </div>
     </div>
@@ -21,7 +21,7 @@
       <div class="product_description_title">
         {{ name }}
       </div>
-      <div class="product_description_text">Supplier</div>
+      <div class="product_description_text"></div>
       <div class="product_description_title">Ingredients:</div>
       <div class="product_description_ingredients">
         <div v-for="ingredient in ingredients" :key="ingredient.id">
@@ -35,13 +35,10 @@
 <script>
 export default {
   name: "ProductBlock",
-  methods: {
-    addToBracket() {
-      this.counter++;
-    },
-    increment() {
-      this.counter++;
-    },
+  data() {
+    return {
+      counter: 1,
+    };
   },
   props: {
     id: {
@@ -66,16 +63,42 @@ export default {
       type: Array,
     },
   },
+  methods: {
+    addToBasket() {
+      let prod = {
+        id: this.id,
+        name: this.name,
+        menuId: this.menuId,
+        price: this.price,
+        image: this.image,
+        type: this.type,
+        ingredients: this.ingredients,
+        counter: this.counter,
+      };
+      let a = false;
+      for (let i = 0; i < this.$store.state.basket.products.length; i++) {
+        if (this.$store.state.basket.products[i].id === this.id) {
+          console.log("counter++ for ", this.id);
+          this.$store.commit("basket/incCount", this.id);
+          a = true;
+        }
+      }
+      if (a === false) {
+        this.$store.commit("basket/addProduct", prod);
+      }
+      console.log(this.$store.getters["basket/getBasket"]);
+    },
+  },
 };
 </script>
 
 <style scoped>
 .product_block {
   display: flex;
+  font: bold large sans-serif;
   flex-direction: row;
-  background-color: #c8dcf4;
   min-height: 500px;
-  width: 1200px;
+  width-max: 1200px;
   margin: 50px auto;
   background-color: #686e65;
   border-radius: 20px;
@@ -85,8 +108,8 @@ export default {
   display: flex;
   flex-direction: column;
   min-height: 480px;
-  width: 30%;
-  margin: 10px;
+  max-width: 400px;
+  margin: 30px;
   border: 2px #222;
   color: #222;
 }
@@ -94,10 +117,11 @@ export default {
 .product_logo {
   display: flex;
   max-width: 100%;
-  min-height: 150px;
+  max-height: 300px;
   background-color: #ddd;
-  border-radius: 20px;
-  margin: 10px auto;
+  border: #222 solid 2px;
+  border-radius: 10%;
+  margin: auto;
 }
 
 .product_text {
@@ -108,6 +132,7 @@ export default {
 }
 .product_name {
   margin: 0 auto;
+  text-align: center;
 }
 
 .product_price_block {
@@ -135,33 +160,40 @@ export default {
   text-transform: uppercase;
   height: max-content;
   padding: 5px;
-  background-color: #71bf4d;
+  background-color: #2d8d0f;
   border-radius: 10px;
+  border-style: solid;
+  border-color: #222;
   transition: color 0.2s linear;
 }
 
 .product_button:hover {
   background-color: #46792f;
+  cursor: pointer;
 }
 
 .product_description {
   display: flex;
   flex-direction: column;
+  background-color: #4a4e47;
+  border-radius: 20px;
+  border: solid 1px;
   min-height: 480px;
   width: 60%;
-  margin: 10px;
+  margin: 30px;
   color: #222;
 }
 
 .product_description_title {
   text-align: center;
-  font-size: 24px;
+  font-size: 30px;
   margin: 10px;
 }
 
 .product_description_text {
   margin: 10px;
   font-size: 20px;
+  font-style: italic;
 }
 
 .product_description_ingredients {
@@ -169,5 +201,6 @@ export default {
   flex-direction: column;
   margin: 10px;
   font-size: 20px;
+  font-style: italic;
 }
 </style>

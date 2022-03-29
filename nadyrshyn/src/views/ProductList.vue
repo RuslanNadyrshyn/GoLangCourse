@@ -12,7 +12,11 @@
           <div class="container">
             <div class="list_block">
               <div class="list_nav">
-                <div v-for="type in suppliersTypes" :key="type">
+                <ListNavItem :type="'all'"></ListNavItem>
+                <div
+                  v-for="type in $store.state.suppliers.suppliersTypes"
+                  :key="type"
+                >
                   <ListNavItem :type="type">
                     {{ suppliersTypes }}
                   </ListNavItem>
@@ -28,7 +32,8 @@
                     :name="supplier.name"
                     :type="supplier.type"
                     :image="supplier.image"
-                    :workingHours="supplier.workingHours"
+                    :opening="supplier.workingHours[0]"
+                    :closing="supplier.workingHours[1]"
                   >
                     {{ suppliers }}
                   </SupplierItem>
@@ -37,7 +42,11 @@
             </div>
             <div class="list_block">
               <div class="list_nav">
-                <div v-for="type in productsTypes" :key="type">
+                <ListNavItem :type="'all'"></ListNavItem>
+                <div
+                  v-for="type in $store.state.products.productsTypes"
+                  :key="type"
+                >
                   <ListNavItem :type="type">
                     {{ productsTypes }}
                   </ListNavItem>
@@ -71,7 +80,7 @@
 </template>
 
 <script>
-import HeaderItem from "@/components/Header";
+import HeaderItem from "@/components/HeaderItem";
 import ListNavItem from "@/components/ListNavItem";
 import ProductItem from "@/components/ProductItem";
 import SupplierItem from "@/components/SupplierItem";
@@ -89,35 +98,10 @@ export default {
       errors: [],
     };
   },
-  methods: {
-    getProductTypes() {
-      return this.$store.state.products.products.type.filter((type) =>
-        this.$store.state.products.products.type.includes(type)
-      );
-    },
-  },
   created() {
     this.$store.dispatch("products/fetchProducts");
     this.$store.dispatch("suppliers/fetchSuppliers");
-  },
-  mounted() {
-    let products = this.$store.getters["products/getProducts"];
-    let suppliers = this.$store.getters["suppliers/getSuppliers"];
-    this.productsTypes.push("ALL");
-    this.suppliersTypes.push("ALL");
-    for (let i = 0; i < products.length; i++) {
-      if (this.productsTypes.includes(products[i].type) === false) {
-        this.productsTypes.push(products[i].type);
-      }
-    }
-    for (let i = 0; i < suppliers.length; i++) {
-      if (this.suppliersTypes.includes(suppliers[i].type) === false) {
-        this.suppliersTypes.push(suppliers[i].type);
-      }
-    }
-
-    console.log("fetched");
-    console.log(this.$store.state.suppliers.suppliers);
+    console.log(this.$store.getters["basket/getBasket"]);
   },
 };
 </script>

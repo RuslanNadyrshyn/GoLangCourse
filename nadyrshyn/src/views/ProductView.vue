@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import HeaderItem from "@/components/Header";
+import HeaderItem from "@/components/HeaderItem";
 import ProductBlock from "@/components/ProductBlock";
 
 export default {

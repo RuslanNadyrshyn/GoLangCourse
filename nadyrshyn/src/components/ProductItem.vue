@@ -62,11 +62,13 @@ export default {
   max-width: 100%;
   height: 250px;
   align-items: center;
+  justify-content: center;
 }
 
 .Product_logo {
   display: block;
   border-radius: 20%;
+  border: #222 solid 1px;
   max-width: 100%;
   transition: transform 0.2s;
 }
