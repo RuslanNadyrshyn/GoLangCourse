@@ -6,8 +6,8 @@
           {{ error }}
         </div>
       </template>
-      <HeaderItem></HeaderItem>
       <div class="intro">
+        <HeaderItem></HeaderItem>
         <div class="section">
           <div class="container">
             <div v-for="product in selectedProduct" :key="product.id">
@@ -64,9 +64,8 @@ export default {
   flex-direction: column;
   justify-content: center;
   width: 100%;
-  min-height: 500px;
-  background-color: #ffcfb4;
-  background-size: cover;
+  min-height: 100vh;
+  background-color: #333;
 }
 .container {
   width: 100%;

@@ -1,7 +1,12 @@
 <template>
   <div class="basket_item">
     <div class="basket_item_image">
-      <img class="product_logo" :src="image" alt="" />
+      <img
+        class="product_logo"
+        :src="image"
+        alt=""
+        @click="$router.push({ path: `/product/${id}` })"
+      />
     </div>
     <div class="description_block">
       <div class="basket_item_title">
@@ -86,9 +91,8 @@ export default {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  min-height: 100px;
-  margin: 5px auto;
-  padding: 15px;
+  min-height: 140px;
+  margin: 10px;
   background-color: #4a4e47;
   border-radius: 20px;
 }
@@ -106,18 +110,25 @@ export default {
   background-color: #ddd;
   border-radius: 20px;
   margin: 10px auto;
+  transition: transform 0.2s;
 }
+
+.product_logo:hover {
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
 .description_block {
   display: flex;
   flex-direction: column;
-  height: 130px;
+  min-height: 130px;
   width: 50%;
 }
 
 .basket_item_description {
   display: flex;
   flex-direction: column;
-  min-height: 80px;
+  min-height: 68px;
   background-color: #686e65;
   border: 1px solid #333;
   border-radius: 10px;
@@ -136,7 +147,7 @@ export default {
 }
 
 .basket_item_ingredient {
-  margin: 0 10px;
+  margin: 5px 10px;
 }
 
 .counter_container {
@@ -165,7 +176,7 @@ export default {
   background-color: #c2c5c1;
   border-radius: 10px;
   margin: 5px 0;
-  transition: 0.2s;
+  transition: color 0.2s linear, transform 0.1s linear, scale 0.2s;
 }
 
 .counter_btn.green {
@@ -173,17 +184,24 @@ export default {
 }
 
 .counter_btn.red {
-  background-color: #df2727;
+  background-color: #e01d1d;
 }
 
 .counter_btn:hover {
   opacity: 0.8;
   cursor: pointer;
+  transform: scale(1.05);
+}
+
+.counter_btn:active {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .counter_number {
   display: flex;
   justify-content: center;
+  padding: 5px;
   align-items: center;
   background-color: #686e65;
   min-width: 40px;
@@ -203,6 +221,7 @@ export default {
 
 .basket_item_price_container {
   display: flex;
+  text-transform: uppercase;
   flex-direction: row;
   justify-content: center;
   align-items: center;
@@ -224,14 +243,22 @@ export default {
 .basket_item_remove_btn {
   font-size: 20px;
   border-radius: 10px;
-  background-color: #df4545;
+  width: 90%;
+  background-color: #e01d1d;
   border: solid 1px #111;
-  padding: 5px;
+  padding: 10px 5px;
   cursor: pointer;
-  transition: 0.2s;
+  transition: color 0.2s linear, transform 0.1s linear, scale 0.2s;
 }
 
 .basket_item_remove_btn:hover {
-  background-color: #df2727;
+  opacity: 0.8;
+  cursor: pointer;
+  transform: scale(1.05);
+}
+
+.basket_item_remove_btn:active {
+  opacity: 1;
+  transform: scale(1);
 }
 </style>

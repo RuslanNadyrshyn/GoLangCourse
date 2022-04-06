@@ -1,5 +1,5 @@
 <template>
-  <div class="list_nav_item">
+  <div class="list_nav_item" @click="sortType()">
     {{ type }}
   </div>
 </template>
@@ -11,6 +11,21 @@ export default {
     type: {
       type: String,
     },
+    isProduct: {
+      type: Boolean,
+    },
+    isSupplier: {
+      type: Boolean,
+    },
+  },
+  methods: {
+    sortType() {
+      if (this.isProduct === true) {
+        this.$store.dispatch("products/sortByType", this.type);
+      } else if (this.isSupplier === true) {
+        console.log("You pressed supplier type: ", this.type);
+      }
+    },
   },
 };
 </script>
@@ -18,15 +33,16 @@ export default {
 <style scoped>
 .list_nav_item {
   padding: 10px;
-  background-color: coral;
-  color: #333;
+  color: #d3c7c7;
   text-decoration: none;
   border-radius: 10px 10px 0 0;
-  margin: 0px;
   text-transform: uppercase;
+  transition: color 0.2s linear;
 }
+
 .list_nav_item:hover {
   background-color: rgb(245, 208, 195);
+  color: #333;
   cursor: pointer;
 }
 </style>

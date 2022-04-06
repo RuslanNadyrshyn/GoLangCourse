@@ -12,12 +12,12 @@
           <div class="container">
             <div class="list_block">
               <div class="list_nav">
-                <ListNavItem :type="'all'"></ListNavItem>
+                <ListNavItem :type="'all'" :isSupplier="true"></ListNavItem>
                 <div
                   v-for="type in $store.state.suppliers.suppliersTypes"
                   :key="type"
                 >
-                  <ListNavItem :type="type">
+                  <ListNavItem :type="type" :isSupplier="true">
                     {{ suppliersTypes }}
                   </ListNavItem>
                 </div>
@@ -42,19 +42,21 @@
             </div>
             <div class="list_block">
               <div class="list_nav">
-                <ListNavItem :type="'all'"></ListNavItem>
+                <ListNavItem :type="'all'" :isProduct="true"></ListNavItem>
                 <div
                   v-for="type in $store.state.products.productsTypes"
                   :key="type"
                 >
-                  <ListNavItem :type="type">
+                  <ListNavItem :type="type" :isProduct="true">
                     {{ productsTypes }}
                   </ListNavItem>
                 </div>
               </div>
               <div class="list">
                 <div
-                  v-for="product in $store.state.products.products"
+                  v-for="product in $store.getters[
+                    'products/getSortedProducts'
+                  ]"
                   :key="product.id"
                 >
                   <ProductItem
@@ -65,6 +67,8 @@
                     :price="product.price"
                     :type="product.type"
                     :ingredients="product.ingredients"
+                    :supplier_id="product.supplier_id"
+                    :supplier_name="product.supplier_name"
                   >
                     {{ products }}
                   </ProductItem>
@@ -101,7 +105,6 @@ export default {
   created() {
     this.$store.dispatch("products/fetchProducts");
     this.$store.dispatch("suppliers/fetchSuppliers");
-    console.log(this.$store.getters["basket/getBasket"]);
   },
 };
 </script>
@@ -112,7 +115,7 @@ export default {
   flex-direction: column;
   justify-content: center;
   width: 100%;
-  background-color: #ffcfb4;
+  background-color: #333;
   background-size: cover;
 }
 .list_block {
@@ -121,7 +124,7 @@ export default {
   justify-content: center;
   background-color: #686e65;
   border-radius: 20px;
-  margin-top: 10px;
+  margin: 20px auto;
 }
 .list_nav {
   display: flex;
@@ -129,7 +132,7 @@ export default {
   font-family: Arial, Helvetica, sans-serif;
   font-weight: 700;
   flex-wrap: wrap;
-  background-color: coral;
+  background-color: #4b4242ff;
   border-radius: 14px 10px 0 0;
 }
 .container {

@@ -3,7 +3,9 @@ import axios from "axios";
 const state = {
   url: "http://localhost:8080/get_products",
   products: [],
+  sortedProducts: [],
   productsTypes: [],
+  sortType: "",
   errors: [],
   loaded: false,
 };
@@ -14,6 +16,12 @@ const mutations = {
   },
   setProductsTypes(state, productsTypes) {
     state.productsTypes = productsTypes;
+  },
+  setSortedProducts(state, sortedProducts) {
+    state.sortedProducts = sortedProducts;
+  },
+  setSortType(state, type) {
+    state.sortType = type;
   },
   setErrors(state, errors) {
     state.errors = errors;
@@ -43,6 +51,16 @@ const actions = {
         context.commit("setLoaded", true);
       });
   },
+  sortByType(context, type) {
+    let products = context.getters.getProducts;
+    context.commit("setSortType", type);
+    if (type === "all") {
+      context.commit("setSortedProducts", products);
+    } else {
+      let SortedArray = products.filter((product) => product.type === type);
+      context.commit("setSortedProducts", SortedArray);
+    }
+  },
 };
 
 const getters = {
@@ -52,8 +70,12 @@ const getters = {
   getProducts: (state) => {
     return state.products;
   },
-  getProductsByType: (state) => {
-    return state.products.filter((type) => type === state.products.type);
+  getSortedProducts: (state) => {
+    if (state.sortType === "") {
+      return state.products;
+    } else {
+      return state.sortedProducts;
+    }
   },
 };
 

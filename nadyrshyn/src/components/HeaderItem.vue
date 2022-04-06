@@ -6,10 +6,7 @@
           Доставка
         </div>
         <nav class="nav">
-          <div
-            class="nav_link_active"
-            @click="$router.push({ path: `/products` })"
-          >
+          <div class="nav_link" @click="$router.push({ path: `/products` })">
             Главная
           </div>
           <div class="nav_link" @click="$router.push({ path: `/basket` })">
@@ -31,14 +28,20 @@ export default {
 </script>
 
 <style scoped>
-.header {
-  background-color: #71bf4d;
+header {
+  width: 100%;
+  background-color: #4b4242ff;
   font: bold large sans-serif;
 }
 .header_logo {
   font-size: 30px;
   text-transform: uppercase;
 }
+.header_title {
+  cursor: pointer;
+  color: #d3c7c7;
+}
+
 .header_inner {
   display: flex;
   font-size: 30px;
@@ -52,7 +55,7 @@ export default {
 }
 
 .nav {
-  font-size: 16px;
+  font-size: 20px;
   text-transform: uppercase;
 }
 
@@ -60,13 +63,14 @@ export default {
   display: inline-block;
   vertical-align: top;
   padding: 10px;
-  color: #333;
+  color: #d3c7c7;
   text-decoration: none;
-  transition: color 0.2s linear;
+  transition: 0.2s linear;
 }
 
 .nav_link:hover {
-  color: #c8dcf4;
+  transform: scale(0.95);
+  color: #333;
   cursor: pointer;
   background-color: #8f968b;
 }
@@ -80,6 +84,7 @@ export default {
   transition: color 0.2s linear;
   background-color: #8f968b;
 }
+
 .nav_link_active:hover {
   color: #c8dcf4;
   cursor: pointer;

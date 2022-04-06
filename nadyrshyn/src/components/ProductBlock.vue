@@ -11,9 +11,11 @@
         <div class="product_price_block">
           <div class="product_price">
             {{ price }}
-            <div class="product_price_grn">$</div>
+            <div class="product_price_grn">грн</div>
           </div>
-          <button class="product_button" v-on:click="addToBasket()">Add</button>
+          <button class="product_btn" v-on:click="addToBasket()">
+            добавить в корзину
+          </button>
         </div>
       </div>
     </div>
@@ -75,18 +77,15 @@ export default {
         ingredients: this.ingredients,
         counter: this.counter,
       };
-      let a = false;
+      let inBasket = false;
       for (let i = 0; i < this.$store.state.basket.products.length; i++) {
         if (this.$store.state.basket.products[i].id === this.id) {
-          console.log("counter++ for ", this.id);
           this.$store.commit("basket/incCount", this.id);
-          a = true;
+          inBasket = true;
         }
       }
-      if (a === false) {
+      if (inBasket === false)
         this.$store.commit("basket/addProduct", prod);
-      }
-      console.log(this.$store.getters["basket/getBasket"]);
     },
   },
 };
@@ -98,7 +97,7 @@ export default {
   font: bold large sans-serif;
   flex-direction: row;
   min-height: 500px;
-  width-max: 1200px;
+  max-width: 1200px;
   margin: 50px auto;
   background-color: #686e65;
   border-radius: 20px;
@@ -151,12 +150,12 @@ export default {
 }
 
 .product_price_grn {
-  margin-left: 10px;
+  margin-left: 5px;
 }
 
-.product_button {
-  font-size: 20px;
-  width: 100px;
+.product_btn {
+  font-size: 16px;
+  width: 120px;
   text-transform: uppercase;
   height: max-content;
   padding: 5px;
@@ -164,12 +163,18 @@ export default {
   border-radius: 10px;
   border-style: solid;
   border-color: #222;
-  transition: color 0.2s linear;
+  transition: color 0.2s linear, transform 0.1s linear, scale 0.2s;
 }
 
-.product_button:hover {
+.product_btn:hover {
   background-color: #46792f;
   cursor: pointer;
+  transform: scale(1.05);
+}
+
+.product_btn:active {
+  background-color: #3e8e41;
+  transform: scale(1);
 }
 
 .product_description {

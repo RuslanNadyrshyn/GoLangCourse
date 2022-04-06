@@ -29,11 +29,13 @@ const mutations = {
       }
     }
   },
+  clearBasket(state) {
+    state.products = [];
+  },
   deleteProduct(state, productId) {
     for (let i = 0; i < state.products.length; i++) {
       if (state.products[i].id === productId) {
         state.products.splice(i, 1);
-        console.log(productId, " deleted");
         break;
       }
     }
@@ -54,18 +56,11 @@ const mutations = {
 };
 
 const actions = {
-  addCountToProduct(state, productId) {
-    state.commit("basket/addProduct", productId);
-    console.log("Added to basket: ", productId);
-    console.log(getters.getBasket(state));
-  },
   deleteProduct(context, productId) {
     context.commit("deleteProduct", productId);
-    console.log("Total price: ", context.getters.getTotalPrice);
   },
   calcTotalPrice(context) {
     context.commit("setTotalPrice");
-    console.log("Total price: ", context.getters.getTotalPrice);
   },
 };
 
