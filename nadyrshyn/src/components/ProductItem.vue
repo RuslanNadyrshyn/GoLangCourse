@@ -83,7 +83,6 @@ export default {
       if (a === false) {
         this.$store.commit("basket/addProduct", prod);
       }
-      console.log(this.$store.getters["basket/getBasket"]);
     },
   },
 };

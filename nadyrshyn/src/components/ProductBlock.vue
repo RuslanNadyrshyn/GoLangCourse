@@ -78,14 +78,12 @@ export default {
         counter: this.counter,
       };
       let inBasket = false;
-      for (let i = 0; i < this.$store.state.basket.products.length; i++) {
+      for (let i = 0; i < this.$store.state.basket.products.length; i++)
         if (this.$store.state.basket.products[i].id === this.id) {
           this.$store.commit("basket/incCount", this.id);
           inBasket = true;
         }
-      }
-      if (inBasket === false)
-        this.$store.commit("basket/addProduct", prod);
+      if (inBasket === false) this.$store.commit("basket/addProduct", prod);
     },
   },
 };

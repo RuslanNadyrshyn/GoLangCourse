@@ -1,6 +1,6 @@
 const state = {
   url: "http://localhost:8080/get_baskets",
-  products: [],
+  products: JSON.parse(localStorage.getItem("delivery_basket")),
   totalPrice: 0,
   errors: [],
   loaded: false,
@@ -9,6 +9,7 @@ const state = {
 const mutations = {
   addProduct(state, product) {
     state.products.push(product);
+    localStorage.setItem("delivery_basket", JSON.stringify(state.products));
   },
   incCount(state, productId) {
     for (let i = 0; i < state.products.length; i++) {
@@ -46,6 +47,7 @@ const mutations = {
       total += state.products[i].price * state.products[i].counter;
     }
     state.totalPrice = total.toFixed(2);
+    localStorage.setItem("delivery_basket", JSON.stringify(state.products));
   },
   setErrors(state, errors) {
     state.errors = errors;
@@ -68,7 +70,7 @@ const getters = {
   getBasketURL: (state) => {
     return state.url;
   },
-  getBasket: (state) => {
+  getBasket: () => {
     return state.products;
   },
   getTotalPrice: (state) => {

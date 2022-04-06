@@ -53,6 +53,8 @@ export default {
     },
   },
   created() {
+    if (JSON.parse(localStorage.getItem("delivery_basket")) == null)
+      localStorage.setItem("delivery_basket", JSON.stringify(this.products));
     this.$store.dispatch("products/fetchProducts");
     this.$store.dispatch("suppliers/fetchSuppliers");
   },

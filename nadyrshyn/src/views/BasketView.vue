@@ -1,60 +1,50 @@
 <template>
   <div>
-    <div v-if="$store.state.products.loaded">
-      <template v-if="errors.length">
-        <div v-for="(error, index) in errors" :key="index">
-          {{ error }}
-        </div>
-      </template>
-      <HeaderItem></HeaderItem>
-      <div class="intro">
-        <div class="section">
-          <div class="container">
-            <div class="basket_title">Корзина</div>
-            <div class="basket_block">
-              <div v-if="$store.state.basket.products.length === 0">
-                <div class="clean_basket_text">Корзина пуста</div>
-              </div>
-              <div v-else-if="$store.state.basket.products.length !== 0">
-                <div
-                  v-for="product in $store.state.basket.products"
-                  :key="product.id"
+    <HeaderItem></HeaderItem>
+    <div class="intro">
+      <div class="section">
+        <div class="container">
+          <div class="basket_title">Корзина</div>
+          <div class="basket_block">
+            <div v-if="$store.state.basket.products.length === 0">
+              <div class="clean_basket_text">Корзина пуста</div>
+            </div>
+            <div v-else-if="$store.state.basket.products.length !== 0">
+              <div
+                v-for="product in $store.getters['basket/getBasket']"
+                :key="product.id"
+              >
+                <BasketItem
+                  :id="product.id"
+                  :menuId="product.menuId"
+                  :name="product.name"
+                  :image="product.image"
+                  :price="product.price"
+                  :type="product.type"
+                  :ingredients="product.ingredients"
+                  :counter="product.counter"
                 >
-                  <BasketItem
-                    :id="product.id"
-                    :menuId="product.menuId"
-                    :name="product.name"
-                    :image="product.image"
-                    :price="product.price"
-                    :type="product.type"
-                    :ingredients="product.ingredients"
-                    :counter="product.counter"
-                  >
-                    {{ products }}
-                  </BasketItem>
-                </div>
+                  {{ products }}
+                </BasketItem>
               </div>
-              <div class="basket_total_price_block">
-                <div class="total_price">
-                  Всего:
-                  <div class="basket_total_price">
-                    {{ $store.state.basket.totalPrice }}
-                  </div>
-                  грн
+            </div>
+            <div class="basket_total_price_block">
+              <div class="total_price">
+                Всего:
+                <div class="basket_total_price">
+                  {{ $store.getters["basket/getTotalPrice"] }}
                 </div>
-                <button class="basket_btn clear" v-on:click="clearBasket()">
-                  Очистить корзину
-                </button>
+                грн
               </div>
-              <button class="basket_btn" v-on:click="clearBasket()">
-                Заказать
+              <button class="basket_btn clear" v-on:click="clearBasket()">
+                Очистить корзину
               </button>
             </div>
+            <button class="basket_btn" v-on:click="setOrder()">Заказать</button>
           </div>
         </div>
       </div>
     </div>
-    <div v-else>Loading...</div>
   </div>
 </template>
 
@@ -74,10 +64,24 @@ export default {
     };
   },
   created() {
+    if (JSON.parse(localStorage.getItem("delivery_basket")) == null)
+      localStorage.setItem("delivery_basket", JSON.stringify(this.products));
     this.$store.dispatch("basket/calcTotalPrice");
   },
   methods: {
     clearBasket() {
+      this.$store.commit("basket/clearBasket");
+      this.$store.dispatch("basket/calcTotalPrice");
+    },
+    setOrder() {
+      if (this.$store.getters["basket/getBasket"].length === 0) {
+        console.log("Корзина пустая!");
+        return;
+      }
+      localStorage.setItem(
+        "order",
+        JSON.stringify(this.$store.getters["basket/getBasket"])
+      );
       this.$store.commit("basket/clearBasket");
       this.$store.dispatch("basket/calcTotalPrice");
     },
