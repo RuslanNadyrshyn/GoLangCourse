@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="$store.state.products.loaded">
+    <div v-if="$store.state.suppliers.loaded">
       <template v-if="errors.length">
         <div v-for="(error, index) in errors" :key="index">
           {{ error }}
@@ -14,17 +14,20 @@
               <div class="list_nav">
                 <ListNavItem :type="'all'" :isSupplier="true"></ListNavItem>
                 <div
-                  v-for="type in $store.state.suppliers.suppliersTypes"
+                  v-for="type in $store.getters['suppliers/getSuppliersTypes']"
                   :key="type"
                 >
                   <ListNavItem :type="type" :isSupplier="true">
                     {{ suppliersTypes }}
                   </ListNavItem>
                 </div>
+                <ListNavItem :type="'Открыто'" :isSupplier="true"></ListNavItem>
               </div>
               <div class="list">
                 <div
-                  v-for="supplier in $store.state.suppliers.suppliers"
+                  v-for="supplier in $store.getters[
+                    'suppliers/getSortedSuppliers'
+                  ]"
                   :key="supplier.id"
                 >
                   <SupplierItem
@@ -32,8 +35,8 @@
                     :name="supplier.name"
                     :type="supplier.type"
                     :image="supplier.image"
-                    :opening="supplier.workingHours[0]"
-                    :closing="supplier.workingHours[1]"
+                    :workingHours="supplier.workingHours"
+                    :menu="supplier.menu"
                   >
                     {{ suppliers }}
                   </SupplierItem>
@@ -44,7 +47,7 @@
               <div class="list_nav">
                 <ListNavItem :type="'all'" :isProduct="true"></ListNavItem>
                 <div
-                  v-for="type in $store.state.products.productsTypes"
+                  v-for="type in $store.getters['products/getProductsTypes']"
                   :key="type"
                 >
                   <ListNavItem :type="type" :isProduct="true">
@@ -102,7 +105,7 @@ export default {
       errors: [],
     };
   },
-  created() {
+  mounted() {
     if (JSON.parse(localStorage.getItem("delivery_basket")) == null)
       localStorage.setItem("delivery_basket", JSON.stringify(this.products));
     this.$store.dispatch("products/fetchProducts");
@@ -115,8 +118,8 @@ export default {
 .intro {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   width: 100%;
+  min-height: 100vh;
   background-color: #333;
   background-size: cover;
 }

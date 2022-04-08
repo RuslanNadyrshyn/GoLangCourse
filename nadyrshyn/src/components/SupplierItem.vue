@@ -1,10 +1,12 @@
 <template>
-  <div class="Supplier_item">
+  <div class="Supplier_item" @click="sortBySupplier()">
     <div class="Supplier_img">
       <img class="Supplier_logo" :src="image" alt="" />
     </div>
     <div class="Supplier_text">
       {{ name }}
+      {{ workingHours.opening }}
+      {{ workingHours.closing }}
     </div>
   </div>
 </template>
@@ -26,7 +28,15 @@ export default {
       type: String,
     },
     workingHours: {
+      type: Object,
+    },
+    menu: {
       type: Array,
+    },
+  },
+  methods: {
+    sortBySupplier() {
+      this.$store.dispatch("products/sortBySupplier", this.menu);
     },
   },
 };

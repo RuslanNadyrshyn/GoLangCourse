@@ -86,6 +86,28 @@ func (ss SupplierService) CreateSupplierTX(sup models.Supplier) {
 	}
 }
 
+func (ss SupplierService) GetAll() (suppliers []models.Supplier, err error) {
+	var sup models.Supplier
+	//rows, err := r.DB.Query("SELECT id, name, type, image, opening, closing FROM suppliers")
+	rows, err := ss.SupplierRepo.DB.Query("SELECT id, name, type, image, opening, closing FROM suppliers")
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		err = rows.Scan(&sup.Id, &sup.Name, &sup.Type, &sup.Image,
+			&sup.WorkingHours.Opening, &sup.WorkingHours.Closing)
+		if err != nil {
+			panic(err)
+		}
+		sup.Menu, err = ss.ProductRepo.GetBySupplier(sup.Id)
+		suppliers = append(suppliers, sup)
+	}
+	fmt.Println(suppliers)
+	return suppliers, nil
+}
+
 func (ss SupplierService) CreateSupplier(sup models.Supplier) models.Supplier {
 	//Supplier
 	var err error

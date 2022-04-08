@@ -46,7 +46,7 @@ func GetSuppliers(resp http.ResponseWriter, req *http.Request) {
 		http.Error(resp, "not allowed", http.StatusMethodNotAllowed)
 	}
 
-	suppliers, err := supplierService.SupplierRepo.GetAll()
+	suppliers, err := supplierService.GetAll()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -69,4 +69,19 @@ func GetProducts(resp http.ResponseWriter, req *http.Request) {
 	data, _ := json.Marshal(products)
 	resp.Header().Add("Access-Control-Allow-Origin", "*")
 	fmt.Fprintln(resp, string(data))
+}
+
+func GetBasket(resp http.ResponseWriter, req *http.Request) {
+	if req.Method != http.MethodGet {
+		http.Error(resp, "not allowed", http.StatusMethodNotAllowed)
+	}
+	//
+	//basket, err := supplierService.BasketRepo.GetById(id)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//
+	//data, _ := json.Marshal(basket)
+	//resp.Header().Add("Access-Control-Allow-Origin", "*")
+	//fmt.Fprintln(resp, string(data))
 }

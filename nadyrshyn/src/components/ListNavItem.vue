@@ -24,6 +24,7 @@ export default {
         this.$store.dispatch("products/sortByType", this.type);
       } else if (this.isSupplier === true) {
         console.log("You pressed supplier type: ", this.type);
+        this.$store.dispatch("suppliers/sortByType", this.type);
       }
     },
   },

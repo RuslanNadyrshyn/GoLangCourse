@@ -51,6 +51,16 @@ const actions = {
         context.commit("setLoaded", true);
       });
   },
+  fetchP(context, products) {
+    context.commit("setProducts", products);
+    let types = [];
+    for (let i = 0; i < products.length; i++) {
+      if (types.includes(products[i].type) === false) {
+        types.push(products[i].type);
+      }
+    }
+    context.commit("setProductsTypes", types);
+  },
   sortByType(context, type) {
     let products = context.getters.getProducts;
     context.commit("setSortType", type);
@@ -60,6 +70,10 @@ const actions = {
       let SortedArray = products.filter((product) => product.type === type);
       context.commit("setSortedProducts", SortedArray);
     }
+  },
+  sortBySupplier(context, products) {
+    context.commit("setSortType", "s");
+    context.commit("setSortedProducts", products);
   },
 };
 
@@ -76,6 +90,9 @@ const getters = {
     } else {
       return state.sortedProducts;
     }
+  },
+  getProductsTypes: (state) => {
+    return state.productsTypes;
   },
 };
 
