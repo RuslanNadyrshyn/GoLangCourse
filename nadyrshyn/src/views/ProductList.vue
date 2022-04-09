@@ -21,7 +21,8 @@
                     {{ suppliersTypes }}
                   </ListNavItem>
                 </div>
-                <ListNavItem :type="'Открыто'" :isSupplier="true"></ListNavItem>
+                <ListNavItem :type="'Открыто'" :isSupplier="true">
+                </ListNavItem>
               </div>
               <div class="list">
                 <div
@@ -108,8 +109,8 @@ export default {
   mounted() {
     if (JSON.parse(localStorage.getItem("delivery_basket")) == null)
       localStorage.setItem("delivery_basket", JSON.stringify(this.products));
-    this.$store.dispatch("products/fetchProducts");
     this.$store.dispatch("suppliers/fetchSuppliers");
+    this.$store.dispatch("products/fetchProducts");
   },
 };
 </script>

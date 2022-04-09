@@ -45,6 +45,7 @@ const actions = {
           }
         }
         context.commit("setProductsTypes", types);
+        this.fetchP(context, res);
       })
       .catch((err) => [context.commit("setErrors", [err])])
       .finally(() => {
@@ -52,6 +53,10 @@ const actions = {
       });
   },
   fetchP(context, products) {
+    console.log("fetchP");
+    // console.log(this.$store.getters["suppliers/getSortedSuppliers"]);
+    // console.log(context.getters.getProducts);
+    console.log(products);
     context.commit("setProducts", products);
     let types = [];
     for (let i = 0; i < products.length; i++) {

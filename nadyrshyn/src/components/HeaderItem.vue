@@ -38,8 +38,11 @@ header {
   text-transform: uppercase;
 }
 .header_title {
+  display: flex;
+  justify-content: space-between;
   cursor: pointer;
   color: #d3c7c7;
+  width: 300px;
 }
 
 .header_inner {

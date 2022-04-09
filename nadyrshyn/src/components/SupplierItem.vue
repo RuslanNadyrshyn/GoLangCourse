@@ -1,12 +1,13 @@
 <template>
-  <div class="Supplier_item" @click="sortBySupplier()">
-    <div class="Supplier_img">
-      <img class="Supplier_logo" :src="image" alt="" />
+  <div class="supplier_item" @click="sortBySupplier()">
+    <div class="supplier_img">
+      <img class="supplier_logo" :src="image" alt="" />
     </div>
-    <div class="Supplier_text">
+    <div class="supplier_text">
       {{ name }}
-      {{ workingHours.opening }}
-      {{ workingHours.closing }}
+    </div>
+    <div class="working_hours">
+      {{ workingHours.opening }}-{{ workingHours.closing }}
     </div>
   </div>
 </template>
@@ -43,40 +44,54 @@ export default {
 </script>
 
 <style scoped>
-.Supplier_item {
+.supplier_item {
   display: flex;
+  background-color: #8f968b;
   flex-direction: column;
   color: #222;
   text-align: center;
-  max-width: 300px;
-  height: 150px;
+  max-width: 200px;
+  height: 180px;
   margin: 10px;
+  padding: 10px;
+  border-radius: 20px;
 }
-.Supplier_item:hover {
+
+.supplier_item:hover {
   opacity: 0.9;
   cursor: pointer;
 }
-.Supplier_img {
+
+.supplier_img {
   display: flex;
-  max-width: 100%;
+  width: 100%;
   height: 250px;
   align-items: center;
 }
 
-.Supplier_logo {
+.supplier_logo {
   display: block;
-  border-radius: 20%;
+  border-radius: 20px;
   max-width: 100px;
   margin: auto;
   transition: transform 0.2s;
 }
 
-.Supplier_logo:hover {
+.supplier_logo:hover {
   transform: scale(1.05);
 }
-.Supplier_text {
+
+.supplier_text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   font-size: 20px;
+  min-height: 50px;
   font-weight: 700;
   text-transform: uppercase;
+}
+
+.working_hours {
+  font-size: 16px;
 }
 </style>
