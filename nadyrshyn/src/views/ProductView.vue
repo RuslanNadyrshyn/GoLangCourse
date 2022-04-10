@@ -67,7 +67,7 @@ export default {
           prod.push(suppliers[i].menu[j]);
 
       this.$store.dispatch("products/fetchP", prod);
-    }, 2000);
+    }, 1000);
   },
 };
 </script>

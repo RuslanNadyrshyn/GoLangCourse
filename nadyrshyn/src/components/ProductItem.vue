@@ -180,26 +180,9 @@ export default {
 }
 
 .product_btn {
-  font-size: 16px;
-  width: max-content;
-  text-transform: uppercase;
-  height: max-content;
   margin: 10px auto;
   padding: 10px;
-  background-color: #2d8d0f;
-  border-radius: 5px;
-  border: solid #222 1px;
-  transition: color 0.2s linear, transform 0.1s linear, scale 0.1s;
-}
-
-.product_btn:hover {
-  background-color: #46792f;
-  cursor: pointer;
-  transform: scale(1.05);
-}
-
-.product_btn:active {
-  background-color: #3e8e41;
-  transform: scale(1);
+  background-color: #222222;
+  color: #c2c5c1;
 }
 </style>

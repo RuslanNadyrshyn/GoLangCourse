@@ -11,6 +11,13 @@
         <div class="intro">
           <div class="section">
             <div class="container">
+              <div class="title">
+                <div class="title_text">Доставка</div>
+              </div>
+              <div class="list_counter">
+                Заведений найдено:
+                {{ $store.state.suppliers.sortedSuppliers.length }}
+              </div>
               <div class="list_block">
                 <div class="list_nav">
                   <ListNavItem :type="'all'" :isSupplier="true"></ListNavItem>
@@ -46,6 +53,10 @@
                     </SupplierItem>
                   </div>
                 </div>
+              </div>
+              <div class="list_counter">
+                Товаров найдено:
+                {{ $store.state.products.sortedProducts.length }}
               </div>
               <div class="list_block">
                 <div class="list_nav">
@@ -124,7 +135,7 @@ export default {
           prod.push(suppliers[i].menu[j]);
 
       this.$store.dispatch("products/fetchP", prod);
-    }, 2000);
+    }, 1000);
   },
 };
 </script>
@@ -137,14 +148,37 @@ export default {
   min-height: 100vh;
   background-color: #333;
   background-size: cover;
+  font: bold large sans-serif;
 }
+
+.title {
+  display: flex;
+  justify-content: center;
+  margin: 10px auto;
+}
+.title_logo {
+}
+.title_text {
+  font-size: 32px;
+  color: #d3c7c7;
+}
+
+.list_counter {
+  font-size: 20px;
+  padding: 5px;
+  background-color: #4b4242ff;
+  color: #d3c7c7;
+  width: max-content;
+}
+
 .list_block {
   display: flex;
   flex-direction: column;
   justify-content: center;
   background-color: #686e65;
-  margin: 40px auto;
+  margin-bottom: 40px;
 }
+
 .list_nav {
   display: flex;
   font-size: 20px;

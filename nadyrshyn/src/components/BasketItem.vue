@@ -31,7 +31,7 @@
           <div class="basket_item_price">{{ price }}</div>
           грн
         </div>
-        <button class="basket_item_remove_btn" v-on:click="deleteProd()">
+        <button class="basket_delete_btn red" v-on:click="deleteProd()">
           Удалить
         </button>
       </div>
@@ -169,39 +169,15 @@ export default {
   display: flex;
   justify-content: center;
   font-size: 24px;
-  width: 40px;
+  width: 50px;
   height: 35px;
-  border: solid 1px #111;
-  border-radius: 5px;
-  margin: 5px 0;
-  transition: color 0.2s linear, transform 0.1s linear, scale 0.2s;
-}
-
-.counter_btn.green {
-  background-color: #2d8d0f;
-  opacity: 0.8;
-}
-
-.counter_btn.red {
-  background-color: #e01d1d;
-  opacity: 0.8;
-}
-
-.counter_btn:hover {
-  opacity: 1;
-  cursor: pointer;
-  transform: scale(1.05);
-}
-
-.counter_btn:active {
-  opacity: 0.9;
-  transform: scale(1);
 }
 
 .counter_number {
   display: flex;
   justify-content: center;
   padding: 5px;
+  margin: 5px;
   align-items: center;
   background-color: #686e65;
   min-width: 40px;
@@ -240,26 +216,8 @@ export default {
   border: 1px solid #333;
 }
 
-.basket_item_remove_btn {
-  font-size: 20px;
+.basket_delete_btn {
   width: 90%;
-  background-color: #e01d1d;
-  opacity: 0.8;
-  border: solid 1px #111;
-  border-radius: 5px;
-  padding: 10px 5px;
-  cursor: pointer;
-  transition: color 0.2s linear, transform 0.1s linear, scale 0.2s;
-}
-
-.basket_item_remove_btn:hover {
-  opacity: 1;
-  cursor: pointer;
-  transform: scale(1.05);
-}
-
-.basket_item_remove_btn:active {
-  opacity: 0.9;
-  transform: scale(1);
+  padding: 10px;
 }
 </style>

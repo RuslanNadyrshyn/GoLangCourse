@@ -28,9 +28,6 @@
                 </BasketItem>
               </div>
             </div>
-            <button class="basket_btn clear" v-on:click="clearBasket()">
-              Очистить корзину
-            </button>
           </div>
           <div class="basket_total_price_block">
             <div class="total_price">
@@ -40,7 +37,14 @@
               </div>
               грн
             </div>
-            <button class="basket_btn" v-on:click="setOrder()">Заказать</button>
+            <div class="basket_buttons">
+              <button class="clear red" v-on:click="clearBasket()">
+                Очистить корзину
+              </button>
+              <button class="order green" v-on:click="setOrder()">
+                Заказать
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -149,33 +153,13 @@ export default {
   margin: 0 10px;
 }
 
-.basket_btn {
-  font-size: 24px;
-  border-radius: 5px;
-  width: min-content;
-  cursor: pointer;
+.clear {
+  font-size: 14px;
+  margin-right: 5px;
+  padding: 6px;
+}
+.order {
+  margin-left: 5px;
   padding: 10px;
-  margin: 10px;
-  border: solid 1px #111;
-  background-color: #3e8e41;
-  transition: color 0.2s linear, transform 0.1s linear, scale 0.2s;
-}
-
-.basket_btn:hover {
-  opacity: 0.8;
-  cursor: pointer;
-  transform: scale(1.05);
-}
-
-.basket_btn:active {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.basket_btn.clear {
-  width: max-content;
-  margin-top: 0;
-  font-size: 16px;
-  float: right;
 }
 </style>

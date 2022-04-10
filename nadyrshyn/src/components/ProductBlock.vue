@@ -13,7 +13,7 @@
             {{ price }}
             <div class="product_price_grn">грн</div>
           </div>
-          <button class="product_btn" v-on:click="addToBasket()">
+          <button class="add_to_basket green" v-on:click="addToBasket()">
             добавить в корзину
           </button>
         </div>
@@ -174,29 +174,8 @@ export default {
   margin-left: 5px;
 }
 
-.product_btn {
-  font-size: 16px;
+.add_to_basket {
   width: 120px;
-  text-transform: uppercase;
-  height: max-content;
-  padding: 5px;
-  background-color: #2d8d0f;
-  opacity: 0.9;
-  border-radius: 5px;
-  border: solid 1px #111;
-  transition: color 0.2s linear, transform 0.1s linear, scale 0.2s;
-}
-
-.product_btn:hover {
-  opacity: 1;
-  cursor: pointer;
-  transform: scale(1.05);
-}
-
-.product_btn:active {
-  opacity: 0.9;
-  background-color: #2d8d0f;
-  transform: scale(1);
 }
 
 .product_description {
@@ -218,13 +197,11 @@ export default {
 }
 
 .product_description_text {
-  margin: 10px;
   font-size: 20px;
-  font-style: italic;
+  margin: 10px;
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
   width: 90%;
 }
 .supplier_logo {
@@ -235,13 +212,15 @@ export default {
   max-width: 100%;
 }
 .supplier_name {
-  font-size: 20px;
+  font-size: 28px;
 }
+
 .product_description_ingredients {
   display: flex;
   flex-direction: column;
   padding: 10px;
   background-color: #8f968b;
+  border: solid #222 1px;
   border-radius: 5px;
   margin: 10px;
   font-size: 20px;
