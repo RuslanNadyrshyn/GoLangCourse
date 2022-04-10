@@ -73,7 +73,7 @@ const actions = {
     let timestamp = hours + ":" + minutes;
     for (let i = 0; i < suppliers.length; i++)
       if (
-        timestamp > suppliers[i].workingHours.opening &&
+        timestamp >= suppliers[i].workingHours.opening &&
         timestamp < suppliers[i].workingHours.closing
       )
         sorted.push(suppliers[i]);

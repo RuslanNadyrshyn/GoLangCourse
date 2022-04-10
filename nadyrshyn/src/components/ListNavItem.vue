@@ -21,6 +21,13 @@ export default {
   methods: {
     sortType() {
       if (this.isProduct === true) {
+        let sortedSuppliers =
+          this.$store.getters["suppliers/getSortedSuppliers"];
+        let sortedProducts = [];
+        for (let i = 0; i < sortedSuppliers.length; i++)
+          for (let j = 0; j < sortedSuppliers[i].menu.length; j++)
+            sortedProducts.push(sortedSuppliers[i].menu[j]);
+        this.$store.dispatch("products/sortBySupplier", sortedProducts);
         this.$store.dispatch("products/sortByType", this.type);
       } else if (this.isSupplier === true) {
         console.log("You pressed supplier type: ", this.type);

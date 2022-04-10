@@ -33,13 +33,13 @@ const actions = {
     axios
       .get(context.getters.getProductURL)
       .then((res) => {
-        context.commit("setProducts", res.data);
-        context.commit("setSortedProducts", res.data);
         let types = [];
         for (let i = 0; i < res.data.length; i++) {
           if (types.includes(res.data[i].type) === false)
             types.push(res.data[i].type);
         }
+        context.commit("setProducts", res.data);
+        context.commit("setSortedProducts", res.data);
         context.commit("setProductsTypes", types);
       })
       .catch((err) => [context.commit("setErrors", [err])])
@@ -48,18 +48,18 @@ const actions = {
       });
   },
   fetchP(context, products) {
-    context.commit("setProducts", products);
-    context.commit("setSortedProducts", products);
     let types = [];
     for (let i = 0; i < products.length; i++) {
       if (types.includes(products[i].type) === false)
         types.push(products[i].type);
     }
+    context.commit("setProducts", products);
+    context.commit("setSortedProducts", products);
     context.commit("setProductsTypes", types);
     context.commit("setLoaded", true);
   },
   sortByType(context, type) {
-    let products = context.getters.getProducts;
+    let products = context.getters.getSortedProducts;
     if (type === "all") context.commit("setSortedProducts", products);
     else {
       let SortedArray = products.filter((product) => product.type === type);
