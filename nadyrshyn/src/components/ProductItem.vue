@@ -1,10 +1,13 @@
 <template>
   <div class="product_item">
+    <div class="product_item_title">
+      <img class="supplier_mini_logo" :src="supplier_image" />
+      <div class="supplier_name">{{ supplier_name }}</div>
+    </div>
     <div class="product_img">
       <img
         class="product_logo"
         :src="image"
-        alt=""
         @click="$router.push({ path: `/product/${id}` })"
       />
     </div>
@@ -56,6 +59,9 @@ export default {
     supplier_name: {
       type: String,
     },
+    supplier_image: {
+      type: String,
+    },
   },
   methods: {
     addToBasket() {
@@ -70,7 +76,9 @@ export default {
         counter: this.counter,
         supplier_id: this.supplier_id,
         supplier_name: this.supplier_name,
+        supplier_image: this.supplier_image,
       };
+      console.log(prod);
       let a = false;
       for (let i = 0; i < this.$store.state.basket.products.length; i++) {
         if (this.$store.state.basket.products[i].id === this.id) {
@@ -96,19 +104,34 @@ export default {
   justify-content: space-between;
   flex-direction: column;
   color: #222;
-  max-width: 250px;
+  width: 251px;
   height: 420px;
-  margin: 10px;
-  padding: 15px;
-  border-radius: 20px;
+  margin: 10px 13px;
+  padding: 10px 10px 0 10px;
+  border-radius: 10px;
 }
-
 .product_item:hover {
-  opacity: 0.9;
   background-color: #4b4242ff;
   color: #d3c7c7;
 }
 
+.product_item_title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 90%;
+}
+.supplier_mini_logo {
+  display: block;
+  border-radius: 5px;
+  margin-right: 5px;
+  max-height: 40px;
+  max-width: 100%;
+}
+.supplier_name {
+  font-size: 18px;
+}
 .product_img {
   display: flex;
   max-width: 100%;
@@ -119,29 +142,35 @@ export default {
 
 .product_logo {
   display: block;
-  border-radius: 30px;
+  border-radius: 10px;
   border: #222 solid 1px;
   max-width: 100%;
+  max-height: 200px;
   transition: transform 0.2s;
 }
 
 .product_logo:hover {
-  transform: scale(1.05);
+  transform: scale(1.02);
   opacity: 0.9;
   cursor: pointer;
 }
 
 .product_text {
-  font-size: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 18px;
   font-weight: 700;
   width: 100%;
   text-transform: uppercase;
-  margin-top: 10px;
+  margin: auto;
+  min-height: 100px;
 }
 
 .product_price {
   display: flex;
   align-items: end;
+  justify-content: end;
   font-size: 30px;
 }
 
@@ -152,14 +181,14 @@ export default {
 
 .product_btn {
   font-size: 16px;
-  width: 80%;
+  width: max-content;
   text-transform: uppercase;
   height: max-content;
+  margin: 10px auto;
   padding: 10px;
   background-color: #2d8d0f;
-  border-radius: 10px;
-  border-style: solid;
-  border-color: #222;
+  border-radius: 5px;
+  border: solid #222 1px;
   transition: color 0.2s linear, transform 0.1s linear, scale 0.1s;
 }
 

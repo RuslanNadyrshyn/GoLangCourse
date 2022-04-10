@@ -5,7 +5,6 @@ const state = {
   products: [],
   sortedProducts: [],
   productsTypes: [],
-  sortType: "",
   errors: [],
   loaded: false,
 };
@@ -19,9 +18,6 @@ const mutations = {
   },
   setSortedProducts(state, sortedProducts) {
     state.sortedProducts = sortedProducts;
-  },
-  setSortType(state, type) {
-    state.sortType = type;
   },
   setErrors(state, errors) {
     state.errors = errors;
@@ -38,14 +34,13 @@ const actions = {
       .get(context.getters.getProductURL)
       .then((res) => {
         context.commit("setProducts", res.data);
+        context.commit("setSortedProducts", res.data);
         let types = [];
         for (let i = 0; i < res.data.length; i++) {
-          if (types.includes(res.data[i].type) === false) {
+          if (types.includes(res.data[i].type) === false)
             types.push(res.data[i].type);
-          }
         }
         context.commit("setProductsTypes", types);
-        this.fetchP(context, res);
       })
       .catch((err) => [context.commit("setErrors", [err])])
       .finally(() => {
@@ -53,31 +48,25 @@ const actions = {
       });
   },
   fetchP(context, products) {
-    console.log("fetchP");
-    // console.log(this.$store.getters["suppliers/getSortedSuppliers"]);
-    // console.log(context.getters.getProducts);
-    console.log(products);
     context.commit("setProducts", products);
+    context.commit("setSortedProducts", products);
     let types = [];
     for (let i = 0; i < products.length; i++) {
-      if (types.includes(products[i].type) === false) {
+      if (types.includes(products[i].type) === false)
         types.push(products[i].type);
-      }
     }
     context.commit("setProductsTypes", types);
+    context.commit("setLoaded", true);
   },
   sortByType(context, type) {
     let products = context.getters.getProducts;
-    context.commit("setSortType", type);
-    if (type === "all") {
-      context.commit("setSortedProducts", products);
-    } else {
+    if (type === "all") context.commit("setSortedProducts", products);
+    else {
       let SortedArray = products.filter((product) => product.type === type);
       context.commit("setSortedProducts", SortedArray);
     }
   },
   sortBySupplier(context, products) {
-    context.commit("setSortType", "s");
     context.commit("setSortedProducts", products);
   },
 };
@@ -90,11 +79,7 @@ const getters = {
     return state.products;
   },
   getSortedProducts: (state) => {
-    if (state.sortType === "") {
-      return state.products;
-    } else {
-      return state.sortedProducts;
-    }
+    return state.sortedProducts;
   },
   getProductsTypes: (state) => {
     return state.productsTypes;

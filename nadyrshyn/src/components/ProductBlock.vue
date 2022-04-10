@@ -23,7 +23,12 @@
       <div class="product_description_title">
         {{ name }}
       </div>
-      <div class="product_description_text"></div>
+      <div class="product_description_text">
+        <div class="supplier_img">
+          <img class="supplier_logo" :src="supplier_image" />
+        </div>
+        <div class="supplier_name">{{ supplier_name }}</div>
+      </div>
       <div class="product_description_title">Ingredients:</div>
       <div class="product_description_ingredients">
         <div v-for="ingredient in ingredients" :key="ingredient.id">
@@ -64,6 +69,15 @@ export default {
     ingredients: {
       type: Array,
     },
+    supplier_id: {
+      type: Number,
+    },
+    supplier_name: {
+      type: String,
+    },
+    supplier_image: {
+      type: String,
+    },
   },
   methods: {
     addToBasket() {
@@ -76,7 +90,11 @@ export default {
         type: this.type,
         ingredients: this.ingredients,
         counter: this.counter,
+        supplier_id: this.supplier_id,
+        supplier_name: this.supplier_name,
+        supplier_image: this.supplier_image,
       };
+      console.log(prod);
       let inBasket = false;
       for (let i = 0; i < this.$store.state.basket.products.length; i++)
         if (this.$store.state.basket.products[i].id === this.id) {
@@ -98,26 +116,31 @@ export default {
   max-width: 1200px;
   margin: 50px auto;
   background-color: #686e65;
-  border-radius: 20px;
 }
 
 .product_block_item {
   display: flex;
   flex-direction: column;
   min-height: 480px;
-  max-width: 400px;
-  margin: 30px;
+  width: 350px;
+  margin: 30px 0 30px 30px;
   border: 2px #222;
   color: #222;
 }
-
+.product_img {
+  display: flex;
+  max-width: 100%;
+  height: 250px;
+  align-items: center;
+  justify-content: center;
+}
 .product_logo {
   display: flex;
   max-width: 100%;
-  max-height: 300px;
+  max-height: 250px;
   background-color: #ddd;
-  border: #222 solid 2px;
-  border-radius: 10%;
+  border: #222 solid 1px;
+  border-radius: 10px;
   margin: auto;
 }
 
@@ -158,20 +181,21 @@ export default {
   height: max-content;
   padding: 5px;
   background-color: #2d8d0f;
-  border-radius: 10px;
-  border-style: solid;
-  border-color: #222;
+  opacity: 0.9;
+  border-radius: 5px;
+  border: solid 1px #111;
   transition: color 0.2s linear, transform 0.1s linear, scale 0.2s;
 }
 
 .product_btn:hover {
-  background-color: #46792f;
+  opacity: 1;
   cursor: pointer;
   transform: scale(1.05);
 }
 
 .product_btn:active {
-  background-color: #3e8e41;
+  opacity: 0.9;
+  background-color: #2d8d0f;
   transform: scale(1);
 }
 
@@ -179,12 +203,12 @@ export default {
   display: flex;
   flex-direction: column;
   background-color: #4a4e47;
-  border-radius: 20px;
-  border: solid 1px;
+  border-radius: 10px;
+  border: solid 1px #222;
   min-height: 480px;
   width: 60%;
   margin: 30px;
-  color: #222;
+  color: #c2c5c1;
 }
 
 .product_description_title {
@@ -197,13 +221,30 @@ export default {
   margin: 10px;
   font-size: 20px;
   font-style: italic;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 90%;
 }
-
+.supplier_logo {
+  display: block;
+  border-radius: 5px;
+  margin-right: 15px;
+  max-height: 60px;
+  max-width: 100%;
+}
+.supplier_name {
+  font-size: 20px;
+}
 .product_description_ingredients {
   display: flex;
   flex-direction: column;
+  padding: 10px;
+  background-color: #8f968b;
+  border-radius: 5px;
   margin: 10px;
   font-size: 20px;
-  font-style: italic;
+  color: #333;
 }
 </style>

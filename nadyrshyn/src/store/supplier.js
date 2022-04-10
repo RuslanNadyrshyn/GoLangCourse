@@ -5,7 +5,6 @@ const state = {
   suppliers: [],
   sortedSuppliers: [],
   suppliersTypes: [],
-  supplierSortType: "",
   errors: [],
   loaded: false,
 };
@@ -13,13 +12,6 @@ const state = {
 const mutations = {
   setSuppliers(state, suppliers) {
     state.suppliers = suppliers;
-    let prod = [];
-    for (let i = 0; i < suppliers.length; i++) {
-      for (let j = 0; j < suppliers[i].menu.length; j++) {
-        prod.push(suppliers[i].menu[j]);
-      }
-    }
-    // console.log(prod);
   },
   setSortedSuppliers(state, sortedSuppliers) {
     state.sortedSuppliers = sortedSuppliers;
@@ -41,18 +33,19 @@ const actions = {
     axios
       .get(context.getters.getSupplierURL)
       .then((res) => {
-        context.commit("setSuppliers", res.data);
-        context.commit("setSortedSuppliers", res.data);
-        let prod = [];
         let types = [];
         for (let i = 0; i < res.data.length; i++) {
           if (types.includes(res.data[i].type) === false) {
             types.push(res.data[i].type);
           }
           for (let j = 0; j < res.data[i].menu.length; j++) {
-            prod.push(res.data[i].menu[j]);
+            res.data[i].menu[j].supplier_id = res.data[i].id;
+            res.data[i].menu[j].supplier_name = res.data[i].name;
+            res.data[i].menu[j].supplier_image = res.data[i].image;
           }
         }
+        context.commit("setSuppliers", res.data);
+        context.commit("setSortedSuppliers", res.data);
         context.commit("setSuppliersTypes", types);
       })
       .catch((err) => [context.commit("setErrors", [err])])
@@ -62,11 +55,10 @@ const actions = {
   },
   sortByType(context, type) {
     let suppliers = context.getters.getSuppliers;
-    if (type === "all") context.commit("setSortedSuppliers", suppliers);
-    else {
-      let SortedArray = suppliers.filter((supplier) => supplier.type === type);
-      context.commit("setSortedSuppliers", SortedArray);
-    }
+    if (type !== "all")
+      suppliers = suppliers.filter((supplier) => supplier.type === type);
+    context.commit("setSortedSuppliers", suppliers);
+    return suppliers;
   },
   sortByWorkingHours(context) {
     let suppliers = context.getters.getSuppliers;
@@ -79,14 +71,14 @@ const actions = {
     if (minutes < 10) minutes = "0" + minutes;
 
     let timestamp = hours + ":" + minutes;
-    for (let i = 0; i < suppliers.length; i++) {
+    for (let i = 0; i < suppliers.length; i++)
       if (
         timestamp > suppliers[i].workingHours.opening &&
         timestamp < suppliers[i].workingHours.closing
       )
         sorted.push(suppliers[i]);
-    }
     context.commit("setSortedSuppliers", sorted);
+    return sorted;
   },
 };
 

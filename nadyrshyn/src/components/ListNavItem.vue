@@ -24,11 +24,19 @@ export default {
         this.$store.dispatch("products/sortByType", this.type);
       } else if (this.isSupplier === true) {
         console.log("You pressed supplier type: ", this.type);
+        let suppliers;
         if (this.type === "Открыто") {
-          this.$store.dispatch("suppliers/sortByWorkingHours");
+          suppliers = this.$store.dispatch("suppliers/sortByWorkingHours");
         } else {
-          this.$store.dispatch("suppliers/sortByType", this.type);
+          suppliers = this.$store.dispatch("suppliers/sortByType", this.type);
         }
+        suppliers.then((res) => {
+          let prod = [];
+          for (let i = 0; i < res.length; i++)
+            for (let j = 0; j < res[i].menu.length; j++)
+              prod.push(res[i].menu[j]);
+          this.$store.dispatch("products/sortBySupplier", prod);
+        });
       }
     },
   },
@@ -40,7 +48,6 @@ export default {
   padding: 10px;
   color: #d3c7c7;
   text-decoration: none;
-  border-radius: 10px 10px 0 0;
   text-transform: uppercase;
   transition: color 0.2s linear;
 }

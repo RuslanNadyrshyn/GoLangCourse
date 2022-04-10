@@ -6,82 +6,88 @@
           {{ error }}
         </div>
       </template>
-      <HeaderItem></HeaderItem>
-      <div class="intro">
-        <div class="section">
-          <div class="container">
-            <div class="list_block">
-              <div class="list_nav">
-                <ListNavItem :type="'all'" :isSupplier="true"></ListNavItem>
-                <div
-                  v-for="type in $store.getters['suppliers/getSuppliersTypes']"
-                  :key="type"
-                >
-                  <ListNavItem :type="type" :isSupplier="true">
-                    {{ suppliersTypes }}
+      <div v-if="$store.state.products.loaded">
+        <HeaderItem></HeaderItem>
+        <div class="intro">
+          <div class="section">
+            <div class="container">
+              <div class="list_block">
+                <div class="list_nav">
+                  <ListNavItem :type="'all'" :isSupplier="true"></ListNavItem>
+                  <div
+                    v-for="type in $store.getters[
+                      'suppliers/getSuppliersTypes'
+                    ]"
+                    :key="type"
+                  >
+                    <ListNavItem :type="type" :isSupplier="true">
+                      {{ suppliersTypes }}
+                    </ListNavItem>
+                  </div>
+                  <ListNavItem :type="'Открыто'" :isSupplier="true">
                   </ListNavItem>
                 </div>
-                <ListNavItem :type="'Открыто'" :isSupplier="true">
-                </ListNavItem>
-              </div>
-              <div class="list">
-                <div
-                  v-for="supplier in $store.getters[
-                    'suppliers/getSortedSuppliers'
-                  ]"
-                  :key="supplier.id"
-                >
-                  <SupplierItem
-                    :id="supplier.id"
-                    :name="supplier.name"
-                    :type="supplier.type"
-                    :image="supplier.image"
-                    :workingHours="supplier.workingHours"
-                    :menu="supplier.menu"
+                <div class="list">
+                  <div
+                    v-for="supplier in $store.getters[
+                      'suppliers/getSortedSuppliers'
+                    ]"
+                    :key="supplier.id"
                   >
-                    {{ suppliers }}
-                  </SupplierItem>
+                    <SupplierItem
+                      :id="supplier.id"
+                      :name="supplier.name"
+                      :type="supplier.type"
+                      :image="supplier.image"
+                      :workingHours="supplier.workingHours"
+                      :menu="supplier.menu"
+                    >
+                      {{ suppliers }}
+                    </SupplierItem>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="list_block">
-              <div class="list_nav">
-                <ListNavItem :type="'all'" :isProduct="true"></ListNavItem>
-                <div
-                  v-for="type in $store.getters['products/getProductsTypes']"
-                  :key="type"
-                >
-                  <ListNavItem :type="type" :isProduct="true">
-                    {{ productsTypes }}
-                  </ListNavItem>
-                </div>
-              </div>
-              <div class="list">
-                <div
-                  v-for="product in $store.getters[
-                    'products/getSortedProducts'
-                  ]"
-                  :key="product.id"
-                >
-                  <ProductItem
-                    :id="product.id"
-                    :menuId="product.menuId"
-                    :name="product.name"
-                    :image="product.image"
-                    :price="product.price"
-                    :type="product.type"
-                    :ingredients="product.ingredients"
-                    :supplier_id="product.supplier_id"
-                    :supplier_name="product.supplier_name"
+              <div class="list_block">
+                <div class="list_nav">
+                  <ListNavItem :type="'all'" :isProduct="true"></ListNavItem>
+                  <div
+                    v-for="type in $store.getters['products/getProductsTypes']"
+                    :key="type"
                   >
-                    {{ products }}
-                  </ProductItem>
+                    <ListNavItem :type="type" :isProduct="true">
+                      {{ productsTypes }}
+                    </ListNavItem>
+                  </div>
+                </div>
+                <div class="list product_list">
+                  <div
+                    v-for="product in $store.getters[
+                      'products/getSortedProducts'
+                    ]"
+                    :key="product.id"
+                  >
+                    <ProductItem
+                      :id="product.id"
+                      :menuId="product.menuId"
+                      :name="product.name"
+                      :image="product.image"
+                      :price="product.price"
+                      :type="product.type"
+                      :ingredients="product.ingredients"
+                      :supplier_id="product.supplier_id"
+                      :supplier_name="product.supplier_name"
+                      :supplier_image="product.supplier_image"
+                    >
+                      {{ products }}
+                    </ProductItem>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+      <div v-else>Loading</div>
     </div>
     <div v-else>Loading...</div>
   </div>
@@ -106,11 +112,19 @@ export default {
       errors: [],
     };
   },
-  mounted() {
+  created() {
     if (JSON.parse(localStorage.getItem("delivery_basket")) == null)
       localStorage.setItem("delivery_basket", JSON.stringify(this.products));
     this.$store.dispatch("suppliers/fetchSuppliers");
-    this.$store.dispatch("products/fetchProducts");
+    setTimeout(() => {
+      let suppliers = this.$store.state.suppliers.suppliers;
+      let prod = [];
+      for (let i = 0; i < suppliers.length; i++)
+        for (let j = 0; j < suppliers[i].menu.length; j++)
+          prod.push(suppliers[i].menu[j]);
+
+      this.$store.dispatch("products/fetchP", prod);
+    }, 2000);
   },
 };
 </script>
@@ -129,8 +143,7 @@ export default {
   flex-direction: column;
   justify-content: center;
   background-color: #686e65;
-  border-radius: 20px;
-  margin: 20px auto;
+  margin: 40px auto;
 }
 .list_nav {
   display: flex;
@@ -139,7 +152,6 @@ export default {
   font-weight: 700;
   flex-wrap: wrap;
   background-color: #4b4242ff;
-  border-radius: 14px 10px 0 0;
 }
 .container {
   width: 100%;
@@ -149,8 +161,15 @@ export default {
 .list {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-evenly;
+  justify-content: start;
   width: 100%;
+  height: 220px;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+  margin: 10px auto;
+}
+.list.product_list {
+  min-height: 450px;
+  max-height: 600px;
 }
 </style>

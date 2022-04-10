@@ -50,11 +50,11 @@ export default {
   flex-direction: column;
   color: #222;
   text-align: center;
-  max-width: 200px;
+  width: 172px;
   height: 180px;
-  margin: 10px;
-  padding: 10px;
-  border-radius: 20px;
+  margin: 10px 8px;
+  padding: 10px 5px;
+  border-radius: 10px;
 }
 
 .supplier_item:hover {
@@ -72,7 +72,8 @@ export default {
 .supplier_logo {
   display: block;
   border-radius: 20px;
-  max-width: 100px;
+  max-width: 100%;
+  max-height: 100px;
   margin: auto;
   transition: transform 0.2s;
 }

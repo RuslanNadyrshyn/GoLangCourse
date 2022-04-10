@@ -28,17 +28,17 @@
                 </BasketItem>
               </div>
             </div>
-            <div class="basket_total_price_block">
-              <div class="total_price">
-                Всего:
-                <div class="basket_total_price">
-                  {{ $store.getters["basket/getTotalPrice"] }}
-                </div>
-                грн
+            <button class="basket_btn clear" v-on:click="clearBasket()">
+              Очистить корзину
+            </button>
+          </div>
+          <div class="basket_total_price_block">
+            <div class="total_price">
+              Всего:
+              <div class="basket_total_price">
+                {{ $store.getters["basket/getTotalPrice"] }}
               </div>
-              <button class="basket_btn clear" v-on:click="clearBasket()">
-                Очистить корзину
-              </button>
+              грн
             </div>
             <button class="basket_btn" v-on:click="setOrder()">Заказать</button>
           </div>
@@ -118,10 +118,13 @@ export default {
   text-align: center;
   align-items: normal;
   min-height: 170px;
+  max-height: 600px;
   max-width: 1200px;
-  margin: 20px auto;
+  margin: 10px auto;
+  border: 1px #222 solid;
   background-color: #686e65;
-  border-radius: 20px;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
 }
 
 .clean_basket_text {
@@ -131,6 +134,7 @@ export default {
 .basket_total_price_block {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-size: 30px;
   flex-direction: row;
   margin: 0 10px;
@@ -146,13 +150,12 @@ export default {
 }
 
 .basket_btn {
-  font-size: 20px;
+  font-size: 24px;
+  border-radius: 5px;
   width: min-content;
   cursor: pointer;
-  border-radius: 10px;
   padding: 10px;
-  margin-bottom: 20px;
-  margin-left: 10px;
+  margin: 10px;
   border: solid 1px #111;
   background-color: #3e8e41;
   transition: color 0.2s linear, transform 0.1s linear, scale 0.2s;
@@ -171,7 +174,8 @@ export default {
 
 .basket_btn.clear {
   width: max-content;
-  margin-bottom: 0;
+  margin-top: 0;
   font-size: 16px;
+  float: right;
 }
 </style>
