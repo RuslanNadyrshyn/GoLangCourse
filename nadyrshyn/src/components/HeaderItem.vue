@@ -1,20 +1,31 @@
 <template>
-  <header class="header">
+  <header>
     <div class="container">
       <div class="header_inner">
-        <div class="header_title" @click="$router.push({ path: `/products` })">
-          Доставка
-        </div>
+        <router-link class="header_title" :to="'/'">Доставка</router-link>
         <nav class="nav">
-          <div class="nav_link" @click="$router.push({ path: `/products` })">
+          <router-link
+            v-bind:class="$route.path === '/' ? 'nav_link_active' : 'nav_link'"
+            :to="'/'"
+          >
             Главная
-          </div>
-          <div class="nav_link" @click="$router.push({ path: `/basket` })">
+          </router-link>
+          <router-link
+            v-bind:class="
+              $route.path === '/basket' ? 'nav_link_active' : 'nav_link'
+            "
+            :to="'/basket'"
+          >
             Корзина
-          </div>
-          <div class="nav_link" @click="$router.push({ path: `/login` })">
+          </router-link>
+          <router-link
+            v-bind:class="
+              $route.path === '/login' ? 'nav_link_active' : 'nav_link'
+            "
+            :to="'/login'"
+          >
             Войти
-          </div>
+          </router-link>
         </nav>
       </div>
     </div>
@@ -42,7 +53,6 @@ header {
   justify-content: space-between;
   cursor: pointer;
   color: #d3c7c7;
-  width: 300px;
 }
 
 .header_inner {
@@ -51,15 +61,13 @@ header {
   justify-content: space-between;
   align-items: center;
 }
-.container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-}
 
 .nav {
+  display: flex;
+  flex-direction: row;
   font-size: 20px;
   text-transform: uppercase;
+  text-decoration: none;
 }
 
 .nav_link {
