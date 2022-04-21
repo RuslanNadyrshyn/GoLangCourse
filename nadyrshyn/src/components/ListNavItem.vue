@@ -1,6 +1,30 @@
 <template>
-  <div class="list_nav_item" @click="sortType()">
-    {{ type }}
+  <div>
+    <template v-if="isProduct === false">
+      <div
+        v-bind:class="
+          type === this.$store.state.suppliers.selectedType
+            ? 'list_nav active'
+            : 'list_nav'
+        "
+        @click="sortType()"
+      >
+        {{ type }}
+      </div>
+    </template>
+
+    <template v-else-if="isProduct === true">
+      <div
+        v-bind:class="
+          type === this.$store.state.products.selectedType
+            ? 'list_nav active'
+            : 'list_nav'
+        "
+        @click="sortType()"
+      >
+        {{ type }}
+      </div>
+    </template>
   </div>
 </template>
 
@@ -12,9 +36,6 @@ export default {
       type: String,
     },
     isProduct: {
-      type: Boolean,
-    },
-    isSupplier: {
       type: Boolean,
     },
   },
@@ -29,8 +50,7 @@ export default {
             sortedProducts.push(sortedSuppliers[i].menu[j]);
         this.$store.dispatch("products/sortBySupplier", sortedProducts);
         this.$store.dispatch("products/sortByType", this.type);
-      } else if (this.isSupplier === true) {
-        console.log("You pressed supplier type: ", this.type);
+      } else {
         let suppliers;
         if (this.type === "Открыто") {
           suppliers = this.$store.dispatch("suppliers/sortByWorkingHours");
@@ -51,7 +71,7 @@ export default {
 </script>
 
 <style scoped>
-.list_nav_item {
+.list_nav {
   padding: 10px;
   color: #d3c7c7;
   text-decoration: none;
@@ -59,7 +79,16 @@ export default {
   transition: color 0.2s linear;
 }
 
-.list_nav_item:hover {
+.list_nav:hover {
+  background-color: rgb(245, 208, 195);
+  color: #333;
+  cursor: pointer;
+}
+.list_nav.active {
+  background-color: #8f968b;
+  color: #333;
+}
+.list_nav.active:hover {
   background-color: rgb(245, 208, 195);
   color: #333;
   cursor: pointer;

@@ -4,26 +4,43 @@ import (
 	"Delivery/Delivery/internal/repositories/database"
 	"Delivery/Delivery/internal/repositories/models"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 )
 
 type SupplierService struct {
+	UserRepo              database.UserDBRepository
 	SupplierRepo          database.SupplierDBRepository
 	MenuRepo              database.MenuDBRepository
 	ProductRepo           database.ProductDBRepository
 	IngredientRepo        database.IngredientDBRepository
 	ProductIngredientRepo database.ProductIngredientDBRepository
+	OrderRepo             database.OrderDBRepository
 }
 
 func NewSupplierService(conn *sql.DB) SupplierService {
 	return SupplierService{
+		UserRepo:              database.NewUserRepository(conn),
 		SupplierRepo:          database.NewSupplierRepository(conn),
 		MenuRepo:              database.NewMenuRepository(conn),
 		ProductRepo:           database.NewProductRepository(conn),
 		IngredientRepo:        database.NewIngredientRepository(conn),
 		ProductIngredientRepo: database.NewProductIngredientRepository(conn),
+		OrderRepo:             database.NewOrderRepository(conn),
 	}
+}
+
+type orderRequest struct {
+	User       *models.User `json:"user"`
+	TotalPrice float32      `json:"totalPrice"`
+	Address    string       `json:"address"`
+	Products   []struct {
+		ProductId    int     `json:"id"`
+		ProductPrice float64 `json:"price"`
+		Counter      int     `json:"counter"`
+	} `json:"products"`
 }
 
 func (ss SupplierService) CreateSupplierTX(sup models.Supplier) {
@@ -88,7 +105,6 @@ func (ss SupplierService) CreateSupplierTX(sup models.Supplier) {
 
 func (ss SupplierService) GetAll() (suppliers []models.Supplier, err error) {
 	var sup models.Supplier
-	//rows, err := r.DB.Query("SELECT id, name, type, image, opening, closing FROM suppliers")
 	rows, err := ss.SupplierRepo.DB.Query("SELECT id, name, type, image, opening, closing FROM suppliers")
 	if err != nil {
 		panic(err)
@@ -189,7 +205,7 @@ func (ss SupplierService) CreateMenu(sup models.Supplier) {
 		return
 	}
 
-	//Products TX
+	//Products
 	for i := range sup.Menu {
 		sup.Menu[i].MenuId = menuId
 		productId, err := ss.ProductRepo.Insert(sup.Menu[i])
@@ -198,7 +214,7 @@ func (ss SupplierService) CreateMenu(sup models.Supplier) {
 			return
 		}
 
-		//Ingredients TX
+		//Ingredients
 		for j := range sup.Menu[i].Ingredients {
 			ingredientId, err := ss.IngredientRepo.Insert(sup.Menu[i].Ingredients[j])
 			if err != nil {
@@ -213,5 +229,63 @@ func (ss SupplierService) CreateMenu(sup models.Supplier) {
 				return
 			}
 		}
+	}
+}
+
+func setupCORS(w *http.ResponseWriter, req *http.Request) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+}
+
+// CreateOrder
+//		Запись заказа:
+//			Добавить user, получить его id
+//			Записать в таблицу orders(price, user_id, address)
+//			Получить id таблицы orders
+//			Записать в таблицу order_products(order_id, product_id)
+func (ss SupplierService) CreateOrder(w http.ResponseWriter, r *http.Request) {
+	setupCORS(&w, r)
+	switch r.Method {
+	case "POST":
+		fmt.Println("createOrder")
+		var userId, orderId int
+		req := new(orderRequest)
+		err := json.NewDecoder(r.Body).Decode(&req)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			fmt.Println(err)
+		}
+		userId, err = ss.UserRepo.Insert(req.User)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		order := models.Order{
+			Price:   req.TotalPrice,
+			UserId:  userId,
+			Address: req.Address,
+		}
+		orderId, err = ss.OrderRepo.Insert(&order)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		for _, product := range req.Products {
+			_, err := ss.OrderRepo.InsertOrderProduct(orderId, product.ProductId, product.Counter, product.ProductPrice)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+		}
+
+		w.WriteHeader(http.StatusOK)
+		err = json.NewEncoder(w).Encode("OKAY")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+	default:
+		http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
 	}
 }

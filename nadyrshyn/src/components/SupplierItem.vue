@@ -1,13 +1,13 @@
 <template>
   <div class="supplier_item" @click="sortBySupplier()">
     <div class="supplier_img">
-      <img class="supplier_logo" :src="image" alt="" />
+      <img class="supplier_logo" :src="supplier.image" alt="supplier_logo" />
     </div>
     <div class="supplier_text">
-      {{ name }}
+      {{ supplier.name }}
     </div>
     <div class="working_hours">
-      {{ workingHours.opening }}-{{ workingHours.closing }}
+      {{ supplier.workingHours.opening }}-{{ supplier.workingHours.closing }}
     </div>
   </div>
 </template>
@@ -16,28 +16,13 @@
 export default {
   name: "SupplierItem",
   props: {
-    id: {
-      type: Number,
-    },
-    name: {
-      type: String,
-    },
-    image: {
-      type: String,
-    },
-    type: {
-      type: String,
-    },
-    workingHours: {
+    supplier: {
       type: Object,
-    },
-    menu: {
-      type: Array,
     },
   },
   methods: {
     sortBySupplier() {
-      this.$store.dispatch("products/sortBySupplier", this.menu);
+      this.$store.dispatch("products/sortBySupplier", this.supplier.menu);
     },
   },
 };
@@ -66,7 +51,6 @@ export default {
   display: flex;
   width: 100%;
   height: 250px;
-  align-items: center;
 }
 
 .supplier_logo {

@@ -1,6 +1,6 @@
 package models
 
-type Orders struct {
+type Order struct {
 	Id      int
 	Price   float32
 	UserId  int

@@ -5,6 +5,7 @@ const state = {
   suppliers: [],
   sortedSuppliers: [],
   suppliersTypes: [],
+  selectedType: "все",
   errors: [],
   loaded: false,
 };
@@ -18,6 +19,9 @@ const mutations = {
   },
   setSuppliersTypes(state, suppliersTypes) {
     state.suppliersTypes = suppliersTypes;
+  },
+  setSelectedType(state, selected) {
+    state.selectedType = selected;
   },
   setErrors(state, errors) {
     state.errors = errors;
@@ -35,10 +39,10 @@ const actions = {
       .then((res) => {
         let types = [];
         for (let i = 0; i < res.data.length; i++) {
-          if (types.includes(res.data[i].type) === false) {
+          if (types.includes(res.data[i].type) === false)
             types.push(res.data[i].type);
-          }
           for (let j = 0; j < res.data[i].menu.length; j++) {
+            res.data[i].menu[j].counter = 0;
             res.data[i].menu[j].supplier_id = res.data[i].id;
             res.data[i].menu[j].supplier_name = res.data[i].name;
             res.data[i].menu[j].supplier_image = res.data[i].image;
@@ -47,6 +51,7 @@ const actions = {
         context.commit("setSuppliers", res.data);
         context.commit("setSortedSuppliers", res.data);
         context.commit("setSuppliersTypes", types);
+        context.commit("setSelectedType", "все");
       })
       .catch((err) => [context.commit("setErrors", [err])])
       .finally(() => {
@@ -54,13 +59,15 @@ const actions = {
       });
   },
   sortByType(context, type) {
+    context.commit("setSelectedType", type);
     let suppliers = context.getters.getSuppliers;
-    if (type !== "all")
+    if (type !== "все")
       suppliers = suppliers.filter((supplier) => supplier.type === type);
     context.commit("setSortedSuppliers", suppliers);
     return suppliers;
   },
   sortByWorkingHours(context) {
+    context.commit("setSelectedType", "Открыто");
     let suppliers = context.getters.getSuppliers;
     let time = new Date();
     let hours = time.getHours();

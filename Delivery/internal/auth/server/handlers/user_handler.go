@@ -64,9 +64,8 @@ func (h *UserHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(resp)
 	default:
-		http.Error(w, "Only GET method is allowed", http.StatusMethodNotAllowed)
+		http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
 	}
-
 }
 
 func (h *UserHandler) GetProfile(w http.ResponseWriter, r *http.Request) {

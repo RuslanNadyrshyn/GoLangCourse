@@ -38,6 +38,8 @@ func Start(cfg *config.Config) {
 	mux.HandleFunc("/get_products", GetProducts)
 	mux.HandleFunc("/get_suppliers", GetSuppliers)
 
+	mux.HandleFunc("/post_order", supplierService.CreateOrder)
+
 	log.Fatal(http.ListenAndServe(cfg.Port, mux))
 }
 
@@ -68,20 +70,21 @@ func GetProducts(resp http.ResponseWriter, req *http.Request) {
 
 	data, _ := json.Marshal(products)
 	resp.Header().Add("Access-Control-Allow-Origin", "*")
-	fmt.Fprintln(resp, string(data))
+	_ = data
+	fmt.Println(resp, string(data))
 }
 
-func GetBasket(resp http.ResponseWriter, req *http.Request) {
-	if req.Method != http.MethodGet {
-		http.Error(resp, "not allowed", http.StatusMethodNotAllowed)
-	}
-	//
-	//basket, err := supplierService.BasketRepo.GetById(id)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//
-	//data, _ := json.Marshal(basket)
-	//resp.Header().Add("Access-Control-Allow-Origin", "*")
-	//fmt.Fprintln(resp, string(data))
-}
+//func GetBasket(resp http.ResponseWriter, req *http.Request) {
+//	if req.Method != http.MethodGet {
+//		http.Error(resp, "not allowed", http.StatusMethodNotAllowed)
+//	}
+//	//
+//	//basket, err := supplierService.BasketRepo.GetById(id)
+//	//if err != nil {
+//	//	log.Fatal(err)
+//	//}
+//	//
+//	//data, _ := json.Marshal(basket)
+//	//resp.Header().Add("Access-Control-Allow-Origin", "*")
+//	//fmt.Fprintln(resp, string(data))
+//}

@@ -5,6 +5,7 @@ const state = {
   products: [],
   sortedProducts: [],
   productsTypes: [],
+  selectedType: "все",
   errors: [],
   loaded: false,
 };
@@ -18,6 +19,9 @@ const mutations = {
   },
   setSortedProducts(state, sortedProducts) {
     state.sortedProducts = sortedProducts;
+  },
+  setSelectedType(state, selected) {
+    state.selectedType = selected;
   },
   setErrors(state, errors) {
     state.errors = errors;
@@ -41,6 +45,7 @@ const actions = {
         context.commit("setProducts", res.data);
         context.commit("setSortedProducts", res.data);
         context.commit("setProductsTypes", types);
+        context.commit("setSelectedType", "все");
       })
       .catch((err) => [context.commit("setErrors", [err])])
       .finally(() => {
@@ -49,18 +54,19 @@ const actions = {
   },
   fetchP(context, products) {
     let types = [];
-    for (let i = 0; i < products.length; i++) {
+    for (let i = 0; i < products.length; i++)
       if (types.includes(products[i].type) === false)
         types.push(products[i].type);
-    }
     context.commit("setProducts", products);
     context.commit("setSortedProducts", products);
+    context.commit("setSelectedType", "все");
     context.commit("setProductsTypes", types);
     context.commit("setLoaded", true);
   },
   sortByType(context, type) {
+    context.commit("setSelectedType", type);
     let products = context.getters.getSortedProducts;
-    if (type === "all") context.commit("setSortedProducts", products);
+    if (type === "все") context.commit("setSortedProducts", products);
     else {
       let SortedArray = products.filter((product) => product.type === type);
       context.commit("setSortedProducts", SortedArray);

@@ -1,5 +1,5 @@
 const state = {
-  url: "http://localhost:8080/get_baskets",
+  url: "http://localhost:8080/get_basket",
   products: JSON.parse(localStorage.getItem("delivery_basket")),
   totalPrice: 0,
   errors: [],
@@ -11,42 +11,21 @@ const mutations = {
     state.products.push(product);
     localStorage.setItem("delivery_basket", JSON.stringify(state.products));
   },
-  incCount(state, productId) {
-    for (let i = 0; i < state.products.length; i++) {
-      if (state.products[i].id === productId) {
-        state.products[i].counter++;
-        break;
-      }
-    }
-  },
-  decCount(state, productId) {
-    for (let i = 0; i < state.products.length; i++) {
-      if (
-        state.products[i].id === productId &&
-        state.products[i].counter !== 1
-      ) {
-        state.products[i].counter--;
-        break;
-      }
-    }
-  },
   clearBasket(state) {
     state.products = [];
   },
   deleteProduct(state, productId) {
-    for (let i = 0; i < state.products.length; i++) {
-      if (state.products[i].id === productId) {
-        state.products.splice(i, 1);
+    state.products.splice(productId, 1);
+  },
+  updateProduct(state, prod) {
+    for (let i = 0; i < state.products.length; i++)
+      if (state.products[i].id === prod.id) {
+        state.products[i] = prod;
         break;
       }
-    }
   },
-  setTotalPrice(state) {
-    let total = 0;
-    for (let i = 0; i < state.products.length; i++) {
-      total += state.products[i].price * state.products[i].counter;
-    }
-    state.totalPrice = total.toFixed(2);
+  setTotalPrice(state, total) {
+    state.totalPrice = total;
     localStorage.setItem("delivery_basket", JSON.stringify(state.products));
   },
   setErrors(state, errors) {
@@ -58,18 +37,40 @@ const mutations = {
 };
 
 const actions = {
+  addProduct(context, product) {
+    let inBasket = false;
+    for (let i = 0; i < state.products.length; i++)
+      if (state.products[i].id === product.id) {
+        state.products[i].counter++;
+        inBasket = true;
+        break;
+      }
+    if (inBasket === false) {
+      product.counter++;
+      context.commit("addProduct", product);
+    }
+  },
   deleteProduct(context, productId) {
-    context.commit("deleteProduct", productId);
+    for (let i = 0; i < context.state.products.length; i++)
+      if (context.state.products[i].id === productId) {
+        context.commit("deleteProduct", i);
+        break;
+      }
   },
   calcTotalPrice(context) {
-    context.commit("setTotalPrice");
+    let total = 0;
+    for (let i = 0; i < state.products.length; i++)
+      total += state.products[i].price * state.products[i].counter;
+
+    total = total.toFixed(2);
+    context.commit("setTotalPrice", total);
+  },
+  updateProduct(context, prod) {
+    context.commit("updateProduct", prod);
   },
 };
 
 const getters = {
-  getBasketURL: (state) => {
-    return state.url;
-  },
   getBasket: () => {
     return state.products;
   },

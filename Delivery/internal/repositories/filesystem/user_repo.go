@@ -1,7 +1,7 @@
 package filesystem
 
 import (
-	"awesomeProject/internal/repositories/models"
+	"Delivery/Delivery/internal/repositories/models"
 	"encoding/json"
 	"fmt"
 	"io"

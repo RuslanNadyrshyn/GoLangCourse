@@ -1,8 +1,8 @@
 package helpers
 
 import (
-	"awesomeProject/internal/auth/helper"
-	"awesomeProject/internal/auth/responses"
+	"Delivery/Delivery/internal/auth/helper"
+	"Delivery/Delivery/internal/auth/responses"
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
 	"net/http/httptest"
