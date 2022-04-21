@@ -36,7 +36,7 @@ export default {
   },
   created() {
     if (JSON.parse(localStorage.getItem("delivery_basket")) == null)
-      localStorage.setItem("delivery_basket", JSON.stringify(this.products));
+      localStorage.setItem("delivery_basket", JSON.stringify([]));
     this.$store.dispatch("suppliers/fetchSuppliers");
     setTimeout(() => {
       let suppliers = this.$store.state.suppliers.suppliers;

@@ -10,6 +10,9 @@
         :src="product.image"
         @click="$router.push({ path: `/product/${product.id}` })"
       />
+      <template v-if="counter > 0">
+        <label class="product_counter">{{ counter }}</label>
+      </template>
     </div>
     <div class="product_text">
       <label
@@ -31,17 +34,35 @@
     </button>
   </div>
 </template>
+
 <script>
 export default {
   name: "ProductItem",
+  data() {
+    return {
+      counter: 0,
+    };
+  },
   props: {
     product: {
       type: Object,
     },
   },
+  created() {
+    for (let i = 0; i < this.$store.state.basket.products.length; i++)
+      if (this.$store.state.basket.products[i].id === this.product.id) {
+        this.counter = this.$store.state.basket.products[i].counter;
+        break;
+      }
+  },
   methods: {
     addToBasket() {
       this.$store.dispatch("basket/addProduct", this.product);
+      for (let i = 0; i < this.$store.state.basket.products.length; i++)
+        if (this.$store.state.basket.products[i].id === this.product.id) {
+          this.counter = this.$store.state.basket.products[i].counter;
+          break;
+        }
     },
   },
 };
@@ -49,6 +70,7 @@ export default {
 
 <style>
 .product_img {
+  position: relative;
   display: flex;
   max-width: 100%;
   height: 250px;
@@ -84,6 +106,18 @@ export default {
   justify-content: center;
   width: 90%;
   height: 40px;
+}
+.product_counter {
+  position: absolute;
+  background-color: #d3c7c7;
+  color: #222222;
+  border: #111 solid 1px;
+  border-radius: 5px;
+  padding: 5px;
+  opacity: 0.9;
+  right: 10px;
+  bottom: 10px;
+  font-size: 28px;
 }
 
 .item_title_logo {

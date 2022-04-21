@@ -91,9 +91,10 @@ export default {
     };
   },
   created() {
+    console.log(this.$store.getters["products/getProducts"]);
+    if (JSON.parse(localStorage.getItem("delivery_basket")) == null)
+      localStorage.setItem("delivery_basket", JSON.stringify([]));
     if (this.$store.getters["suppliers/getSuppliers"].length === 0) {
-      if (JSON.parse(localStorage.getItem("delivery_basket")) == null)
-        localStorage.setItem("delivery_basket", JSON.stringify(this.products));
       this.$store.dispatch("suppliers/fetchSuppliers");
       setTimeout(() => {
         let suppliers = this.$store.getters["suppliers/getSuppliers"];

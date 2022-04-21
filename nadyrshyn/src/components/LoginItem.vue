@@ -69,7 +69,7 @@ export default {
         password: "",
       },
       sign_in: {
-        name: "",
+				name: "",
         email: "",
         password: "",
         age: Number,

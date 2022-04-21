@@ -13,9 +13,11 @@ const mutations = {
   },
   clearBasket(state) {
     state.products = [];
+    localStorage.setItem("delivery_basket", JSON.stringify(state.products));
   },
   deleteProduct(state, productId) {
     state.products.splice(productId, 1);
+    localStorage.setItem("delivery_basket", JSON.stringify(state.products));
   },
   updateProduct(state, prod) {
     for (let i = 0; i < state.products.length; i++)
@@ -23,6 +25,7 @@ const mutations = {
         state.products[i] = prod;
         break;
       }
+    localStorage.setItem("delivery_basket", JSON.stringify(state.products));
   },
   setTotalPrice(state, total) {
     state.totalPrice = total;

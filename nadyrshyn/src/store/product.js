@@ -59,7 +59,6 @@ const actions = {
         types.push(products[i].type);
     context.commit("setProducts", products);
     context.commit("setSortedProducts", products);
-    context.commit("setSelectedType", "все");
     context.commit("setProductsTypes", types);
     context.commit("setLoaded", true);
   },

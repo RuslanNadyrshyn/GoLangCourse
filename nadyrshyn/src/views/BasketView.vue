@@ -71,8 +71,6 @@ export default {
       } else {
         basket.totalPrice = this.$store.getters["basket/getTotalPrice"];
         localStorage.setItem("order", JSON.stringify(basket));
-        // this.$store.commit("basket/clearBasket");
-        // this.$store.dispatch("basket/calcTotalPrice");
         this.$router.push({ path: `/order` });
       }
     },

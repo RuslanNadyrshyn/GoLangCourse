@@ -81,6 +81,7 @@ export default {
   },
   methods: {
     deleteProd() {
+      this.counter = 0;
       this.$store.dispatch("basket/deleteProduct", this.product.id);
     },
   },
