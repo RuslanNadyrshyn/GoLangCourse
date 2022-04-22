@@ -120,7 +120,7 @@ header {
   border-radius: 5px;
   padding: 2px 4px;
   right: 3px;
-  bottom: -15px;
+  bottom: -10px;
   font-size: 14px;
 }
 .counter.hidden {

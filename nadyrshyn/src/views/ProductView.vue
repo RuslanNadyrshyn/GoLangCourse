@@ -22,7 +22,6 @@ export default {
   components: { ProductBlock },
   data() {
     return {
-      product: [],
       loaded: false,
       errors: [],
     };

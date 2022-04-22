@@ -77,6 +77,7 @@ export default {
             this.$store.dispatch("basket/calcTotalPrice");
           }
       } else if (newValue !== "") this.counter = 1;
+      else if (newValue === "") this.summary = this.product.price;
     },
   },
   methods: {
