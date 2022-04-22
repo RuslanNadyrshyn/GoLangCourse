@@ -17,6 +17,15 @@
             :to="'/basket'"
           >
             Корзина
+            <label
+              v-bind:class="
+                this.$store.state.basket.products.length > 0
+                  ? 'counter'
+                  : 'counter hidden'
+              "
+            >
+              {{ this.$store.state.basket.products.length }}
+            </label>
           </router-link>
           <router-link
             v-bind:class="
@@ -71,6 +80,7 @@ header {
 }
 
 .nav_link {
+  position: relative;
   display: inline-block;
   vertical-align: top;
   padding: 10px;
@@ -87,11 +97,12 @@ header {
 }
 
 .nav_link_active {
+  position: relative;
   display: inline-block;
   vertical-align: top;
   text-decoration: none;
   padding: 10px;
-  color: rgb(185, 77, 14);
+  color: #dc410f;
   transition: color 0.2s linear;
   background-color: #8f968b;
 }
@@ -100,5 +111,19 @@ header {
   color: #c8dcf4;
   cursor: pointer;
   background-color: #8f968b;
+}
+
+.counter {
+  position: absolute;
+  background-color: #dc410f;
+  color: #111;
+  border-radius: 5px;
+  padding: 2px 4px;
+  right: 3px;
+  bottom: -15px;
+  font-size: 14px;
+}
+.counter.hidden {
+  opacity: 0;
 }
 </style>
