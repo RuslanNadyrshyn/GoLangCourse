@@ -3,6 +3,7 @@ package repositories
 import (
 	"Delivery/Delivery/internal/repositories/database"
 	"Delivery/Delivery/internal/repositories/models"
+	"Delivery/Delivery/internal/repositories/requests"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -30,17 +31,6 @@ func NewSupplierService(conn *sql.DB) SupplierService {
 		ProductIngredientRepo: database.NewProductIngredientRepository(conn),
 		OrderRepo:             database.NewOrderRepository(conn),
 	}
-}
-
-type orderRequest struct {
-	User       *models.User `json:"user"`
-	TotalPrice float32      `json:"totalPrice"`
-	Address    string       `json:"address"`
-	Products   []struct {
-		ProductId    int     `json:"id"`
-		ProductPrice float64 `json:"price"`
-		Counter      int     `json:"counter"`
-	} `json:"products"`
 }
 
 func (ss SupplierService) CreateSupplierTX(sup models.Supplier) {
@@ -238,24 +228,27 @@ func setupCORS(w *http.ResponseWriter, req *http.Request) {
 	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 }
 
-// CreateOrder
-//		Запись заказа:
-//			Добавить user, получить его id
-//			Записать в таблицу orders(price, user_id, address)
-//			Получить id таблицы orders
-//			Записать в таблицу order_products(order_id, product_id)
 func (ss SupplierService) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	setupCORS(&w, r)
 	switch r.Method {
+	case "OPTIONS":
+		w.WriteHeader(http.StatusOK)
+		err := json.NewEncoder(w).Encode("OKAY")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 	case "POST":
-		fmt.Println("createOrder")
+
 		var userId, orderId int
-		req := new(orderRequest)
+		req := new(requests.OrderRequest)
 		err := json.NewDecoder(r.Body).Decode(&req)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			fmt.Println(err)
+			return
 		}
+
 		userId, err = ss.UserRepo.Insert(req.User)
 		if err != nil {
 			log.Println(err)

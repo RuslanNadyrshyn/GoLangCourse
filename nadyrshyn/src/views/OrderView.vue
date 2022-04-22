@@ -7,10 +7,7 @@
             <label class="title_text">Заказ</label>
           </div>
           <div class="basket_block">
-            <div
-              v-for="product in $store.getters['basket/getBasket']"
-              :key="product.id"
-            >
+            <div v-for="product in order.products" :key="product.id">
               <OrderItem :product="product">{{ order.products }}</OrderItem>
             </div>
           </div>
@@ -18,7 +15,7 @@
             <div class="total_price_container">
               Всего:
               <div class="total_price">
-                {{ order.products.totalPrice }}
+                {{ order.totalPrice }}
               </div>
               грн
             </div>
@@ -77,10 +74,15 @@ export default {
       },
     };
   },
+  created() {
+    this.$store.dispatch("basket/calcTotalPrice");
+    this.order.totalPrice = this.$store.getters["basket/getTotalPrice"];
+  },
   methods: {
     setOrder() {
-      console.log(this.order);
-      this.$store.dispatch("orders/fetchOrderPOST", this.order);
+      if (this.order.address !== "" && this.order.user.name !== "")
+        this.$store.dispatch("orders/fetchOrderPOST", this.order);
+      else alert("Введите имя и адрес!");
     },
   },
 };

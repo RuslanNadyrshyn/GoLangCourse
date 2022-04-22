@@ -65,7 +65,7 @@ const actions = {
     for (let i = 0; i < state.products.length; i++)
       total += state.products[i].price * state.products[i].counter;
 
-    total = total.toFixed(2);
+    total.toFixed(2);
     context.commit("setTotalPrice", total);
   },
   updateProduct(context, prod) {
