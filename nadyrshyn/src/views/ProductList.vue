@@ -1,6 +1,6 @@
 <template>
   <div>
-    <template v-if="$store.state.products.loaded">
+    <template v-if="$store.state.suppliers.loaded">
       <template v-if="errors.length">
         <div v-for="(error, index) in errors" :key="index">
           {{ error }}
@@ -13,10 +13,6 @@
               <div class="title">
                 <label class="title_text">Доставка</label>
               </div>
-              <label class="list_counter">
-                Заведений найдено:
-                {{ $store.state.suppliers.sortedSuppliers.length }}
-              </label>
               <div class="list_block">
                 <div class="list_nav">
                   <ListNavItem :type="'все'" :isProduct="false"></ListNavItem>
@@ -41,10 +37,6 @@
                     <SupplierItem :supplier="supplier"></SupplierItem>
                   </div>
                 </div>
-              </div>
-              <div class="list_counter">
-                Товаров найдено:
-                {{ $store.state.products.sortedProducts.length }}
               </div>
               <div class="list_block">
                 <div class="list_nav">
@@ -71,9 +63,9 @@
           </div>
         </div>
       </template>
-      <div v-else>Loading</div>
+      <div v-else>Loading products...</div>
     </template>
-    <div v-else>Loading...</div>
+    <div v-else>Loading suppliers...</div>
   </div>
 </template>
 
@@ -91,7 +83,6 @@ export default {
     };
   },
   created() {
-    console.log(this.$store.getters["products/getProducts"]);
     if (JSON.parse(localStorage.getItem("delivery_basket")) == null)
       localStorage.setItem("delivery_basket", JSON.stringify([]));
     if (this.$store.getters["suppliers/getSuppliers"].length === 0) {
@@ -111,15 +102,6 @@ export default {
 </script>
 
 <style scoped>
-.list_counter {
-  text-transform: uppercase;
-  font: 18px sans-serif;
-  padding: 5px;
-  background-color: #4b4242ff;
-  color: #d3c7c7;
-  width: max-content;
-}
-
 .list_block {
   display: flex;
   flex-direction: column;

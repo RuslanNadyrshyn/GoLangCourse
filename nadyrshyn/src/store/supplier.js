@@ -51,12 +51,9 @@ const actions = {
         context.commit("setSuppliers", res.data);
         context.commit("setSortedSuppliers", res.data);
         context.commit("setSuppliersTypes", types);
-        context.commit("setSelectedType", "все");
       })
       .catch((err) => [context.commit("setErrors", [err])])
-      .finally(() => {
-        context.commit("setLoaded", true);
-      });
+      .finally(() => context.commit("setLoaded", true));
   },
   sortByType(context, type) {
     context.commit("setSelectedType", type);

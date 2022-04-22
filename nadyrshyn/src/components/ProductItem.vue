@@ -109,14 +109,13 @@ export default {
 }
 .product_counter {
   position: absolute;
-  background-color: #d3c7c7;
-  color: #222222;
+  background-color: #333;
+  color: #c2c5c1;
   border: #111 solid 1px;
   border-radius: 5px;
   padding: 5px;
-  opacity: 0.9;
   right: 10px;
-  bottom: 10px;
+  bottom: 0;
   font-size: 28px;
 }
 
