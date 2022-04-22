@@ -239,7 +239,6 @@ func (ss SupplierService) CreateOrder(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	case "POST":
-
 		var userId, orderId int
 		req := new(requests.OrderRequest)
 		err := json.NewDecoder(r.Body).Decode(&req)

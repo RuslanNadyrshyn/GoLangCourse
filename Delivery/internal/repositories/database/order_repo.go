@@ -3,7 +3,6 @@ package database
 import (
 	"Delivery/Delivery/internal/repositories/models"
 	"database/sql"
-	"fmt"
 	"log"
 )
 
@@ -38,7 +37,6 @@ func (odbr OrderDBRepository) Insert(o *models.Order) (int, error) {
 
 func (odbr OrderDBRepository) InsertOrderProduct(orderId int, productId int, count int, price float64) (int, error) {
 	var orderProductId int64
-	fmt.Println(orderId, productId, count, price)
 	result, err := odbr.DB.Exec("INSERT order_product(order_id, product_id, count, price) VALUES(?, ?, ?, ?)",
 		orderId, productId, count, price)
 	if err != nil {
