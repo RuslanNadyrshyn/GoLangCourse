@@ -17,6 +17,7 @@
             ? 'counter'
             : 'counter hidden'
         "
+        @click="sortType()"
       >
         {{ $store.state.suppliers.sortedSuppliers.length }}
       </label>
@@ -100,17 +101,17 @@ export default {
 
 .counter {
   position: absolute;
-  background-color: #d3c7c7;
   color: #111;
-  border: solid #111 1px;
   border-radius: 5px;
-  padding: 2px 4px;
   right: 2px;
-  top: -12px;
-  font-size: 14px;
+  top: 2px;
+  font-size: 12px;
+}
+.counter:hover {
+  cursor: pointer;
 }
 .counter.hidden {
-  opacity: 0;
+  display: none;
 }
 
 .list_nav {
@@ -134,5 +135,20 @@ export default {
   background-color: rgb(245, 208, 195);
   color: #333;
   cursor: pointer;
+}
+
+@media (max-width: 560px) {
+  .counter {
+    right: 0;
+    top: -1px;
+    font-size: 10px;
+    padding: 2px;
+    background: none;
+    border: none;
+  }
+  .list_nav {
+    font-size: 18px;
+    padding: 10px;
+  }
 }
 </style>

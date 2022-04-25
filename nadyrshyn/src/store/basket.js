@@ -13,6 +13,7 @@ const mutations = {
   },
   clearBasket(state) {
     state.products = [];
+    state.totalPrice = 0;
     localStorage.setItem("delivery_basket", JSON.stringify(state.products));
   },
   deleteProduct(state, productId) {
@@ -64,8 +65,7 @@ const actions = {
     let total = 0;
     for (let i = 0; i < state.products.length; i++)
       total += state.products[i].price * state.products[i].counter;
-
-    total.toFixed(2);
+    total = Number(total.toFixed(2));
     context.commit("setTotalPrice", total);
   },
   updateProduct(context, prod) {

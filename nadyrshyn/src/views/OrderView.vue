@@ -80,9 +80,13 @@ export default {
   },
   methods: {
     setOrder() {
-      if (this.order.address !== "" && this.order.user.name !== "")
+      if (this.order.address !== "" && this.order.user.name !== "") {
         this.$store.dispatch("orders/fetchOrderPOST", this.order);
-      else alert("Введите имя и адрес!");
+        this.$store.commit("basket/clearBasket");
+        this.$router.push("/");
+      } else {
+        alert("Введите имя и адрес!");
+      }
     },
   },
 };

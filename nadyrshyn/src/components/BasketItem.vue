@@ -7,17 +7,16 @@
         @click="$router.push({ path: `/product/${product.id}` })"
       />
     </div>
-    <div class="price_block">
-      <label class="price_block_title">Цена:</label>
-      <div class="price_container">
-        <div class="price">{{ product.price }}</div>
-        <label>грн</label>
-      </div>
-    </div>
     <div class="description_block">
-      <label class="basket_item_title">
-        {{ product.name }}
-      </label>
+      <div class="basket_item_title">
+        <div class="price_block">
+          <div class="price_container">
+            <div class="price">{{ product.price }}</div>
+            <label>грн</label>
+          </div>
+        </div>
+        <label class="title_product">{{ product.name }}</label>
+      </div>
       <div class="basket_item_description">
         <div class="basket_item_ingredients">
           <div v-for="ingredient in product.ingredients" :key="ingredient.id">
@@ -39,7 +38,6 @@
       <button class="counter_btn red" v-on:click="counter--">&darr;</button>
     </div>
     <div class="price_block total">
-      <label class="price_block_title">Общая цена:</label>
       <div class="price_container">
         <div class="price">{{ summary.toFixed(2) }}</div>
         <label>грн</label>
@@ -96,7 +94,7 @@ input[type="number"] {
   -moz-box-sizing: content-box;
 }
 .basket_item {
-  font: large medium sans-serif;
+  font: 16px medium sans-serif;
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
@@ -121,7 +119,6 @@ input[type="number"] {
 }
 
 .price_block {
-  height: 90px;
   display: flex;
   margin: 5px;
   flex-direction: column;
@@ -131,13 +128,8 @@ input[type="number"] {
   height: 130px;
 }
 
-.price_block_title {
-  font-size: 16px;
-}
-
 .price_container {
   display: flex;
-  text-transform: uppercase;
   flex-direction: row;
   justify-content: center;
   align-items: center;
@@ -161,8 +153,8 @@ input[type="number"] {
   display: flex;
   flex-direction: column;
   min-height: 130px;
-  width: 450px;
-  margin: 0 5px;
+  width: 50%;
+  margin: 5px;
 }
 
 .basket_item_description {
@@ -175,9 +167,16 @@ input[type="number"] {
 }
 
 .basket_item_title {
+  display: flex;
   text-align: center;
-  font-size: 24px;
+  align-items: center;
   margin-bottom: 5px;
+}
+.title_product {
+  font-size: 24px;
+  display: flex;
+  text-align: center;
+  margin: auto;
 }
 
 .basket_item_ingredients {
@@ -198,6 +197,19 @@ input[type="number"] {
   justify-content: center;
   width: 100px;
   height: 150px;
+}
+
+@media (max-width: 810px) {
+  .price {
+    font-size: 20px;
+    min-width: 70px;
+  }
+  .basket_item {
+    font-size: 16px;
+  }
+  .basket_item_ingredient {
+    font-size: 14px;
+  }
 }
 </style>
 
@@ -223,8 +235,19 @@ input[type="number"] {
 }
 
 .basket_delete_btn {
-  width: 120px;
+  width: 75%;
   padding: 10px;
   margin: 0 auto;
+}
+@media (max-width: 810px) {
+  .counter_number {
+    font-size: 20px;
+    width: 50px;
+    height: 20px;
+  }
+  .counter_btn {
+    font-size: 18px;
+    width: 52px;
+  }
 }
 </style>

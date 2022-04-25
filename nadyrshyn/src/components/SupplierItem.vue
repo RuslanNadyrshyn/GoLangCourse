@@ -35,9 +35,9 @@ export default {
   flex-direction: column;
   color: #222;
   text-align: center;
-  width: 172px;
+  width: 170px;
   height: 180px;
-  margin: 10px 8px;
+  margin: 5px;
   padding: 10px 5px;
   border-radius: 10px;
 }
@@ -50,7 +50,7 @@ export default {
 .supplier_img {
   display: flex;
   width: 100%;
-  height: 250px;
+  height: 110px;
 }
 
 .supplier_logo {
@@ -69,6 +69,7 @@ export default {
 .supplier_text {
   display: flex;
   flex-direction: column;
+  text-align: center;
   justify-content: center;
   font-size: 20px;
   min-height: 50px;
@@ -78,5 +79,21 @@ export default {
 
 .working_hours {
   font-size: 16px;
+}
+
+@media (max-width: 560px) {
+  .supplier_item {
+    width: 110px;
+    height: 120px;
+  }
+  .supplier_img {
+    height: 50px;
+  }
+  .supplier_logo {
+    max-height: 50px;
+  }
+  .supplier_text {
+    font-size: 14px;
+  }
 }
 </style>

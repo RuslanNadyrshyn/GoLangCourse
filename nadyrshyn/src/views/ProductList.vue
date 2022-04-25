@@ -16,6 +16,8 @@
               <div class="list_block">
                 <div class="list_nav">
                   <ListNavItem :type="'все'" :isProduct="false"></ListNavItem>
+                  <ListNavItem :type="'Открыто'" :isProduct="false">
+                  </ListNavItem>
                   <div
                     v-for="type in $store.getters[
                       'suppliers/getSuppliersTypes'
@@ -24,8 +26,6 @@
                   >
                     <ListNavItem :type="type" :isProduct="false"></ListNavItem>
                   </div>
-                  <ListNavItem :type="'Открыто'" :isProduct="false">
-                  </ListNavItem>
                 </div>
                 <div class="list">
                   <div
@@ -111,26 +111,38 @@ export default {
 }
 
 .list_nav {
+  position: relative;
   display: flex;
   font-size: 20px;
   font-family: Arial, Helvetica, sans-serif;
   font-weight: 700;
-  flex-wrap: wrap;
   background-color: #4b4242ff;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
 }
 
 .list {
   display: flex;
   flex-wrap: wrap;
-  justify-content: start;
+  justify-content: space-around;
   width: 100%;
-  height: 220px;
+  height: 210px;
   overflow-y: scroll;
   scroll-behavior: smooth;
-  margin: 10px auto;
+  margin: auto;
 }
 .list.product_list {
-  min-height: 450px;
-  max-height: 600px;
+  height: 860px;
+}
+
+@media (max-width: 560px) {
+  .list {
+    flex-wrap: nowrap;
+    height: 150px;
+  }
+  .list.product_list {
+    flex-wrap: wrap;
+    height: 600px;
+  }
 }
 </style>

@@ -38,16 +38,6 @@
           <input v-model="sign_in.name" class="form_control" type="text" />
         </div>
         <div class="form_group">
-          <label>Возраст:</label>
-          <input
-            v-model.number="sign_in.age"
-            class="form_control"
-            type="number"
-            min="0"
-            required
-          />
-        </div>
-        <div class="form_group">
           <button class="reg_btn" type="submit" @click="SignIn">
             Регистрация
           </button>
@@ -69,7 +59,7 @@ export default {
         password: "",
       },
       sign_in: {
-				name: "",
+        name: "",
         email: "",
         password: "",
         age: Number,
@@ -84,12 +74,21 @@ export default {
   methods: {
     Login() {
       console.log(this.login);
+      axios
+        .post("http://localhost:8080/login", this.login)
+        .then((res) => console.log("Login accepted", res.data))
+        .catch((err) => console.log(err));
     },
     SignIn() {
       console.log(this.sign_in);
       axios
         .post("http://localhost:8080/sign_in", this.sign_in)
-        .then((res) => console.log(res))
+        .then((res) => {
+          console.log("Signed In!", res);
+          this.login.email = this.sign_in.email;
+          this.login.password = this.sign_in.password;
+          this.Login();
+        })
         .catch((err) => console.log(err));
     },
   },

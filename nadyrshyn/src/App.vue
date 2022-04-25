@@ -61,6 +61,14 @@ img {
   max-height: 100%;
   transition: transform 0.2s;
 }
+@media (max-width: 560px) {
+  .title {
+    margin: 5px;
+  }
+  .title_text {
+    font-size: 24px;
+  }
+}
 </style>
 <script>
 import HeaderItem from "@/components/HeaderItem";

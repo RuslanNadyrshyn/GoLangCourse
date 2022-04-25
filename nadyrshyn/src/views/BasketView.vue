@@ -84,9 +84,10 @@ export default {
   flex-direction: column;
   text-align: center;
   align-items: normal;
+  min-height: 150px;
   max-height: 490px;
   max-width: 1200px;
-  margin: 10px auto;
+  margin: 0 auto 10px;
   border: 1px #222 solid;
   background-color: #686e65;
   overflow-y: scroll;
@@ -106,6 +107,14 @@ export default {
 }
 .total_price {
   margin: 0 10px;
+}
+
+@media (max-height: 810px) {
+  .basket_block {
+    display: flow;
+    max-height: 330px;
+    overflow-x: scroll;
+  }
 }
 </style>
 

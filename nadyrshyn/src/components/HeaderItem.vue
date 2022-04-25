@@ -82,7 +82,6 @@ header {
 .nav_link {
   position: relative;
   display: inline-block;
-  vertical-align: top;
   padding: 10px;
   color: #d3c7c7;
   text-decoration: none;
@@ -99,7 +98,6 @@ header {
 .nav_link_active {
   position: relative;
   display: inline-block;
-  vertical-align: top;
   text-decoration: none;
   padding: 10px;
   color: #dc410f;
@@ -125,5 +123,27 @@ header {
 }
 .counter.hidden {
   opacity: 0;
+}
+
+@media (max-width: 550px) {
+  .header_inner {
+    justify-content: right;
+  }
+  .header_title {
+    display: none;
+  }
+  .nav {
+    flex-wrap: wrap;
+    font-size: 16px;
+  }
+  .nav_link {
+    padding: 5px;
+  }
+  .nav_link_active {
+    padding: 5px;
+  }
+  .counter {
+    font-size: 11px;
+  }
 }
 </style>

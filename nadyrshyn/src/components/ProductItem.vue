@@ -87,9 +87,9 @@ export default {
   justify-content: space-between;
   flex-direction: column;
   color: #222;
-  width: 251px;
+  width: 250px;
   height: 420px;
-  margin: 10px 13px;
+  margin: 5px;
   padding: 10px 10px 0 10px;
   border-radius: 10px;
 }
@@ -158,6 +158,7 @@ export default {
 }
 .product_price_container {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
 }
@@ -185,5 +186,40 @@ export default {
   padding: 10px;
   background-color: #222222;
   color: #c2c5c1;
+}
+
+@media (max-width: 560px) {
+  .product_item {
+    width: 200px;
+    height: 300px;
+  }
+  .product_img {
+    max-height: 150px;
+  }
+  .product_logo {
+    max-height: 150px;
+  }
+  .product_counter {
+    font-size: 16px;
+  }
+  .product_item_title {
+    display: none;
+  }
+  .product_name {
+    font-size: 16px;
+  }
+  .product_text {
+    min-height: 90px;
+  }
+  .product_price_container {
+    justify-content: right;
+  }
+  .product_type {
+    display: none;
+  }
+  .product_btn {
+    margin-top: 0;
+    padding: 5px;
+  }
 }
 </style>
