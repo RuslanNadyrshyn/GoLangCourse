@@ -222,14 +222,8 @@ func (ss SupplierService) CreateMenu(sup models.Supplier) {
 	}
 }
 
-func setupCORS(w *http.ResponseWriter, req *http.Request) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "*")
-	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-}
-
 func (ss SupplierService) CreateOrder(w http.ResponseWriter, r *http.Request) {
-	setupCORS(&w, r)
+	requests.SetupCORS(&w, r)
 	switch r.Method {
 	case "OPTIONS":
 		w.WriteHeader(http.StatusOK)
@@ -272,7 +266,7 @@ func (ss SupplierService) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		}
 
 		w.WriteHeader(http.StatusOK)
-		err = json.NewEncoder(w).Encode("OKAY")
+		err = json.NewEncoder(w).Encode(orderId)
 		if err != nil {
 			fmt.Println(err)
 			return

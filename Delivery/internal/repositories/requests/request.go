@@ -1,6 +1,9 @@
 package requests
 
-import "Delivery/Delivery/internal/repositories/models"
+import (
+	"Delivery/Delivery/internal/repositories/models"
+	"net/http"
+)
 
 type OrderRequest struct {
 	User       *models.User `json:"user"`
@@ -11,4 +14,10 @@ type OrderRequest struct {
 		ProductPrice float64 `json:"price"`
 		Counter      int     `json:"counter"`
 	} `json:"products"`
+}
+
+func SetupCORS(w *http.ResponseWriter, req *http.Request) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 }

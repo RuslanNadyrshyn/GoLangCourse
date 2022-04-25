@@ -37,7 +37,6 @@ func (r UserDBRepository) Insert(u *models.User) (int, error) {
 
 	PasswordHash, err := bcrypt.GenerateFromPassword([]byte(u.PasswordHash), bcrypt.DefaultCost)
 	u.PasswordHash = string(PasswordHash)
-
 	if r.TX != nil {
 		err := r.TX.QueryRow("INSERT users(name, email, password_hash) VALUES(?, ?, ?) RETURNING id", u.Name, u.Email, u.PasswordHash).Scan(&id)
 		if err != nil {

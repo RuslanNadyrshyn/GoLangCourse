@@ -44,7 +44,9 @@ const actions = {
     console.log("start_fetch");
     axios
       .post(context.getters.getPostURL, order)
-      .then((res) => console.log(res.data))
+      .then((res) => {
+        alert("Спасибо за заказ. Номер вашего заказа: " + res.data);
+      })
       .catch((err) => [context.commit("setErrors", [err])])
       .finally(() => {
         context.commit("setLoaded", true);

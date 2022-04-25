@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"Delivery/Delivery/internal/auth/repositories"
+	"Delivery/Delivery/internal/auth/requests"
 	"Delivery/Delivery/internal/auth/responses"
 	"Delivery/Delivery/internal/auth/services"
 	"Delivery/Delivery/internal/repositories/database"
@@ -31,7 +32,10 @@ func NewUserHandler(
 }
 
 func (h *UserHandler) SignIn(w http.ResponseWriter, r *http.Request) {
+	requests.SetupCORS(&w, r)
 	switch r.Method {
+	case "OPTIONS":
+		w.WriteHeader(http.StatusOK)
 	case "POST":
 		var id int
 		req := new(models.User)
