@@ -8,6 +8,7 @@ import (
 	"Delivery/Delivery/internal/repositories/database"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
@@ -26,20 +27,25 @@ func NewAuthHandler(cfg *config.Config, conn *sql.DB) *AuthHandler {
 }
 
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Login")
+	requests.SetupCORS(&w, r)
 	switch r.Method {
+	case "OPTIONS":
+		w.WriteHeader(http.StatusOK)
 	case "POST":
 		req := new(requests.LoginRequest)
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
 		userRepo := database.NewUserRepository(h.conn)
-
+		fmt.Printf("request:\tEmail: %s, pass: %s\n", req.Email, req.Password)
 		user, err := userRepo.GetByEmail(req.Email)
 		if err != nil {
 			http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 			log.Println(err)
 			return
 		}
+
 		if err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(req.Password)); err != nil {
 			http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 			log.Println(err)
@@ -63,7 +69,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 			AccessToken:  accessString,
 			RefreshToken: refreshString,
 		}
-
+		fmt.Println("resp: ", resp)
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(resp)
 
