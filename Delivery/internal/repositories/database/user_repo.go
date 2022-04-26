@@ -22,6 +22,21 @@ func (r UserDBRepository) Insert(u *models.User) (int, error) {
 	var id int64
 
 	if u.Email == "" {
+		if r.TX != nil {
+			result, err := r.DB.Exec("INSERT users(name) VALUES(?)", u.Name)
+			if err != nil {
+				_ = r.TX.Rollback()
+			}
+			id, err = result.LastInsertId()
+			if err != nil {
+				_ = r.TX.Rollback()
+			}
+			err = r.TX.Commit()
+			if err != nil {
+				_ = r.TX.Rollback()
+			}
+			return int(id), err
+		}
 		result, err := r.DB.Exec("INSERT users(name) VALUES(?)", u.Name)
 		if err != nil {
 			fmt.Println(err)

@@ -27,8 +27,8 @@ func NewAuthHandler(cfg *config.Config, conn *sql.DB) *AuthHandler {
 }
 
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Login")
 	requests.SetupCORS(&w, r)
+
 	switch r.Method {
 	case "OPTIONS":
 		w.WriteHeader(http.StatusOK)
@@ -38,7 +38,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
 		userRepo := database.NewUserRepository(h.conn)
-		fmt.Printf("request:\tEmail: %s, pass: %s\n", req.Email, req.Password)
+
 		user, err := userRepo.GetByEmail(req.Email)
 		if err != nil {
 			http.Error(w, "Invalid credentials", http.StatusUnauthorized)

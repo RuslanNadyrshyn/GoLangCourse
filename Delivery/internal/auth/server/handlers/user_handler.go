@@ -42,7 +42,6 @@ func (h *UserHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
-
 		userRepo := database.NewUserRepository(h.conn)
 
 		_, err := userRepo.GetByEmail(req.Email)
