@@ -101,7 +101,7 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 300px;
+  width: 90%;
   margin: 10px;
 }
 .form_control {

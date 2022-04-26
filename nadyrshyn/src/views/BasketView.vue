@@ -97,11 +97,11 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 30px;
   flex-direction: row;
   margin: 10px;
 }
 .total_price_container {
+  font-size: 30px;
   display: flex;
   flex-direction: row;
 }
@@ -109,11 +109,20 @@ export default {
   margin: 0 10px;
 }
 
-@media (max-height: 810px) {
-  .basket_block {
-    display: flow;
-    max-height: 330px;
-    overflow-x: scroll;
+@media (max-width: 810px) {
+  .total_price_container {
+    font-size: 18px;
+  }
+  .total_price {
+    margin-right: 5px;
+  }
+}
+@media (max-width: 450px) {
+  .basket_buttons {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: space-evenly;
+    align-items: center;
   }
 }
 </style>
@@ -124,11 +133,20 @@ export default {
 }
 .clear_btn {
   font-size: 14px;
-  margin-right: 5px;
-  padding: 6px;
+  padding: 5px;
 }
 .order_btn {
-  margin-left: 5px;
   padding: 10px;
+}
+@media (max-width: 810px) {
+  .order_btn {
+    padding: 5px;
+  }
+}
+@media (max-width: 450px) {
+  .order_btn {
+    margin-bottom: 5px;
+    width: 100%;
+  }
 }
 </style>

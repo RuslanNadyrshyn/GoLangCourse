@@ -31,13 +31,13 @@
               <label class="form-label">Имя:</label>
               <input
                 v-model="order.user.name"
-                class="form-control"
+                class="form_control"
                 type="text"
               />
             </div>
             <div class="form_group">
               <label class="form-label">Адрес:</label>
-              <input v-model="order.address" class="form-control" type="text" />
+              <input v-model="order.address" class="form_control" type="text" />
             </div>
             <button class="order_btn green" v-on:click="setOrder()">
               Оформить заказ
@@ -110,4 +110,16 @@ export default {
   margin: 10px;
   padding: 10px;
 }
+@media (max-width: 810px) {
+  .to_basket_btn {
+    font-size: 14px;
+    padding: 5px;
+  }
+}
+@media (max-width: 450px) {
+  .user_form {
+    max-width: 90vw;
+  }
+}
+
 </style>
