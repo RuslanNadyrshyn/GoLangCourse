@@ -6,17 +6,17 @@
           <label class="title_text">Корзина</label>
         </div>
         <div class="basket_block">
-          <div v-if="$store.state.basket.products.length === 0">
+          <template v-if="$store.state.basket.products.length === 0">
             <div class="clean_basket_text">Корзина пуста</div>
-          </div>
-          <div v-else>
+          </template>
+          <template v-else>
             <div
               v-for="product in $store.getters['basket/getBasket']"
               :key="product.id"
             >
               <BasketItem :product="product">{{ products }}</BasketItem>
             </div>
-          </div>
+          </template>
         </div>
         <div class="total_price_block">
           <div class="total_price_container">
@@ -117,7 +117,7 @@ export default {
     margin-right: 5px;
   }
 }
-@media (max-width: 450px) {
+@media (max-width: 560px) {
   .basket_buttons {
     display: flex;
     flex-direction: column-reverse;
@@ -143,7 +143,7 @@ export default {
     padding: 5px;
   }
 }
-@media (max-width: 450px) {
+@media (max-width: 560px) {
   .order_btn {
     margin-bottom: 5px;
     width: 100%;

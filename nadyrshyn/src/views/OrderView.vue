@@ -116,10 +116,9 @@ export default {
     padding: 5px;
   }
 }
-@media (max-width: 450px) {
+@media (max-width: 560px) {
   .user_form {
     max-width: 90vw;
   }
 }
-
 </style>

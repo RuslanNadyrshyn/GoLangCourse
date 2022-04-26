@@ -125,7 +125,7 @@ header {
   opacity: 0;
 }
 
-@media (max-width: 550px) {
+@media (max-width: 560px) {
   .header_inner {
     justify-content: right;
   }

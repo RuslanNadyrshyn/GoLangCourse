@@ -9,10 +9,6 @@
             <label class="counter text">в корзине:</label>
             <label class="counter">{{ counter }}</label>
           </div>
-          <!--      <label class="counter">-->
-          <!--        <label style="font-size: 16px">в корзине:</label>-->
-          <!--        {{ counter }}-->
-          <!--      </label>-->
         </template>
       </div>
       <div class="product_price_block">
@@ -20,7 +16,7 @@
           {{ product.price }}
           <div class="product_price_grn">грн</div>
         </div>
-        <button class="add_to_basket green" v-on:click="addToBasket()">
+        <button class="add_to_basket_btn green" v-on:click="addToBasket()">
           добавить в корзину
         </button>
       </div>
@@ -35,8 +31,12 @@
       <div class="description_container">
         <label class="description_title">Ингредиенты:</label>
         <div class="ingredients_container">
-          <div v-for="ingredient in product.ingredients" :key="ingredient.id">
-            <label class="ingredient">{{ ingredient }}</label>
+          <div
+            v-for="ingredient in product.ingredients"
+            :key="ingredient.id"
+            class="ingredient"
+          >
+            <label>{{ ingredient }}</label>
           </div>
         </div>
       </div>
@@ -96,8 +96,11 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  max-height: 400px;
   margin: 0 auto;
+}
+.block_logo {
+  min-height: 200px;
+  max-height: 400px;
 }
 .counter_block {
   position: absolute;
@@ -161,9 +164,9 @@ export default {
   margin-left: 5px;
 }
 
-.add_to_basket {
-  font-size: 22px;
-  padding: 15px 15px;
+.add_to_basket_btn {
+  font-size: 18px;
+  padding: 10px;
   border: #333 solid 1px;
   margin-left: 10px;
 }
@@ -192,6 +195,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
   margin: 0 auto;
   padding: 5px 0;
   width: 90%;
@@ -202,9 +206,6 @@ export default {
   font-size: 26px;
   text-transform: uppercase;
 }
-.ingredient {
-  margin: 10px;
-}
 
 .supplier_logo {
   display: block;
@@ -212,5 +213,44 @@ export default {
   margin: auto;
   max-height: 200px;
   max-width: 80%;
+}
+
+@media (max-width: 810px) {
+  .product_block {
+    flex-direction: column;
+    align-items: center;
+  }
+  .product_block_item {
+    width: 90%;
+    margin: 0;
+  }
+  .product_name {
+    margin: 10px auto;
+  }
+  .product_price_block {
+    font-size: 30px;
+  }
+  .description_block {
+    width: 70%;
+    margin: 0;
+  }
+}
+@media (max-width: 560px) {
+  .product_price_block {
+    font-size: 26px;
+  }
+  .add_to_basket_btn {
+    font-size: 14px;
+  }
+  .description_title {
+    font-size: 22px;
+    margin-bottom: 5px;
+  }
+  .description_container {
+    margin: 5px 0;
+  }
+  .ingredients_container {
+    font-size: 20px;
+  }
 }
 </style>

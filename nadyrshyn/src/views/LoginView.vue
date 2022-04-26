@@ -89,4 +89,13 @@ export default {
   color: #333;
   cursor: pointer;
 }
+
+@media (max-width: 560px) {
+  .login_form {
+    max-width: 90vw;
+  }
+  .login_choice_btn {
+    font-size: 20px;
+  }
+}
 </style>

@@ -9,20 +9,34 @@
     </div>
     <div class="description_block">
       <div class="basket_title">
+        <label
+          class="title_product"
+          @click="$router.push({ path: `/product/${product.id}` })"
+        >
+          {{ product.name }}
+        </label>
         <div class="price_block">
           <div class="price">{{ product.price }}</div>
           <label>грн</label>
         </div>
-        <label class="title_product">{{ product.name }}</label>
       </div>
       <div class="basket_container">
-        <div class="basket_item_ingredients">
-          <div
-            v-for="ingredient in product.ingredients"
-            :key="ingredient.id"
-            class="basket_item_ingredient"
-          >
-            <label>{{ ingredient }}</label>
+        <div class="container_block">
+          <div class="basket_item_image hidden">
+            <img
+              :src="product.image"
+              alt="product"
+              @click="$router.push({ path: `/product/${product.id}` })"
+            />
+          </div>
+          <div class="basket_item_ingredients">
+            <div
+              v-for="ingredient in product.ingredients"
+              :key="ingredient.id"
+              class="basket_item_ingredient"
+            >
+              <label>{{ ingredient }}</label>
+            </div>
           </div>
         </div>
         <div class="block">
@@ -56,5 +70,7 @@ export default {
 <style scoped>
 .block {
   flex-direction: column;
+  width: 20%;
+  align-items: end;
 }
 </style>
