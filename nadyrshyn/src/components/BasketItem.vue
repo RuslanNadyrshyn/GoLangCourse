@@ -1,70 +1,67 @@
 <template>
   <div class="basket_item">
-    <div class="basket_item_image">
+    <div class="bi_image">
       <img
         :src="product.image"
         alt="product"
         @click="$router.push({ path: `/product/${product.id}` })"
       />
     </div>
-    <div class="description_block">
-      <div class="basket_title">
+    <div class="description_container">
+      <div class="description_block">
         <label
           class="title_product"
           @click="$router.push({ path: `/product/${product.id}` })"
         >
           {{ product.name }}
         </label>
-        <div class="price_block">
-          <div class="price">{{ product.price }}</div>
-          <label>грн</label>
-        </div>
-      </div>
-      <div class="basket_container">
-        <div class="container_block">
-          <div class="basket_item_image hidden">
+        <div class="ingredients_block">
+          <a class="bi_image hidden">
             <img
               :src="product.image"
               alt="product"
               @click="$router.push({ path: `/product/${product.id}` })"
             />
-          </div>
-          <div class="basket_item_ingredients">
+          </a>
+          <div class="bi_ingredients">
             <div
               v-for="ingredient in product.ingredients"
               :key="ingredient.id"
-              class="basket_item_ingredient"
+              class="bi_ingredient"
             >
               <label>{{ ingredient }}</label>
             </div>
           </div>
         </div>
-        <div class="block">
-          <div class="counter_block">
-            <button class="counter_btn green" v-on:click="counter++">
-              &uarr;
-            </button>
-            <input
-              v-model.number="counter"
-              class="counter_number"
-              type="number"
-              step="1"
-              min="1"
-              required
-            />
-            <button class="counter_btn red" v-on:click="counter--">
-              &darr;
-            </button>
+      </div>
+      <div class="price_container">
+        <div class="counter_block">
+          <button class="counter_btn green" v-on:click="counter++">
+            &uarr;
+          </button>
+          <input
+            v-model.number="counter"
+            class="counter_number"
+            type="number"
+            step="1"
+            min="1"
+            required
+          />
+          <button class="counter_btn red" v-on:click="counter--">&darr;</button>
+        </div>
+
+        <div class="price_block">
+          <div class="price_item">
+            <div class="price">{{ product.price }}</div>
+            <label>грн</label>
           </div>
-          <div class="price_container">
-            <div class="price_block">
-              <div class="price">{{ summary.toFixed(2) }}</div>
-              <label>грн</label>
-            </div>
-            <button class="basket_delete_btn red" v-on:click="deleteProd()">
-              Удалить
-            </button>
+          <div class="price_item">
+            <div class="price">{{ summary.toFixed(2) }}</div>
+            <label>грн</label>
           </div>
+          <button class="basket_delete_btn red" v-on:click="deleteProd()">
+            Удалить
+          </button>
         </div>
       </div>
     </div>
@@ -124,7 +121,7 @@ input[type="number"] {
   border-radius: 10px;
 }
 
-.basket_item_image {
+.bi_image {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -132,28 +129,64 @@ input[type="number"] {
   width: 20%;
   height: 130px;
 }
-.basket_item_image:hover {
+.bi_image:hover {
   cursor: pointer;
   transform: scale(1.03);
 }
-.basket_item_image.hidden {
+.bi_image.hidden {
   display: none;
+}
+
+.description_container {
+  display: flex;
+  flex-direction: row;
+  width: 80%;
+  justify-content: space-around;
 }
 
 .description_block {
   display: flex;
   flex-direction: column;
   width: 80%;
-  justify-content: space-around;
+  margin: 5px;
+}
+.title_product {
+  font-size: 30px;
+  margin: auto;
+}
+.title_product:hover {
+  cursor: pointer;
+}
+.ingredients_block {
+  display: flex;
+  flex-direction: row;
+  height: 100px;
+}
+.bi_ingredients {
+  display: flex;
+  flex-direction: column;
+  background-color: #686e65;
+  border: 1px solid #333;
+  border-radius: 10px;
+  overflow: scroll;
+  scroll-behavior: smooth;
+}
+.bi_ingredient {
+  font-size: 18px;
 }
 
-.basket_title {
+.price_container {
   display: flex;
-  margin: 5px 5px 0;
-  justify-content: space-between;
+  flex-direction: row;
 }
 
 .price_block {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  margin: 5px;
+}
+.price_item {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -167,31 +200,12 @@ input[type="number"] {
   min-width: 80px;
   max-width: max-content;
   background-color: #686e65;
-  padding: 5px;
   margin-right: 5px;
   border-radius: 5px;
   border: 1px solid #333;
 }
 
-.title_product {
-  font-size: 30px;
-  margin: auto;
-}
-.title_product:hover {
-  cursor: pointer;
-}
-
-.basket_container {
-  display: flex;
-  margin: 5px;
-  height: 100px;
-}
-.container_block {
-  display: flex;
-  flex-direction: row;
-  width: 80%;
-}
-.basket_item_ingredients {
+.bi_ingredients {
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -202,15 +216,8 @@ input[type="number"] {
   scroll-behavior: smooth;
   margin-right: 5px;
 }
-.basket_item_ingredient {
+.bi_ingredient {
   font-size: 18px;
-}
-
-.block {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  align-items: center;
 }
 
 @media (max-width: 810px) {
@@ -218,7 +225,7 @@ input[type="number"] {
     font-size: 16px;
     min-height: 100px;
   }
-  .basket_item_image {
+  .bi_image {
     width: 20%;
     max-height: 90px;
   }
@@ -226,38 +233,40 @@ input[type="number"] {
   .price {
     font-size: 20px;
     min-width: 50px;
-    padding: 2px;
   }
 
   .title_product {
     font-size: 26px;
   }
 
-  .basket_container {
+  .ingredients_block {
     height: 64px;
   }
-  .basket_item_ingredient {
+  .bi_ingredient {
     font-size: 14px;
   }
 }
 
 @media (max-width: 560px) {
-  .basket_item_image {
+  .bi_image {
     display: none;
   }
-  .basket_item_image.hidden {
+  .bi_image.hidden {
     max-height: 64px;
     display: flex;
     width: 30%;
   }
-  .basket_item_ingredients {
+  .bi_ingredients {
     width: 70%;
   }
   .title_product {
     font-size: 20px;
   }
-  .description_block {
+  .description_container {
     width: 100%;
+  }
+  .price_item {
+    font-size: 14px;
   }
 }
 </style>
@@ -266,8 +275,7 @@ input[type="number"] {
 .counter_block {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  margin-right: 5px;
+  justify-content: center;
 }
 .counter_btn {
   display: flex;
@@ -286,13 +294,6 @@ input[type="number"] {
   background-color: #686e65;
   width: 75px;
   border: 1px solid #222;
-}
-.price_container {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  height: 100%;
 }
 .basket_delete_btn {
   width: 100%;

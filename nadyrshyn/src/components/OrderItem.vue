@@ -1,50 +1,44 @@
 <template>
   <div class="basket_item">
-    <div class="basket_item_image">
+    <div class="bi_image">
       <img
         :src="product.image"
         alt="product"
         @click="$router.push({ path: `/product/${product.id}` })"
       />
     </div>
-    <div class="description_block">
-      <div class="basket_title">
+    <div class="description_container">
+      <div class="description_block">
         <label
           class="title_product"
           @click="$router.push({ path: `/product/${product.id}` })"
         >
           {{ product.name }}
         </label>
-        <div class="price_block">
-          <div class="price">{{ product.price }}</div>
-          <label>грн</label>
-        </div>
-      </div>
-      <div class="basket_container">
-        <div class="container_block">
-          <div class="basket_item_image hidden">
+        <div class="ingredients_block">
+          <a class="bi_image hidden">
             <img
               :src="product.image"
               alt="product"
               @click="$router.push({ path: `/product/${product.id}` })"
             />
-          </div>
-          <div class="basket_item_ingredients">
+          </a>
+          <div class="bi_ingredients">
             <div
               v-for="ingredient in product.ingredients"
               :key="ingredient.id"
-              class="basket_item_ingredient"
+              class="bi_ingredient"
             >
               <label>{{ ingredient }}</label>
             </div>
           </div>
         </div>
-        <div class="block">
-          <div class="price">{{ product.counter }}</div>
-          <div class="price_block">
-            <div class="price">{{ summary.toFixed(2) }}</div>
-            <label>грн</label>
-          </div>
+      </div>
+      <div class="price_block">
+        <div class="price">{{ product.counter }}</div>
+        <div class="price_item">
+          <div class="price">{{ summary.toFixed(2) }}</div>
+          <label>грн</label>
         </div>
       </div>
     </div>
@@ -66,11 +60,4 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.block {
-  flex-direction: column;
-  width: 20%;
-  align-items: end;
-}
-</style>
+<style scoped></style>
