@@ -105,6 +105,21 @@ func (r ProductDBRepository) GetAll() (products []models.Product, err error) {
 	return products, nil
 }
 
+func (r ProductDBRepository) GetById(id int) (models.Product, error) {
+	var prod models.Product
+
+	err := r.DB.QueryRow("SELECT id, menu_id, name, price, image, type FROM products WHERE id = (?)", id).
+		Scan(&prod.Id, &prod.MenuId, &prod.Name, &prod.Price, &prod.Image, &prod.Type)
+	if err != nil {
+		panic(err)
+	}
+
+	IngredientRepo := NewIngredientRepository(r.DB)
+	prod.Ingredients, err = IngredientRepo.GetByProductId(prod.Id)
+
+	return prod, nil
+}
+
 func (r ProductDBRepository) GetByName(n string) (products []models.Product, err error) {
 	var prod models.Product
 
