@@ -1,8 +1,8 @@
 package models
 
-type Orders struct {
-	Id      int
-	Price   float32
-	UserId  int
-	Address string
+type Order struct {
+	Id      int     `json:"id"`
+	Price   float64 `json:"price"`
+	UserId  int     `json:"userId"`
+	Address string  `json:"address"`
 }

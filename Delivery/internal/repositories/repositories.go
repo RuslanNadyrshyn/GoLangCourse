@@ -21,8 +21,8 @@ type ProductRepositoryInterface interface {
 }
 
 type OrdersRepositoryInterface interface {
-	GetAll(orderId int) (order []*models.Orders, err error)
-	Add(ProductId int) (orders models.Orders, err error)
+	GetAll(orderId int) (order []*models.Order, err error)
+	Add(ProductId int) (order models.Order, err error)
 }
 
 //type OrderProductsRepositoryInterface interface {

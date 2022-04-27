@@ -21,9 +21,37 @@ func NewUserRepository(conn *sql.DB) UserDBRepository {
 func (r UserDBRepository) Insert(u *models.User) (int, error) {
 	var id int64
 
+	if u.Email == "" {
+		if r.TX != nil {
+			result, err := r.DB.Exec("INSERT users(name) VALUES(?)", u.Name)
+			if err != nil {
+				_ = r.TX.Rollback()
+			}
+			id, err = result.LastInsertId()
+			if err != nil {
+				_ = r.TX.Rollback()
+			}
+			err = r.TX.Commit()
+			if err != nil {
+				_ = r.TX.Rollback()
+			}
+			return int(id), err
+		}
+		result, err := r.DB.Exec("INSERT users(name) VALUES(?)", u.Name)
+		if err != nil {
+			fmt.Println(err)
+			return int(id), err
+		}
+		id, err = result.LastInsertId()
+		if err != nil {
+			fmt.Println(err)
+			return int(id), err
+		}
+		return int(id), err
+	}
+
 	PasswordHash, err := bcrypt.GenerateFromPassword([]byte(u.PasswordHash), bcrypt.DefaultCost)
 	u.PasswordHash = string(PasswordHash)
-
 	if r.TX != nil {
 		err := r.TX.QueryRow("INSERT users(name, email, password_hash) VALUES(?, ?, ?) RETURNING id", u.Name, u.Email, u.PasswordHash).Scan(&id)
 		if err != nil {

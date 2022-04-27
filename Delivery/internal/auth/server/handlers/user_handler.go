@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"Delivery/Delivery/internal/auth/repositories"
+	"Delivery/Delivery/internal/auth/requests"
 	"Delivery/Delivery/internal/auth/responses"
 	"Delivery/Delivery/internal/auth/services"
 	"Delivery/Delivery/internal/repositories/database"
@@ -31,14 +32,16 @@ func NewUserHandler(
 }
 
 func (h *UserHandler) SignIn(w http.ResponseWriter, r *http.Request) {
+	requests.SetupCORS(&w, r)
 	switch r.Method {
+	case "OPTIONS":
+		w.WriteHeader(http.StatusOK)
 	case "POST":
 		var id int
 		req := new(models.User)
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
-
 		userRepo := database.NewUserRepository(h.conn)
 
 		_, err := userRepo.GetByEmail(req.Email)
@@ -64,9 +67,8 @@ func (h *UserHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(resp)
 	default:
-		http.Error(w, "Only GET method is allowed", http.StatusMethodNotAllowed)
+		http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
 	}
-
 }
 
 func (h *UserHandler) GetProfile(w http.ResponseWriter, r *http.Request) {

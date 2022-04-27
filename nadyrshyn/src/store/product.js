@@ -5,7 +5,7 @@ const state = {
   products: [],
   sortedProducts: [],
   productsTypes: [],
-  sortType: "",
+  selectedType: "все",
   errors: [],
   loaded: false,
 };
@@ -20,8 +20,8 @@ const mutations = {
   setSortedProducts(state, sortedProducts) {
     state.sortedProducts = sortedProducts;
   },
-  setSortType(state, type) {
-    state.sortType = type;
+  setSelectedType(state, selected) {
+    state.selectedType = selected;
   },
   setErrors(state, errors) {
     state.errors = errors;
@@ -37,29 +37,42 @@ const actions = {
     axios
       .get(context.getters.getProductURL)
       .then((res) => {
-        context.commit("setProducts", res.data);
         let types = [];
         for (let i = 0; i < res.data.length; i++) {
-          if (types.includes(res.data[i].type) === false) {
+          if (types.includes(res.data[i].type) === false)
             types.push(res.data[i].type);
-          }
         }
+        context.commit("setProducts", res.data);
+        context.commit("setSortedProducts", res.data);
         context.commit("setProductsTypes", types);
+        context.commit("setSelectedType", "все");
       })
       .catch((err) => [context.commit("setErrors", [err])])
       .finally(() => {
         context.commit("setLoaded", true);
       });
   },
+  fetchP(context, products) {
+    let types = [];
+    for (let i = 0; i < products.length; i++)
+      if (types.includes(products[i].type) === false)
+        types.push(products[i].type);
+    context.commit("setProducts", products);
+    context.commit("setSortedProducts", products);
+    context.commit("setProductsTypes", types);
+    context.commit("setLoaded", true);
+  },
   sortByType(context, type) {
-    let products = context.getters.getProducts;
-    context.commit("setSortType", type);
-    if (type === "all") {
-      context.commit("setSortedProducts", products);
-    } else {
+    context.commit("setSelectedType", type);
+    let products = context.getters.getSortedProducts;
+    if (type === "все") context.commit("setSortedProducts", products);
+    else {
       let SortedArray = products.filter((product) => product.type === type);
       context.commit("setSortedProducts", SortedArray);
     }
+  },
+  sortBySupplier(context, products) {
+    context.commit("setSortedProducts", products);
   },
 };
 
@@ -71,11 +84,10 @@ const getters = {
     return state.products;
   },
   getSortedProducts: (state) => {
-    if (state.sortType === "") {
-      return state.products;
-    } else {
-      return state.sortedProducts;
-    }
+    return state.sortedProducts;
+  },
+  getProductsTypes: (state) => {
+    return state.productsTypes;
   },
 };
 

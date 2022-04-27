@@ -1,34 +1,48 @@
 <template>
   <div class="product_block">
     <div class="product_block_item">
-      <div class="product_img">
-        <img class="product_logo" :src="image" alt="" />
-      </div>
-      <div class="product_text">
-        <div class="product_name">
-          {{ name }}
-        </div>
-        <div class="product_price_block">
-          <div class="product_price">
-            {{ price }}
-            <div class="product_price_grn">грн</div>
+      <label class="product_name">{{ product.name }}</label>
+      <div class="block_img">
+        <img class="block_logo" :src="product.image" alt="product_image" />
+        <template v-if="counter > 0">
+          <div class="counter_block">
+            <label class="counter text">в корзине:</label>
+            <label class="counter">{{ counter }}</label>
           </div>
-          <button class="product_btn" v-on:click="addToBasket()">
-            добавить в корзину
-          </button>
+        </template>
+      </div>
+      <div class="product_price_block">
+        <div class="product_price_container">
+          {{ product.price }}
+          <div class="product_price_grn">грн</div>
         </div>
+        <button class="add_to_basket_btn green" v-on:click="addToBasket()">
+          добавить в корзину
+        </button>
       </div>
     </div>
-    <div class="product_description">
-      <div class="product_description_title">
-        {{ name }}
-      </div>
-      <div class="product_description_text"></div>
-      <div class="product_description_title">Ingredients:</div>
-      <div class="product_description_ingredients">
-        <div v-for="ingredient in ingredients" :key="ingredient.id">
-          <div class="ingredient_item">{{ ingredient }}</div>
+    <div class="description_block">
+      <div class="description_container">
+        <label class="description_title">тип:</label>
+        <div class="ingredients_container">
+          <label>{{ product.type }}</label>
         </div>
+      </div>
+      <div class="description_container">
+        <label class="description_title">Ингредиенты:</label>
+        <div class="ingredients_container">
+          <div
+            v-for="ingredient in product.ingredients"
+            :key="ingredient.id"
+            class="ingredient"
+          >
+            <label>{{ ingredient }}</label>
+          </div>
+        </div>
+      </div>
+      <div class="description_container">
+        <label class="description_title">{{ product.supplier_name }}</label>
+        <img class="supplier_logo" :src="product.supplier_image" />
       </div>
     </div>
   </div>
@@ -39,53 +53,29 @@ export default {
   name: "ProductBlock",
   data() {
     return {
-      counter: 1,
+      counter: 0,
     };
   },
   props: {
-    id: {
-      type: Number,
+    product: {
+      type: Object,
     },
-    name: {
-      type: String,
-    },
-    menuId: {
-      type: Number,
-    },
-    price: {
-      type: Number,
-    },
-    image: {
-      type: String,
-    },
-    type: {
-      type: String,
-    },
-    ingredients: {
-      type: Array,
-    },
+  },
+  created() {
+    for (let i = 0; i < this.$store.state.basket.products.length; i++)
+      if (this.$store.state.basket.products[i].id === this.product.id) {
+        this.counter = this.$store.state.basket.products[i].counter;
+        break;
+      }
   },
   methods: {
     addToBasket() {
-      let prod = {
-        id: this.id,
-        name: this.name,
-        menuId: this.menuId,
-        price: this.price,
-        image: this.image,
-        type: this.type,
-        ingredients: this.ingredients,
-        counter: this.counter,
-      };
-      let inBasket = false;
-      for (let i = 0; i < this.$store.state.basket.products.length; i++) {
-        if (this.$store.state.basket.products[i].id === this.id) {
-          this.$store.commit("basket/incCount", this.id);
-          inBasket = true;
+      this.$store.dispatch("basket/addProduct", this.product);
+      for (let i = 0; i < this.$store.state.basket.products.length; i++)
+        if (this.$store.state.basket.products[i].id === this.product.id) {
+          this.counter = this.$store.state.basket.products[i].counter;
+          break;
         }
-      }
-      if (inBasket === false)
-        this.$store.commit("basket/addProduct", prod);
     },
   },
 };
@@ -98,38 +88,56 @@ export default {
   flex-direction: row;
   min-height: 500px;
   max-width: 1200px;
-  margin: 50px auto;
+  margin: 10px auto 0;
   background-color: #686e65;
-  border-radius: 20px;
 }
-
+.block_img {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+.block_logo {
+  min-height: 200px;
+  max-height: 400px;
+}
+.counter_block {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  align-items: end;
+  width: max-content;
+  height: min-content;
+  right: 5px;
+  bottom: 5px;
+  font-size: 16px;
+  text-transform: uppercase;
+}
+.counter {
+  background-color: #444;
+  color: #d3c7c7;
+  width: max-content;
+  border-radius: 5px 5px 5px 0;
+  padding: 2px 4px;
+  font-size: 24px;
+  text-transform: uppercase;
+}
+.counter.text {
+  font-size: 16px;
+  border-radius: 5px 0 0 5px;
+}
 .product_block_item {
   display: flex;
   flex-direction: column;
-  min-height: 480px;
-  max-width: 400px;
-  margin: 30px;
-  border: 2px #222;
+  width: 50%;
+  margin: 20px;
   color: #222;
 }
 
-.product_logo {
-  display: flex;
-  max-width: 100%;
-  max-height: 300px;
-  background-color: #ddd;
-  border: #222 solid 2px;
-  border-radius: 10%;
-  margin: auto;
-}
-
-.product_text {
-  display: flex;
-  font-size: 24px;
-  flex-direction: column;
-  padding: 7px;
-}
 .product_name {
+  display: flex;
+  font-size: 32px;
   margin: 0 auto;
   text-align: center;
 }
@@ -138,74 +146,111 @@ export default {
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 10px;
   justify-content: space-between;
-  color: rgb(59, 31, 14);
+  font-size: 40px;
+  margin-top: 10px;
 }
 
-.product_price {
+.product_price_container {
   display: flex;
   flex-direction: row;
-  font-size: 26px;
+  background-color: #444;
+  border-radius: 5px;
+  color: #d3c7c7;
+  padding: 5px 10px;
 }
 
 .product_price_grn {
   margin-left: 5px;
 }
 
-.product_btn {
-  font-size: 16px;
-  width: 120px;
-  text-transform: uppercase;
-  height: max-content;
-  padding: 5px;
-  background-color: #2d8d0f;
-  border-radius: 10px;
-  border-style: solid;
-  border-color: #222;
-  transition: color 0.2s linear, transform 0.1s linear, scale 0.2s;
+.add_to_basket_btn {
+  font-size: 18px;
+  padding: 10px;
+  border: #333 solid 1px;
+  margin-left: 10px;
 }
 
-.product_btn:hover {
-  background-color: #46792f;
-  cursor: pointer;
-  transform: scale(1.05);
-}
-
-.product_btn:active {
-  background-color: #3e8e41;
-  transform: scale(1);
-}
-
-.product_description {
+.description_block {
   display: flex;
   flex-direction: column;
-  background-color: #4a4e47;
-  border-radius: 20px;
-  border: solid 1px;
-  min-height: 480px;
-  width: 60%;
-  margin: 30px;
+  height: max-content;
+  width: 50%;
+  margin: 20px;
   color: #222;
 }
 
-.product_description_title {
-  text-align: center;
-  font-size: 30px;
-  margin: 10px;
-}
-
-.product_description_text {
-  margin: 10px;
-  font-size: 20px;
-  font-style: italic;
-}
-
-.product_description_ingredients {
+.description_container {
   display: flex;
   flex-direction: column;
-  margin: 10px;
-  font-size: 20px;
-  font-style: italic;
+  margin: 10px 0;
+}
+
+.description_title {
+  font-size: 26px;
+  margin: 0 auto 10px;
+  text-transform: uppercase;
+}
+.ingredients_container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin: 0 auto;
+  padding: 5px 0;
+  width: 90%;
+  min-height: max-content;
+  background-color: #444;
+  color: #d3c7c7;
+  border-radius: 10px;
+  font-size: 26px;
+  text-transform: uppercase;
+}
+
+.supplier_logo {
+  display: block;
+  border-radius: 5px;
+  margin: auto;
+  max-height: 200px;
+  max-width: 80%;
+}
+
+@media (max-width: 810px) {
+  .product_block {
+    flex-direction: column;
+    align-items: center;
+  }
+  .product_block_item {
+    width: 90%;
+    margin: 0;
+  }
+  .product_name {
+    margin: 10px auto;
+  }
+  .product_price_block {
+    font-size: 30px;
+  }
+  .description_block {
+    width: 70%;
+    margin: 0;
+  }
+}
+@media (max-width: 560px) {
+  .product_price_block {
+    font-size: 26px;
+  }
+  .add_to_basket_btn {
+    font-size: 14px;
+  }
+  .description_title {
+    font-size: 22px;
+    margin-bottom: 5px;
+  }
+  .description_container {
+    margin: 5px 0;
+  }
+  .ingredients_container {
+    font-size: 20px;
+  }
 }
 </style>

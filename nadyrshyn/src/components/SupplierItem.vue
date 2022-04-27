@@ -1,10 +1,13 @@
 <template>
-  <div class="Supplier_item">
-    <div class="Supplier_img">
-      <img class="Supplier_logo" :src="image" alt="" />
+  <div class="supplier_item" @click="sortBySupplier()">
+    <div class="supplier_img">
+      <img class="supplier_logo" :src="supplier.image" alt="supplier_logo" />
     </div>
-    <div class="Supplier_text">
-      {{ name }}
+    <div class="supplier_text">
+      {{ supplier.name }}
+    </div>
+    <div class="working_hours">
+      {{ supplier.workingHours.opening }}-{{ supplier.workingHours.closing }}
     </div>
   </div>
 </template>
@@ -13,60 +16,84 @@
 export default {
   name: "SupplierItem",
   props: {
-    id: {
-      type: Number,
+    supplier: {
+      type: Object,
     },
-    name: {
-      type: String,
-    },
-    image: {
-      type: String,
-    },
-    type: {
-      type: String,
-    },
-    workingHours: {
-      type: Array,
+  },
+  methods: {
+    sortBySupplier() {
+      this.$store.dispatch("products/sortBySupplier", this.supplier.menu);
     },
   },
 };
 </script>
 
 <style scoped>
-.Supplier_item {
+.supplier_item {
   display: flex;
+  background-color: #8f968b;
   flex-direction: column;
   color: #222;
   text-align: center;
-  max-width: 300px;
-  height: 150px;
-  margin: 10px;
+  width: 170px;
+  height: 180px;
+  margin: 5px;
+  padding: 10px 5px;
+  border-radius: 10px;
 }
-.Supplier_item:hover {
+
+.supplier_item:hover {
   opacity: 0.9;
   cursor: pointer;
 }
-.Supplier_img {
+
+.supplier_img {
   display: flex;
-  max-width: 100%;
-  height: 250px;
-  align-items: center;
+  width: 100%;
+  height: 110px;
 }
 
-.Supplier_logo {
+.supplier_logo {
   display: block;
-  border-radius: 20%;
-  max-width: 100px;
+  border-radius: 20px;
+  max-width: 100%;
+  max-height: 100px;
   margin: auto;
   transition: transform 0.2s;
 }
 
-.Supplier_logo:hover {
+.supplier_logo:hover {
   transform: scale(1.05);
 }
-.Supplier_text {
+
+.supplier_text {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  justify-content: center;
   font-size: 20px;
+  min-height: 50px;
   font-weight: 700;
   text-transform: uppercase;
+}
+
+.working_hours {
+  font-size: 16px;
+}
+
+@media (max-width: 560px) {
+  .supplier_item {
+    width: 110px;
+    height: 120px;
+  }
+  .supplier_img {
+    height: 50px;
+  }
+  .supplier_logo {
+    max-height: 50px;
+  }
+  .supplier_text {
+    font-size: 14px;
+  }
 }
 </style>

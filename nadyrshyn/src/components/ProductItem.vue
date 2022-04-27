@@ -1,18 +1,32 @@
 <template>
   <div class="product_item">
+    <div class="product_item_title">
+      <img class="item_title_logo" :src="product.supplier_image" />
+      <label class="title_name">{{ product.supplier_name }}</label>
+    </div>
     <div class="product_img">
       <img
         class="product_logo"
-        :src="image"
-        alt=""
-        @click="$router.push({ path: `/product/${id}` })"
+        :src="product.image"
+        @click="$router.push({ path: `/product/${product.id}` })"
       />
+      <template v-if="counter > 0">
+        <label class="product_counter">{{ counter }}</label>
+      </template>
     </div>
     <div class="product_text">
-      {{ name }}
-      <div class="product_price">
-        {{ price }}
-        <div class="product_price_grn">грн</div>
+      <label
+        class="product_name"
+        @click="$router.push({ path: `/product/${product.id}` })"
+      >
+        {{ product.name }}
+      </label>
+      <div class="product_price_container">
+        <div class="product_type">{{ product.type }}</div>
+        <div class="product_price_block">
+          <label class="product_price">{{ product.price }}</label>
+          <label class="product_price_grn">грн</label>
+        </div>
       </div>
     </div>
     <button class="product_btn" v-on:click="addToBasket()">
@@ -20,74 +34,50 @@
     </button>
   </div>
 </template>
+
 <script>
 export default {
   name: "ProductItem",
   data() {
     return {
-      counter: 1,
+      counter: 0,
     };
   },
   props: {
-    id: {
-      type: Number,
+    product: {
+      type: Object,
     },
-    name: {
-      type: String,
-    },
-    menuId: {
-      type: Number,
-    },
-    price: {
-      type: Number,
-    },
-    image: {
-      type: String,
-    },
-    type: {
-      type: String,
-    },
-    ingredients: {
-      type: Array,
-    },
-    supplier_id: {
-      type: Number,
-    },
-    supplier_name: {
-      type: String,
-    },
+  },
+  created() {
+    for (let i = 0; i < this.$store.state.basket.products.length; i++)
+      if (this.$store.state.basket.products[i].id === this.product.id) {
+        this.counter = this.$store.state.basket.products[i].counter;
+        break;
+      }
   },
   methods: {
     addToBasket() {
-      let prod = {
-        id: this.id,
-        name: this.name,
-        menuId: this.menuId,
-        price: this.price,
-        image: this.image,
-        type: this.type,
-        ingredients: this.ingredients,
-        counter: this.counter,
-        supplier_id: this.supplier_id,
-        supplier_name: this.supplier_name,
-      };
-      let a = false;
-      for (let i = 0; i < this.$store.state.basket.products.length; i++) {
-        if (this.$store.state.basket.products[i].id === this.id) {
-          console.log("counter++ for ", this.id);
-          this.$store.commit("basket/incCount", this.id);
-          a = true;
+      this.$store.dispatch("basket/addProduct", this.product);
+      for (let i = 0; i < this.$store.state.basket.products.length; i++)
+        if (this.$store.state.basket.products[i].id === this.product.id) {
+          this.counter = this.$store.state.basket.products[i].counter;
           break;
         }
-      }
-      if (a === false) {
-        this.$store.commit("basket/addProduct", prod);
-      }
-      console.log(this.$store.getters["basket/getBasket"]);
     },
   },
 };
 </script>
+
+<style>
+.product_img {
+  position: relative;
+  display: flex;
+  max-width: 100%;
+  height: 250px;
+  align-items: center;
+  justify-content: center;
+}
+</style>
 
 <style scoped>
 .product_item {
@@ -97,52 +87,92 @@ export default {
   justify-content: space-between;
   flex-direction: column;
   color: #222;
-  max-width: 250px;
+  width: 250px;
   height: 420px;
-  margin: 10px;
-  padding: 15px;
-  border-radius: 20px;
+  margin: 5px;
+  padding: 10px 10px 0 10px;
+  border-radius: 10px;
 }
-
 .product_item:hover {
-  opacity: 0.9;
   background-color: #4b4242ff;
   color: #d3c7c7;
 }
 
-.product_img {
+.product_item_title {
   display: flex;
-  max-width: 100%;
-  height: 250px;
+  flex-direction: row;
+  text-transform: uppercase;
   align-items: center;
   justify-content: center;
+  width: 90%;
+  height: 40px;
+}
+.product_counter {
+  position: absolute;
+  background-color: #333;
+  color: #c2c5c1;
+  border: #111 solid 1px;
+  border-radius: 5px;
+  padding: 5px;
+  right: 10px;
+  bottom: 0;
+  font-size: 28px;
+}
+
+.item_title_logo {
+  display: block;
+  border-radius: 5px;
+  margin-right: 5px;
+  max-height: 100%;
+  max-width: 100%;
+}
+
+.title_name {
+  font-size: 18px;
 }
 
 .product_logo {
-  display: block;
-  border-radius: 30px;
+  max-height: 200px;
   border: #222 solid 1px;
-  max-width: 100%;
-  transition: transform 0.2s;
 }
-
 .product_logo:hover {
-  transform: scale(1.05);
-  opacity: 0.9;
   cursor: pointer;
+  transform: scale(1.03);
 }
 
 .product_text {
-  font-size: 20px;
-  font-weight: 700;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   width: 100%;
-  text-transform: uppercase;
-  margin-top: 10px;
+  margin: auto;
+  min-height: 100px;
 }
-
-.product_price {
+.product_name {
+  text-transform: uppercase;
+  font-size: 18px;
+  font-weight: 700;
+}
+.product_name:hover {
+  cursor: pointer;
+}
+.product_price_container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+}
+.product_type {
+  font-size: 16px;
+  text-transform: uppercase;
+}
+.product_price_block {
   display: flex;
   align-items: end;
+  justify-content: end;
+  width: max-content;
+}
+.product_price {
   font-size: 30px;
 }
 
@@ -152,26 +182,44 @@ export default {
 }
 
 .product_btn {
-  font-size: 16px;
-  width: 80%;
-  text-transform: uppercase;
-  height: max-content;
+  margin: 10px auto;
   padding: 10px;
-  background-color: #2d8d0f;
-  border-radius: 10px;
-  border-style: solid;
-  border-color: #222;
-  transition: color 0.2s linear, transform 0.1s linear, scale 0.1s;
+  background-color: #222222;
+  color: #c2c5c1;
 }
 
-.product_btn:hover {
-  background-color: #46792f;
-  cursor: pointer;
-  transform: scale(1.05);
-}
-
-.product_btn:active {
-  background-color: #3e8e41;
-  transform: scale(1);
+@media (max-width: 560px) {
+  .product_item {
+    width: 200px;
+    height: 300px;
+  }
+  .product_img {
+    max-height: 150px;
+  }
+  .product_logo {
+    max-height: 150px;
+  }
+  .product_counter {
+    font-size: 16px;
+  }
+  .product_item_title {
+    display: none;
+  }
+  .product_name {
+    font-size: 16px;
+  }
+  .product_text {
+    min-height: 90px;
+  }
+  .product_price_container {
+    justify-content: right;
+  }
+  .product_type {
+    display: none;
+  }
+  .product_btn {
+    margin-top: 0;
+    padding: 5px;
+  }
 }
 </style>

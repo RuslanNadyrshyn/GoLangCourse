@@ -18,10 +18,7 @@ func Connect() (*sql.DB, error) {
 	dataSource := os.Getenv("DB_USER") + ":" + os.Getenv("PASS") +
 		"@tcp(" + os.Getenv("HOST") + os.Getenv("DB_PORT") + ")/" + os.Getenv("DB")
 
-	db, err := sql.Open(
-		"mysql",
-		dataSource,
-	)
+	db, err := sql.Open("mysql", dataSource)
 	if err != nil {
 		log.Println(err)
 	}
@@ -31,7 +28,7 @@ func Connect() (*sql.DB, error) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("Database connected.")
+	fmt.Println("Database connected. Port: ", os.Getenv("PORT"))
 
 	return db, err
 }

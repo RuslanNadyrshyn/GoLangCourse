@@ -1,8 +1,7 @@
 package models
 
 type Basket struct {
-	Id         int
-	UserId     int
-	SupplierId int
-	Price      float32
+	Id     int     `json:"id"`
+	UserId int     `json:"userId"`
+	Price  float32 `json:"price"`
 }

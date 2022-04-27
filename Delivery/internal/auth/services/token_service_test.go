@@ -1,9 +1,9 @@
 package services
 
 import (
-	"awesomeProject/internal/auth/config"
-	"awesomeProject/internal/auth/helper"
-	"awesomeProject/internal/auth/tests/helpers"
+	"Delivery/Delivery/internal/auth/config"
+	"Delivery/Delivery/internal/auth/helper"
+	"Delivery/Delivery/internal/auth/tests/helpers"
 	"github.com/golang-jwt/jwt"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
