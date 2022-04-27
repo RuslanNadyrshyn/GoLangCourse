@@ -4,6 +4,7 @@ import productState from "./product";
 import supplierState from "./supplier";
 import basketState from "./basket";
 import orderState from "./order";
+import authState from "./auth";
 
 Vue.use(Vuex);
 
@@ -12,6 +13,7 @@ const modules = {
   suppliers: supplierState,
   basket: basketState,
   orders: orderState,
+  auth: authState,
 };
 
 export default new Vuex.Store({

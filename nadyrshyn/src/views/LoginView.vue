@@ -4,7 +4,7 @@
       <label class="title_text">{{ title }}</label>
     </div>
     <div class="login_form">
-      <div v-if="status === 'login'">
+      <template v-if="status === 'login'">
         <div class="login_choice">
           <div class="login_choice_btn active">Войти</div>
           <div
@@ -17,8 +17,8 @@
             Регистрация
           </div>
         </div>
-      </div>
-      <div v-else>
+      </template>
+      <template v-else>
         <div class="login_choice">
           <div
             class="login_choice_btn"
@@ -31,7 +31,7 @@
           </div>
           <div class="login_choice_btn active">Регистрация</div>
         </div>
-      </div>
+      </template>
       <LoginItem :status="status"></LoginItem>
     </div>
   </div>

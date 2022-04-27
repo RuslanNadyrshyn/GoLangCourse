@@ -27,14 +27,26 @@
               {{ this.$store.state.basket.products.length }}
             </label>
           </router-link>
-          <router-link
-            v-bind:class="
+          <template v-if="$store.getters['auth/getAccess'] === true">
+            <router-link
+              v-bind:class="
+              $route.path === '/user' ? 'nav_link_active' : 'nav_link'
+            "
+              :to="'/user'"
+            >
+              Профиль
+            </router-link>
+          </template>
+          <template v-else>
+            <router-link
+              v-bind:class="
               $route.path === '/login' ? 'nav_link_active' : 'nav_link'
             "
-            :to="'/login'"
-          >
-            Войти
-          </router-link>
+              :to="'/login'"
+            >
+              Войти
+            </router-link>
+          </template>
         </nav>
       </div>
     </div>

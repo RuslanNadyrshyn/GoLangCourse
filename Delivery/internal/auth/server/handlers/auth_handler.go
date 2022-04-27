@@ -8,7 +8,6 @@ import (
 	"Delivery/Delivery/internal/repositories/database"
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
@@ -69,7 +68,6 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 			AccessToken:  accessString,
 			RefreshToken: refreshString,
 		}
-		fmt.Println("resp: ", resp)
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(resp)
 

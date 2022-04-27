@@ -76,7 +76,14 @@ export default {
       console.log(this.login);
       axios
         .post("http://localhost:8080/login", this.login)
-        .then((res) => console.log("Login accepted", res.data))
+        .then((res) => {
+          console.log("Login accepted", res.data);
+          localStorage.setItem("tokens", JSON.stringify(res.data));
+          this.$store.dispatch("auth/AddTokens", res.data);
+
+          // let userId = this.$store.getters("auth/getUserId")
+          this.$router.push({ path: `/` });
+        })
         .catch((err) => console.log(err));
     },
     SignIn() {
@@ -85,11 +92,14 @@ export default {
         .post("http://localhost:8080/sign_in", this.sign_in)
         .then((res) => {
           console.log("Signed In!", res);
+
           this.login.email = this.sign_in.email;
           this.login.password = this.sign_in.password;
           this.Login();
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          console.log(err);
+        });
     },
   },
 };
