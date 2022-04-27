@@ -116,7 +116,7 @@ input[type="number"] {
   display: flex;
   flex-direction: row;
   min-height: 150px;
-  margin: 10px;
+  margin: 5px;
   background-color: #4a4e47;
   border-radius: 10px;
 }
@@ -149,10 +149,10 @@ input[type="number"] {
   flex-direction: column;
   width: 80%;
   margin: 5px;
+  text-align: center;
 }
 .title_product {
   font-size: 30px;
-  margin: auto;
 }
 .title_product:hover {
   cursor: pointer;

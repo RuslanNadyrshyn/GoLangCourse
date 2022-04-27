@@ -1,48 +1,42 @@
 <template>
-  <div>
-    <div class="intro">
-      <div class="section">
-        <div class="container">
-          <div class="title">
-            <label class="title_text">Заказ</label>
+  <div class="intro">
+    <div class="section">
+      <div class="container">
+        <div class="title">
+          <label class="title_text">Заказ</label>
+        </div>
+        <div class="basket_block">
+          <div v-for="product in order.products" :key="product.id">
+            <OrderItem :product="product">{{ order.products }}</OrderItem>
           </div>
-          <div class="basket_block">
-            <div v-for="product in order.products" :key="product.id">
-              <OrderItem :product="product">{{ order.products }}</OrderItem>
+        </div>
+        <div class="total_price_block">
+          <div class="total_price_container">
+            Всего:
+            <div class="total_price">
+              {{ order.totalPrice }}
             </div>
+            грн
           </div>
-          <div class="total_price_block">
-            <div class="total_price_container">
-              Всего:
-              <div class="total_price">
-                {{ order.totalPrice }}
-              </div>
-              грн
-            </div>
-            <button
-              class="to_basket_btn red"
-              v-on:click="$router.push({ path: `/basket` })"
-            >
-              Вернуться в корзину
-            </button>
+          <button
+            class="to_basket_btn red"
+            v-on:click="$router.push({ path: `/basket` })"
+          >
+            Вернуться в корзину
+          </button>
+        </div>
+        <div class="user_form">
+          <div class="form_group">
+            <label class="form-label">Имя:</label>
+            <input v-model="order.user.name" class="form_control" type="text" />
           </div>
-          <div class="user_form">
-            <div class="form_group">
-              <label class="form-label">Имя:</label>
-              <input
-                v-model="order.user.name"
-                class="form_control"
-                type="text"
-              />
-            </div>
-            <div class="form_group">
-              <label class="form-label">Адрес:</label>
-              <input v-model="order.address" class="form_control" type="text" />
-            </div>
-            <button class="order_btn green" v-on:click="setOrder()">
-              Оформить заказ
-            </button>
+          <div class="form_group">
+            <label class="form-label">Адрес:</label>
+            <input v-model="order.address" class="form_control" type="text" />
           </div>
+          <button class="order_btn green" v-on:click="setOrder()">
+            Оформить заказ
+          </button>
         </div>
       </div>
     </div>
@@ -119,6 +113,9 @@ export default {
 @media (max-width: 560px) {
   .user_form {
     max-width: 90vw;
+  }
+  .to_basket_btn {
+    font-size: 10px;
   }
 }
 </style>

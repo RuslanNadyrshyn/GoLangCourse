@@ -82,12 +82,11 @@ export default {
 .basket_block {
   display: flex;
   flex-direction: column;
-  text-align: center;
-  align-items: normal;
   min-height: 150px;
-  max-height: 490px;
+  max-height: 480px;
   max-width: 1200px;
-  margin: 0 auto 10px;
+  margin: 0 auto;
+  padding: 5px;
   border: 1px #222 solid;
   background-color: #686e65;
   overflow-y: scroll;
