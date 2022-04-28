@@ -1,9 +1,9 @@
 package services
 
 import (
-	"Delivery/Delivery/internal/auth/config"
-	"Delivery/Delivery/internal/auth/helper"
-	"Delivery/Delivery/internal/auth/tests/helpers"
+	config "Delivery/Delivery/cfg"
+	"Delivery/Delivery/internal/helper"
+	"Delivery/Delivery/tests/helpers"
 	"github.com/golang-jwt/jwt"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"

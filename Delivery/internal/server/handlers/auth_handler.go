@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"Delivery/Delivery/internal/auth/config"
-	"Delivery/Delivery/internal/auth/requests"
-	"Delivery/Delivery/internal/auth/responses"
-	"Delivery/Delivery/internal/auth/services"
+	"Delivery/Delivery/cfg"
 	"Delivery/Delivery/internal/repositories/database"
+	"Delivery/Delivery/internal/repositories/requests"
+	"Delivery/Delivery/internal/repositories/responses"
+	"Delivery/Delivery/internal/services"
 	"database/sql"
 	"encoding/json"
 	"golang.org/x/crypto/bcrypt"
@@ -14,11 +14,11 @@ import (
 )
 
 type AuthHandler struct {
-	cfg  *config.Config
+	cfg  *cfg.Config
 	conn *sql.DB
 }
 
-func NewAuthHandler(cfg *config.Config, conn *sql.DB) *AuthHandler {
+func NewAuthHandler(cfg *cfg.Config, conn *sql.DB) *AuthHandler {
 	return &AuthHandler{
 		cfg:  cfg,
 		conn: conn,

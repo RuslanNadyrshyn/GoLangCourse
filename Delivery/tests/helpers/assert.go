@@ -1,8 +1,8 @@
 package helpers
 
 import (
-	"Delivery/Delivery/internal/auth/helper"
-	"Delivery/Delivery/internal/auth/responses"
+	"Delivery/Delivery/internal/helper"
+	"Delivery/Delivery/internal/repositories/responses"
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
 	"net/http/httptest"

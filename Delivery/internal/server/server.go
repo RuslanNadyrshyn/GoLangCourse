@@ -1,14 +1,12 @@
 package server
 
 import (
-	"Delivery/Delivery/internal/auth/config"
-	"Delivery/Delivery/internal/auth/repositories"
-	"Delivery/Delivery/internal/auth/server/handlers"
-	"Delivery/Delivery/internal/auth/services"
+	"Delivery/Delivery/cfg"
 	repos "Delivery/Delivery/internal/repositories"
 	"Delivery/Delivery/internal/repositories/database/Connection"
+	handlers2 "Delivery/Delivery/internal/server/handlers"
+	"Delivery/Delivery/internal/services"
 	"encoding/json"
-	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"net/http"
@@ -16,18 +14,20 @@ import (
 
 var (
 	conn, err       = Connection.Connect()
-	supplierService = repos.NewSupplierService(conn)
+	supplierService = services.NewSupplierService(conn)
 )
 
-func Start(cfg *config.Config) {
-	userRepository := repositories.NewUserRepository()
+func Start(cfg *cfg.Config) {
+	userRepository := repos.NewUserRepository()
+	supplierRepository := repos.NewSupplierRepository()
 	tokenService := services.NewTokenService(cfg)
 	if err != nil {
 		log.Println(err)
 	}
 
-	authHandler := handlers.NewAuthHandler(cfg, conn)
-	userHandler := handlers.NewUserHandler(tokenService, userRepository, conn)
+	authHandler := handlers2.NewAuthHandler(cfg, conn)
+	userHandler := handlers2.NewUserHandler(tokenService, userRepository, conn)
+	supplierHandler := handlers2.NewSupplierHandler(&supplierService, supplierRepository, conn)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/sign_in", userHandler.SignIn)
@@ -35,9 +35,10 @@ func Start(cfg *config.Config) {
 	mux.HandleFunc("/profile", userHandler.GetProfile)
 	mux.HandleFunc("/refresh", authHandler.Refresh)
 
+	mux.HandleFunc("/get_suppliers", supplierHandler.GetAll)
+
 	// Надо перенести в хендлеры
 	mux.HandleFunc("/get_products", GetProducts)
-	mux.HandleFunc("/get_suppliers", GetSuppliers)
 
 	mux.HandleFunc("/get_order", supplierService.GetOrder)
 	mux.HandleFunc("/post_order", supplierService.CreateOrder)
@@ -55,9 +56,8 @@ func GetSuppliers(resp http.ResponseWriter, req *http.Request) {
 		log.Fatal(err)
 	}
 
-	data, _ := json.Marshal(suppliers)
 	resp.Header().Add("Access-Control-Allow-Origin", "*")
-	fmt.Fprintln(resp, string(data))
+	json.NewEncoder(resp).Encode(suppliers)
 }
 
 func GetProducts(resp http.ResponseWriter, req *http.Request) {
@@ -70,10 +70,8 @@ func GetProducts(resp http.ResponseWriter, req *http.Request) {
 		log.Fatal(err)
 	}
 
-	data, _ := json.Marshal(products)
 	resp.Header().Add("Access-Control-Allow-Origin", "*")
-	_ = data
-	fmt.Println(resp, string(data))
+	json.NewEncoder(resp).Encode(products)
 }
 
 //func GetBasket(resp http.ResponseWriter, req *http.Request) {

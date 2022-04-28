@@ -1,14 +1,13 @@
 package main
 
 import (
-	config2 "Delivery/Delivery/internal/auth/config"
-	"Delivery/Delivery/internal/auth/server"
+	"Delivery/Delivery/cfg"
+	"Delivery/Delivery/internal/server"
 	_ "github.com/go-sql-driver/mysql"
 )
 
 func main() {
 	//http://foodapi.true-tech.php.nixdev.co/swagger/doc.json
-	cfg := config2.NewConfig(false)
-
-	server.Start(cfg)
+	config := cfg.NewConfig(false)
+	server.Start(config)
 }

@@ -1,12 +1,12 @@
 package handlers
 
 import (
-	"Delivery/Delivery/internal/auth/repositories"
-	"Delivery/Delivery/internal/auth/requests"
-	"Delivery/Delivery/internal/auth/responses"
-	"Delivery/Delivery/internal/auth/services"
+	"Delivery/Delivery/internal/repositories"
 	"Delivery/Delivery/internal/repositories/database"
 	"Delivery/Delivery/internal/repositories/models"
+	"Delivery/Delivery/internal/repositories/requests"
+	"Delivery/Delivery/internal/repositories/responses"
+	"Delivery/Delivery/internal/services"
 	"database/sql"
 	"encoding/json"
 	"log"
@@ -88,7 +88,7 @@ func (h *UserHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 		}
 
 		resp := responses.UserResponse{
-			ID:    user.ID,
+			ID:    user.Id,
 			Name:  user.Name,
 			Email: user.Email,
 		}

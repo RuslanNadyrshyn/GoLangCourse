@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	"Delivery/Delivery/internal/auth/models"
+	"Delivery/Delivery/internal/repositories/models"
 	"errors"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -16,16 +16,16 @@ func NewUserRepositoryMock() IUserRepository {
 
 	users := []*models.User{
 		&models.User{
-			ID:       1,
-			Email:    "test-1@example.com",
-			Name:     "Test User 1",
-			Password: string(p1),
+			Id:           1,
+			Email:        "test-1@example.com",
+			Name:         "Test User 1",
+			PasswordHash: string(p1),
 		},
 		&models.User{
-			ID:       2,
-			Email:    "test-2@example.com",
-			Name:     "TestUser2",
-			Password: string(p2),
+			Id:           2,
+			Email:        "test-2@example.com",
+			Name:         "TestUser2",
+			PasswordHash: string(p2),
 		},
 	}
 
@@ -44,7 +44,7 @@ func (r *UserRepositoryMock) GetUserByEmail(email string) (*models.User, error) 
 
 func (r *UserRepositoryMock) GetUserByID(id int) (*models.User, error) {
 	for _, user := range r.users {
-		if user.ID == id {
+		if user.Id == id {
 			return user, nil
 		}
 	}

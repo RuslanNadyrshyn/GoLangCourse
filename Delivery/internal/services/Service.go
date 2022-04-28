@@ -1,10 +1,10 @@
-package repositories
+package services
 
 import (
-	"Delivery/Delivery/internal/auth/requests"
-	"Delivery/Delivery/internal/auth/responses"
 	"Delivery/Delivery/internal/repositories/database"
 	"Delivery/Delivery/internal/repositories/models"
+	"Delivery/Delivery/internal/repositories/requests"
+	"Delivery/Delivery/internal/repositories/responses"
 	"database/sql"
 	"encoding/json"
 	"fmt"

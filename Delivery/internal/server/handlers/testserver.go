@@ -1,15 +1,15 @@
 package handlers
 
 import (
-	"Delivery/Delivery/internal/auth/config"
-	"Delivery/Delivery/internal/auth/repositories"
-	"Delivery/Delivery/internal/auth/services"
+	"Delivery/Delivery/cfg"
+	"Delivery/Delivery/internal/repositories"
+	"Delivery/Delivery/internal/services"
 	"database/sql"
 	"net/http"
 	"net/http/httptest"
 )
 
-func Start(cfg *config.Config, conn *sql.DB) *httptest.Server {
+func Start(cfg *cfg.Config, conn *sql.DB) *httptest.Server {
 	userRepository := repositories.NewUserRepositoryMock()
 	tokenService := services.NewTokenService(cfg)
 

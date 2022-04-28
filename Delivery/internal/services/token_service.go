@@ -1,8 +1,8 @@
 package services
 
 import (
-	"Delivery/Delivery/internal/auth/config"
-	"Delivery/Delivery/internal/auth/helper"
+	"Delivery/Delivery/cfg"
+	"Delivery/Delivery/internal/helper"
 	"errors"
 	"fmt"
 	"github.com/golang-jwt/jwt"
@@ -11,10 +11,10 @@ import (
 )
 
 type TokenService struct {
-	cfg *config.Config
+	cfg *cfg.Config
 }
 
-func NewTokenService(cfg *config.Config) *TokenService {
+func NewTokenService(cfg *cfg.Config) *TokenService {
 	return &TokenService{
 		cfg: cfg,
 	}

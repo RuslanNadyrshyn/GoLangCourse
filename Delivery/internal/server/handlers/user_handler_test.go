@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"awesomeProject/internal/auth/config"
-	"awesomeProject/internal/auth/repositories"
-	"awesomeProject/internal/auth/services"
-	"awesomeProject/internal/auth/tests/helpers"
-	"awesomeProject/internal/repositories/database/Connection"
+	config "Delivery/Delivery/cfg"
+	"Delivery/Delivery/internal/repositories"
+	"Delivery/Delivery/internal/repositories/database/Connection"
+	"Delivery/Delivery/internal/services"
+	"Delivery/Delivery/tests/helpers"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"net/http"
