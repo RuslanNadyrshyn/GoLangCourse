@@ -35,33 +35,36 @@
         </div>
       </div>
       <div class="price_container">
-        <div class="counter_block">
-          <button class="counter_btn green" v-on:click="counter++">
-            &uarr;
-          </button>
-          <input
-            v-model.number="counter"
-            class="counter_number"
-            type="number"
-            step="1"
-            min="1"
-            required
-          />
-          <button class="counter_btn red" v-on:click="counter--">&darr;</button>
+        <div class="price_item">
+          <div class="price">{{ summary.toFixed(2) }}</div>
+          <label>грн</label>
         </div>
-
-        <div class="price_block">
-          <div class="price_item">
-            <div class="price">{{ product.price }}</div>
-            <label>грн</label>
+        <div style="display: flex; margin-top: 5px">
+          <div class="counter_block">
+            <button class="counter_btn green" v-on:click="counter++">
+              &uarr;
+            </button>
+            <input
+              v-model.number="counter"
+              class="counter_number"
+              type="number"
+              step="1"
+              min="1"
+              required
+            />
+            <button class="counter_btn red" v-on:click="counter--">
+              &darr;
+            </button>
           </div>
-          <div class="price_item">
-            <div class="price">{{ summary.toFixed(2) }}</div>
-            <label>грн</label>
+          <div class="price_block">
+            <div class="price_item">
+              <div class="price">{{ product.price }}</div>
+              <label>грн</label>
+            </div>
+            <button class="basket_delete_btn red" v-on:click="deleteProd()">
+              Удалить
+            </button>
           </div>
-          <button class="basket_delete_btn red" v-on:click="deleteProd()">
-            Удалить
-          </button>
         </div>
       </div>
     </div>
@@ -142,13 +145,13 @@ input[type="number"] {
   flex-direction: row;
   width: 80%;
   justify-content: space-around;
+  margin: 5px;
 }
 
 .description_block {
   display: flex;
   flex-direction: column;
   width: 80%;
-  margin: 5px;
   text-align: center;
 }
 .title_product {
@@ -177,19 +180,22 @@ input[type="number"] {
 
 .price_container {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
 }
 
 .price_block {
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
-  margin: 5px;
+  justify-content: space-between;
+  align-items: end;
+  margin-left: 5px;
 }
 .price_item {
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: end;
   align-items: center;
 }
 .price {
@@ -197,10 +203,13 @@ input[type="number"] {
   justify-content: center;
   align-items: center;
   font-size: 30px;
-  min-width: 80px;
-  max-width: max-content;
+  min-width: 75px;
+  width: max-content;
+  max-width: 155px;
+  overflow: hidden;
   background-color: #686e65;
   margin-right: 5px;
+  padding: 0 5px;
   border-radius: 5px;
   border: 1px solid #333;
 }
@@ -281,15 +290,15 @@ input[type="number"] {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 22px;
+  font-size: 20px;
   width: 77px;
   border-radius: 0;
 }
 
 .counter_number {
   font: large medium sans-serif;
-  font-size: 24px;
-  padding: 5px 0;
+  font-size: 22px;
+  padding: 2px 0;
   margin: -1px 0;
   background-color: #686e65;
   width: 75px;

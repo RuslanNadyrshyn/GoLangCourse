@@ -34,7 +34,7 @@
           </div>
         </div>
       </div>
-      <div class="price_block">
+      <div class="price_container">
         <div class="price">{{ product.counter }}</div>
         <div class="price_item">
           <div class="price">{{ summary.toFixed(2) }}</div>

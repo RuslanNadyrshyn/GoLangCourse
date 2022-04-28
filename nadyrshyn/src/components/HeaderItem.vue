@@ -30,8 +30,8 @@
           <template v-if="$store.getters['auth/getAccess'] === true">
             <router-link
               v-bind:class="
-              $route.path === '/user' ? 'nav_link_active' : 'nav_link'
-            "
+                $route.path === '/user' ? 'nav_link_active' : 'nav_link'
+              "
               :to="'/user'"
             >
               Профиль
@@ -40,8 +40,8 @@
           <template v-else>
             <router-link
               v-bind:class="
-              $route.path === '/login' ? 'nav_link_active' : 'nav_link'
-            "
+                $route.path === '/login' ? 'nav_link_active' : 'nav_link'
+              "
               :to="'/login'"
             >
               Войти
