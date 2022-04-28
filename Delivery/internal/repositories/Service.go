@@ -1,14 +1,16 @@
 package repositories
 
 import (
+	"Delivery/Delivery/internal/auth/requests"
+	"Delivery/Delivery/internal/auth/responses"
 	"Delivery/Delivery/internal/repositories/database"
 	"Delivery/Delivery/internal/repositories/models"
-	"Delivery/Delivery/internal/repositories/requests"
 	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type SupplierService struct {
@@ -19,6 +21,7 @@ type SupplierService struct {
 	IngredientRepo        database.IngredientDBRepository
 	ProductIngredientRepo database.ProductIngredientDBRepository
 	OrderRepo             database.OrderDBRepository
+	OrderProductRepo      database.OrderProductDBRepository
 }
 
 func NewSupplierService(conn *sql.DB) SupplierService {
@@ -30,6 +33,7 @@ func NewSupplierService(conn *sql.DB) SupplierService {
 		IngredientRepo:        database.NewIngredientRepository(conn),
 		ProductIngredientRepo: database.NewProductIngredientRepository(conn),
 		OrderRepo:             database.NewOrderRepository(conn),
+		OrderProductRepo:      database.NewOrderProductRepository(conn),
 	}
 }
 
@@ -258,7 +262,7 @@ func (ss SupplierService) CreateOrder(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		for _, product := range req.Products {
-			_, err := ss.OrderRepo.InsertOrderProduct(orderId, product.ProductId, product.Counter, product.ProductPrice)
+			_, err := ss.OrderProductRepo.Insert(orderId, product.ProductId, product.Counter, product.ProductPrice)
 			if err != nil {
 				log.Println(err)
 				return
@@ -273,5 +277,67 @@ func (ss SupplierService) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		}
 	default:
 		http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+func (ss *SupplierService) GetOrder(w http.ResponseWriter, r *http.Request) {
+	requests.SetupCORS(&w, r)
+	switch r.Method {
+	case "GET":
+		req := r.URL.Query().Get("id")
+		id, err := strconv.Atoi(req)
+		if err != nil {
+			http.Error(w, "Bad Request", http.StatusBadRequest)
+			fmt.Println(err)
+			return
+		}
+		order, err := ss.OrderRepo.GetById(id)
+		if err != nil {
+			http.Error(w, "Order does not exist", http.StatusBadRequest)
+			fmt.Println(err)
+			return
+		}
+		fmt.Printf("Id: %d\nPrice: %f\nAddress: %s\n", order.Id, order.Price, order.Address)
+
+		orderProducts, err := ss.OrderProductRepo.GetByOrderId(order.Id)
+		if err != nil {
+			http.Error(w, "OrderProduct error", http.StatusBadRequest)
+			fmt.Println(err)
+			return
+		}
+
+		var respProducts []responses.Product
+		for _, orderProd := range orderProducts {
+			product, err := ss.ProductRepo.GetById(orderProd.ProductId)
+			if err != nil {
+				http.Error(w, "Product error", http.StatusBadRequest)
+				fmt.Println(err)
+				return
+			}
+			p := responses.Product{
+				Id:          product.Id,
+				MenuId:      product.MenuId,
+				Name:        product.Name,
+				Price:       product.Price,
+				Image:       product.Image,
+				Type:        product.Type,
+				Ingredients: product.Ingredients,
+				Counter:     orderProd.Count,
+				OldPrice:    orderProd.Price,
+			}
+			respProducts = append(respProducts, p)
+		}
+
+		resp := responses.OrderResponse{
+			Id:       order.Id,
+			UserId:   order.UserId,
+			Address:  order.Address,
+			Price:    order.Price,
+			Products: respProducts,
+		}
+
+		json.NewEncoder(w).Encode(resp)
+	default:
+		http.Error(w, "Only GET method is allowed", http.StatusMethodNotAllowed)
 	}
 }

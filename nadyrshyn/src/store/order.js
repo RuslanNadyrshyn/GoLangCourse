@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const state = {
-  getOrderURL: "http://localhost:8080/get_order",
+  orderURL: "http://localhost:8080/get_order",
   postOrderURL: "http://localhost:8080/post_order",
   order: Object,
   errors: [],
@@ -20,32 +20,30 @@ const mutations = {
     state.loaded = loaded;
   },
 };
-// fetchOrder(context) {
-//     context.commit("setLoaded", false);
-//     axios
-//         .get(context.getters.getOrderURL)
-//         .then((res) => {
-//             let types = [];
-//             for (let i = 0; i < res.data.length; i++) {
-//                 if (types.includes(res.data[i].type) === false)
-//                     types.push(res.data[i].type);
-//             }
-//             context.commit("setOrder", res.data);
-//             context.commit("setSortedSuppliers", res.data);
-//             context.commit("setSuppliersTypes", types);
-//         })
-//         .catch((err) => [context.commit("setErrors", [err])])
-//         .finally(() => {
-//             context.commit("setLoaded", true);
-//         });
-// },
+
 const actions = {
   fetchOrderPOST(context, order) {
     console.log("start_fetch");
     axios
-      .post(context.getters.getPostURL, order)
+      .post(context.getters.getPostOrderURL, order)
       .then((res) => {
         alert("Спасибо за заказ. Номер вашего заказа: " + res.data);
+      })
+      .catch((err) => [context.commit("setErrors", [err])])
+      .finally(() => {
+        context.commit("setLoaded", true);
+      });
+  },
+  fetchOrder(context, orderId) {
+    context.commit("setLoaded", false);
+    axios
+      .get(context.getters.getOrderURL, {
+        params: {
+          id: orderId,
+        },
+      })
+      .then((res) => {
+        context.commit("setOrder", res.data);
       })
       .catch((err) => [context.commit("setErrors", [err])])
       .finally(() => {
@@ -58,8 +56,14 @@ const getters = {
   getOrder: () => {
     return state.order;
   },
-  getPostURL: () => {
+  getOrderProducts: () => {
+    return state.order.products;
+  },
+  getPostOrderURL: () => {
     return state.postOrderURL;
+  },
+  getOrderURL: () => {
+    return state.orderURL;
   },
 };
 

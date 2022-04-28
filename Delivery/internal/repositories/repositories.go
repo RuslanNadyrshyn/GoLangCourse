@@ -20,9 +20,9 @@ type ProductRepositoryInterface interface {
 	Delete(product *models.Product) error
 }
 
-type OrdersRepositoryInterface interface {
+type OrderRepositoryInterface interface {
 	GetAll(orderId int) (order []*models.Order, err error)
-	Add(ProductId int) (order models.Order, err error)
+	Insert(order *models.Order) (id int, err error)
 }
 
 //type OrderProductsRepositoryInterface interface {

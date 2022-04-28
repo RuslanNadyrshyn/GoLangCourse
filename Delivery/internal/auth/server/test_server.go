@@ -35,9 +35,11 @@ func Start(cfg *config.Config) {
 	mux.HandleFunc("/profile", userHandler.GetProfile)
 	mux.HandleFunc("/refresh", authHandler.Refresh)
 
+	// Надо перенести в хендлеры
 	mux.HandleFunc("/get_products", GetProducts)
 	mux.HandleFunc("/get_suppliers", GetSuppliers)
 
+	mux.HandleFunc("/get_order", supplierService.GetOrder)
 	mux.HandleFunc("/post_order", supplierService.CreateOrder)
 
 	log.Fatal(http.ListenAndServe(cfg.Port, mux))
