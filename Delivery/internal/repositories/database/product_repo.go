@@ -144,7 +144,7 @@ func (r ProductDBRepository) GetByName(n string) (products []models.Product, err
 	return products, nil
 }
 
-func (r ProductDBRepository) GetBySupplier(id int) (products []models.Product, err error) {
+func (r ProductDBRepository) GetBySupplierId(id int) (products []models.Product, err error) {
 	var prod models.Product
 
 	rows, err := r.DB.Query("SELECT id, menu_id, name, price, image, type FROM products "+

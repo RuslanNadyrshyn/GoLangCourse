@@ -45,6 +45,14 @@ func (r MenuDBRepository) Insert(supId int) (int, error) {
 	return int(menuId), err
 }
 
+func (r MenuDBRepository) GetById(id int) (supplierId int, err error) {
+	err = r.DB.QueryRow("SELECT supplier_id FROM menus WHERE id = ?", id).Scan(&supplierId)
+	if err != nil {
+		return 0, err
+	}
+	return supplierId, nil
+}
+
 func (r MenuDBRepository) DeleteAll() error {
 	_, err := r.DB.Exec("DELETE FROM menus")
 	if err != nil {

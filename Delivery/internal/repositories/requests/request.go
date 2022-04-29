@@ -22,6 +22,18 @@ func SetupCORS(w *http.ResponseWriter, req *http.Request) {
 	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 }
 
+type SupplierRequest struct {
+	Id           int    `json:"id"`
+	Name         string `json:"name"`
+	Type         string `json:"type"`
+	Image        string `json:"image"`
+	WorkingHours struct {
+		Opening string `json:"opening"`
+		Closing string `json:"closing"`
+	} `json:"workingHours"`
+	Menu []models.Product `json:"menu"`
+}
+
 type OrderRequest struct {
 	User       *models.User `json:"user"`
 	TotalPrice float64      `json:"totalPrice"`
@@ -31,8 +43,4 @@ type OrderRequest struct {
 		ProductPrice float64 `json:"price"`
 		Counter      int     `json:"counter"`
 	} `json:"products"`
-}
-
-type GetOrderRequest struct {
-	Id int `json:"id"`
 }

@@ -1,5 +1,7 @@
 package responses
 
+import "Delivery/Delivery/internal/repositories/models"
+
 type LoginResponse struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
@@ -29,4 +31,20 @@ type OrderResponse struct {
 	Address  string    `json:"address"`
 	Price    float64   `json:"price"`
 	Products []Product `json:"products"`
+}
+
+type Supplier struct {
+	Id           int    `json:"id"`
+	Name         string `json:"name"`
+	Type         string `json:"type"`
+	Image        string `json:"image"`
+	WorkingHours struct {
+		Opening string `json:"opening"`
+		Closing string `json:"closing"`
+	} `json:"workingHours"`
+}
+
+type ProductResponse struct {
+	Product  models.Product
+	Supplier Supplier
 }
