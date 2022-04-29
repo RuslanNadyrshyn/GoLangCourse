@@ -68,14 +68,14 @@ func (r *SupplierDBRepository) GetAll() (suppliers []*models.Supplier, err error
 	return suppliers, nil
 }
 
-func (r *SupplierDBRepository) GetById(id int) (supplier *models.Supplier, err error) {
-	err = r.DB.QueryRow("SELECT id, name, type, image, opening, closing FROM suppliers "+
+func (r *SupplierDBRepository) GetById(id int) (models.Supplier, error) {
+	var supplier models.Supplier
+	err := r.DB.QueryRow("SELECT id, name, type, image, opening, closing FROM suppliers "+
 		"WHERE id = ?", id).Scan(&supplier.Id, &supplier.Name, &supplier.Type, &supplier.Image,
 		&supplier.WorkingHours.Opening, &supplier.WorkingHours.Closing)
 	if err != nil {
 		return supplier, err
 	}
-
 	return supplier, nil
 }
 

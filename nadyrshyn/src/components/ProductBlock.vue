@@ -41,8 +41,8 @@
         </div>
       </div>
       <div class="description_container">
-        <label class="description_title">{{ product.supplier_name }}</label>
-        <img class="supplier_logo" :src="product.supplier_image" />
+        <label class="description_title">{{ supplier.name }}</label>
+        <img class="supplier_logo" :src="supplier.image" />
       </div>
     </div>
   </div>
@@ -58,6 +58,9 @@ export default {
   },
   props: {
     product: {
+      type: Object,
+    },
+    supplier: {
       type: Object,
     },
   },
@@ -88,6 +91,7 @@ export default {
   flex-direction: row;
   min-height: 500px;
   max-width: 1200px;
+  width: 90%;
   margin: 10px auto 0;
   background-color: #686e65;
 }

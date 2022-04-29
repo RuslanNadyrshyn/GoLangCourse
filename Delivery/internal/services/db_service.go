@@ -218,9 +218,7 @@ func (dbs *DBService) GetProductById(productId int) (product *responses.ProductR
 		fmt.Println(err)
 		return nil, err
 	}
-	// получить продукт из айди
-	// из меню айди получить поставщика
-	// засунуть все в стуктуру продукт
+
 	supplierId, err := dbs.MenuRepo.GetById(prod.MenuId)
 	if err != nil {
 		fmt.Println(err)
@@ -228,17 +226,10 @@ func (dbs *DBService) GetProductById(productId int) (product *responses.ProductR
 	}
 
 	supplier, err := dbs.SupplierRepo.GetById(supplierId)
-
-	sup := responses.Supplier{
-		Id:           supplier.Id,
-		Name:         supplier.Name,
-		Type:         supplier.Type,
-		Image:        supplier.Image,
-		WorkingHours: supplier.WorkingHours,
-	}
 	product = &responses.ProductResponse{
 		Product:  prod,
-		Supplier: sup,
+		Supplier: supplier,
 	}
+
 	return product, nil
 }

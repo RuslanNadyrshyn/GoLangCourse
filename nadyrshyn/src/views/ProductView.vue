@@ -6,9 +6,10 @@
           {{ error }}
         </div>
       </template>
-      <div v-for="product in selectedProduct" :key="product.id">
-        <ProductBlock :product="product"></ProductBlock>
-      </div>
+      <ProductBlock
+        :product="$store.state.products.product.Product"
+        :supplier="$store.state.products.product.Supplier"
+      ></ProductBlock>
     </template>
     <div v-else>Loading...</div>
   </div>
@@ -16,36 +17,31 @@
 
 <script>
 import ProductBlock from "@/components/ProductBlock";
+import axios from "axios";
 
 export default {
   name: "ProductView",
   components: { ProductBlock },
   data() {
     return {
+      product: null,
       loaded: false,
       errors: [],
     };
   },
-  computed: {
-    selectedProduct() {
-      return this.$store.state.products.products.filter(
-        (product) => product.id == this.$route.params.id
-      );
-    },
-  },
   created() {
     if (JSON.parse(localStorage.getItem("delivery_basket")) == null)
       localStorage.setItem("delivery_basket", JSON.stringify([]));
-    this.$store.dispatch("suppliers/fetchSuppliers");
-    setTimeout(() => {
-      let suppliers = this.$store.state.suppliers.suppliers;
-      let prod = [];
-      for (let i = 0; i < suppliers.length; i++)
-        for (let j = 0; j < suppliers[i].menu.length; j++)
-          prod.push(suppliers[i].menu[j]);
-
-      this.$store.dispatch("products/fetchP", prod);
-    }, 1000);
+    this.$store.dispatch("products/fetchById", this.$route.params.id);
+    // axios
+    //   .get("http://localhost:8080/get_product", {
+    //     params: { id: this.$route.params.id },
+    //   })
+    //   .then((res) => this.product = res.data)
+    //   .catch((err) => console.log(err))
+    //   .finally(() => {
+    //     this.$store.commit("products/setLoaded", true);
+    //   });
   },
 };
 </script>
