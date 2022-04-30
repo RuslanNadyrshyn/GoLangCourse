@@ -1,8 +1,13 @@
+import axios from "axios";
+
 const state = {
   urlLogin: "http://localhost:8080/login",
   urlSignIn: "http://localhost:8080/sign_in",
+  urlUser: "http://localhost:8080/user",
+  urlOrders: "http://localhost:8080/orders",
   Access: false,
-  userId: 0,
+  user: null,
+  orders: [],
   accessToken: "",
   refreshToken: "",
   errors: [],
@@ -10,10 +15,16 @@ const state = {
 };
 
 const mutations = {
-  addAccessToken(state, token) {
+  setUser(state, user) {
+    state.user = user;
+  },
+  setOrders(state, orders) {
+    state.orders = orders;
+  },
+  setAccessToken(state, token) {
     state.accessToken = token;
   },
-  addRefreshToken(state, token) {
+  setRefreshToken(state, token) {
     state.refreshToken = token;
   },
   clearTokens(state) {
@@ -38,9 +49,39 @@ const actions = {
 
     context.commit("setAccess", true);
   },
+  fetchUser(context, id) {
+    context.commit("setLoaded", false);
+    axios
+      .get(context.getters.getUserURL, {
+        params: { id: id },
+      })
+      .then((res) => {
+        context.commit("setUser", res.data);
+      })
+      .catch((err) => context.commit("setErrors", err))
+      .finally(() => {
+        context.commit("setLoaded", true);
+      });
+  },
+  fetchOrders(context, userId) {
+    axios
+      .get(context.getters.getOrdersURL, {
+        params: { userId: userId },
+      })
+      .then((res) => {
+        context.commit("setOrders", res.data);
+      })
+      .catch((err) => console.log(err));
+  },
 };
 
 const getters = {
+  getUserURL: () => {
+    return state.urlUser;
+  },
+  getOrdersURL: () => {
+    return state.urlOrders;
+  },
   getAccessToken: () => {
     return state.accessToken;
   },
@@ -49,6 +90,12 @@ const getters = {
   },
   getAccess: (state) => {
     return state.Access;
+  },
+  getUser: (state) => {
+    return state.user;
+  },
+  getOrders: (state) => {
+    return state.orders;
   },
 };
 

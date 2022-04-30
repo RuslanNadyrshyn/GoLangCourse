@@ -74,7 +74,12 @@ export default {
   },
   methods: {
     setOrder() {
-      if (this.order.address !== "" && this.order.user.name !== "") {
+      if (
+        this.order.address !== "" &&
+        this.order.address.length < 5 &&
+        this.order.user.name !== "" &&
+        this.order.user.name.length < 20
+      ) {
         this.$store.dispatch("orders/fetchOrderPOST", this.order);
         this.$store.commit("basket/clearBasket");
         this.$router.push("/");
