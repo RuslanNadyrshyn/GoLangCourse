@@ -38,9 +38,9 @@ func Start(cfg *cfg.Config) {
 	mux.HandleFunc("/refresh", authHandler.Refresh)
 
 	mux.HandleFunc("/get_suppliers", supplierHandler.GetAll)
-	mux.HandleFunc("/get_products", productHandler.GetAll)
 
-	mux.HandleFunc("/get_product", productHandler.GetById)
+	mux.HandleFunc("/get_products", productHandler.GetAll)
+	mux.HandleFunc("/prod", productHandler.GetById)
 
 	mux.HandleFunc("/get_order", orderHandler.GetById)
 	mux.HandleFunc("/post_order", orderHandler.Add)

@@ -65,6 +65,12 @@ const getters = {
   getOrderURL: () => {
     return state.orderURL;
   },
+  getLoaded: () => {
+    return state.loaded;
+  },
+  getErrors: () => {
+    return state.errors;
+  },
 };
 
 export default {

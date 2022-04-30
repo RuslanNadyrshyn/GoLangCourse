@@ -1,20 +1,20 @@
 <template>
   <div class="intro">
     <div class="section">
-    <div class="container">
-      <template v-if="$store.state.products.loaded">
-        <template v-if="errors.length">
-          <div v-for="(error, index) in errors" :key="index">
-            {{ error }}
-          </div>
+      <div class="container">
+        <template v-if="$store.state.products.loaded">
+          <template v-if="errors.length">
+            <div v-for="(error, index) in errors" :key="index">
+              {{ error }}
+            </div>
+          </template>
+          <ProductBlock
+            :product="$store.state.products.product.Product"
+            :supplier="$store.state.products.product.Supplier"
+          ></ProductBlock>
         </template>
-        <ProductBlock
-          :product="$store.state.products.product.Product"
-          :supplier="$store.state.products.product.Supplier"
-        ></ProductBlock>
-      </template>
-      <div v-else>Loading...</div>
-    </div>
+        <div v-else>Loading...</div>
+      </div>
     </div>
   </div>
 </template>

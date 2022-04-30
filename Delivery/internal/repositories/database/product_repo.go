@@ -90,18 +90,16 @@ func (r ProductDBRepository) GetAll() (products []models.Product, err error) {
 	}
 	defer rows.Close()
 
+	IngredientRepo := NewIngredientRepository(r.DB)
 	for rows.Next() {
 		err = rows.Scan(&prod.Id, &prod.MenuId, &prod.Name, &prod.Price, &prod.Image, &prod.Type)
 		if err != nil {
 			panic(err)
 		}
+		prod.Ingredients, err = IngredientRepo.GetByProductId(prod.Id)
 		products = append(products, prod)
 	}
-	IngredientRepo := NewIngredientRepository(r.DB)
 
-	for i := range products {
-		products[i].Ingredients, err = IngredientRepo.GetByProductId(products[i].Id)
-	}
 	return products, nil
 }
 
@@ -154,18 +152,16 @@ func (r ProductDBRepository) GetBySupplierId(id int) (products []models.Product,
 	}
 	defer rows.Close()
 
+	IngredientRepo := NewIngredientRepository(r.DB)
 	for rows.Next() {
 		err = rows.Scan(&prod.Id, &prod.MenuId, &prod.Name, &prod.Price, &prod.Image, &prod.Type)
 		if err != nil {
 			panic(err)
 		}
+		prod.Ingredients, err = IngredientRepo.GetByProductId(prod.Id)
 		products = append(products, prod)
 	}
-	IngredientRepo := NewIngredientRepository(r.DB)
 
-	for i := range products {
-		products[i].Ingredients, err = IngredientRepo.GetByProductId(products[i].Id)
-	}
 	return products, nil
 }
 

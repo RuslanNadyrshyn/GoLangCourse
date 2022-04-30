@@ -133,9 +133,11 @@ export default {
 .clear_btn {
   font-size: 14px;
   padding: 5px;
+  margin: 5px;
 }
 .order_btn {
   padding: 10px;
+  margin: 5px;
 }
 @media (max-width: 810px) {
   .order_btn {

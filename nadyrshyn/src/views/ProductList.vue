@@ -1,8 +1,11 @@
 <template>
   <div class="intro">
     <template v-if="$store.state.suppliers.loaded">
-      <template v-if="errors.length">
-        <div v-for="(error, index) in errors" :key="index">
+      <template v-if="$store.state.suppliers.errors.length">
+        <div
+          v-for="(error, index) in $store.state.suppliers.errors"
+          :key="index"
+        >
           {{ error }}
         </div>
       </template>
@@ -18,9 +21,7 @@
                 <ListNavItem :type="'Открыто'" :isProduct="false">
                 </ListNavItem>
                 <div
-                  v-for="type in $store.getters[
-                    'suppliers/getSuppliersTypes'
-                  ]"
+                  v-for="type in $store.getters['suppliers/getSuppliersTypes']"
                   :key="type"
                 >
                   <ListNavItem :type="type" :isProduct="false"></ListNavItem>
@@ -50,8 +51,8 @@
               <div class="list product_list">
                 <div
                   v-for="product in $store.getters[
-                      'products/getSortedProducts'
-                    ]"
+                    'products/getSortedProducts'
+                  ]"
                   :key="product.id"
                 >
                   <ProductItem :product="product"></ProductItem>
@@ -130,7 +131,7 @@ export default {
   margin: auto;
 }
 .list.product_list {
-  height: 860px;
+  height: 880px;
 }
 
 @media (max-width: 560px) {

@@ -2,7 +2,7 @@ import axios from "axios";
 
 const state = {
   url: "http://localhost:8080/get_products",
-  urlGetById: "http://localhost:8080/get_product",
+  urlGetById: "http://localhost:8080/prod",
   product: null,
   products: [],
   sortedProducts: [],
