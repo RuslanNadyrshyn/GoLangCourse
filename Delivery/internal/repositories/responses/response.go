@@ -26,11 +26,13 @@ type Product struct {
 }
 
 type OrderResponse struct {
-	Id       int       `json:"id"`
-	UserId   int       `json:"userId"`
-	Address  string    `json:"address"`
-	Price    float64   `json:"price"`
-	Products []Product `json:"products"`
+	Id        int       `json:"id"`
+	UserId    int       `json:"userId"`
+	Address   string    `json:"address"`
+	Price     float64   `json:"price"`
+	CreatedAt string    `json:"created_at"`
+	UpdatedAt string    `json:"updated_at"`
+	Products  []Product `json:"products"`
 }
 
 type ProductResponse struct {

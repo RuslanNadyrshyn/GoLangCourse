@@ -12,7 +12,6 @@ const state = {
 const mutations = {
   addAccessToken(state, token) {
     state.accessToken = token;
-    // state.userId = token.uid;
   },
   addRefreshToken(state, token) {
     state.refreshToken = token;
@@ -36,9 +35,7 @@ const actions = {
   AddTokens(context, tokens) {
     context.commit("addAccessToken", tokens.access_token);
     context.commit("addRefreshToken", tokens.refresh_token);
-    console.log(tokens.access_token.id);
-    console.log(tokens.refresh_token);
-    console.log("id:", tokens.access_token.uid);
+
     context.commit("setAccess", true);
   },
 };

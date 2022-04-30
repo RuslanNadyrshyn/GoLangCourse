@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="intro">
     <template v-if="$store.state.suppliers.loaded">
       <template v-if="errors.length">
         <div v-for="(error, index) in errors" :key="index">
@@ -7,56 +7,54 @@
         </div>
       </template>
       <template v-if="$store.state.products.loaded">
-        <div class="intro">
-          <div class="section">
-            <div class="container">
-              <div class="title">
-                <label class="title_text">Доставка</label>
-              </div>
-              <div class="list_block">
-                <div class="list_nav">
-                  <ListNavItem :type="'все'" :isProduct="false"></ListNavItem>
-                  <ListNavItem :type="'Открыто'" :isProduct="false">
-                  </ListNavItem>
-                  <div
-                    v-for="type in $store.getters[
-                      'suppliers/getSuppliersTypes'
-                    ]"
-                    :key="type"
-                  >
-                    <ListNavItem :type="type" :isProduct="false"></ListNavItem>
-                  </div>
-                </div>
-                <div class="list">
-                  <div
-                    v-for="supplier in $store.getters[
-                      'suppliers/getSortedSuppliers'
-                    ]"
-                    :key="supplier.id"
-                  >
-                    <SupplierItem :supplier="supplier"></SupplierItem>
-                  </div>
+        <div class="section">
+          <div class="container">
+            <div class="title">
+              <label class="title_text">Доставка</label>
+            </div>
+            <div class="list_block">
+              <div class="list_nav">
+                <ListNavItem :type="'все'" :isProduct="false"></ListNavItem>
+                <ListNavItem :type="'Открыто'" :isProduct="false">
+                </ListNavItem>
+                <div
+                  v-for="type in $store.getters[
+                    'suppliers/getSuppliersTypes'
+                  ]"
+                  :key="type"
+                >
+                  <ListNavItem :type="type" :isProduct="false"></ListNavItem>
                 </div>
               </div>
-              <div class="list_block">
-                <div class="list_nav">
-                  <ListNavItem :type="'все'" :isProduct="true"></ListNavItem>
-                  <div
-                    v-for="type in $store.getters['products/getProductsTypes']"
-                    :key="type"
-                  >
-                    <ListNavItem :type="type" :isProduct="true"></ListNavItem>
-                  </div>
+              <div class="list">
+                <div
+                  v-for="supplier in $store.getters[
+                    'suppliers/getSortedSuppliers'
+                  ]"
+                  :key="supplier.id"
+                >
+                  <SupplierItem :supplier="supplier"></SupplierItem>
                 </div>
-                <div class="list product_list">
-                  <div
-                    v-for="product in $store.getters[
+              </div>
+            </div>
+            <div class="list_block">
+              <div class="list_nav">
+                <ListNavItem :type="'все'" :isProduct="true"></ListNavItem>
+                <div
+                  v-for="type in $store.getters['products/getProductsTypes']"
+                  :key="type"
+                >
+                  <ListNavItem :type="type" :isProduct="true"></ListNavItem>
+                </div>
+              </div>
+              <div class="list product_list">
+                <div
+                  v-for="product in $store.getters[
                       'products/getSortedProducts'
                     ]"
-                    :key="product.id"
-                  >
-                    <ProductItem :product="product"></ProductItem>
-                  </div>
+                  :key="product.id"
+                >
+                  <ProductItem :product="product"></ProductItem>
                 </div>
               </div>
             </div>

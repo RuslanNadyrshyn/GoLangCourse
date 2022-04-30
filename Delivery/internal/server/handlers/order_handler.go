@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"Delivery/Delivery/internal/repositories"
+	"Delivery/Delivery/internal/repositories/database"
 	"Delivery/Delivery/internal/repositories/requests"
 	"Delivery/Delivery/internal/services"
 	"database/sql"
@@ -76,6 +77,31 @@ func (h *OrderHandler) GetById(w http.ResponseWriter, r *http.Request) {
 		}
 		dbService := services.NewDBService(h.conn)
 		resp, err := dbService.GetOrderById(id)
+		if err != nil {
+			http.Error(w, "Bad Request", http.StatusBadRequest)
+			fmt.Println(err)
+			return
+		}
+
+		json.NewEncoder(w).Encode(resp)
+	default:
+		http.Error(w, "Only GET method is allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+func (h *OrderHandler) GetByUserId(w http.ResponseWriter, r *http.Request) {
+	requests.SetupCORS(&w, r)
+	switch r.Method {
+	case "GET":
+		req := r.URL.Query().Get("userId")
+		userId, err := strconv.Atoi(req)
+		if err != nil {
+			http.Error(w, "Bad Request", http.StatusBadRequest)
+			fmt.Println(err)
+			return
+		}
+		orderRepo := database.NewOrderRepository(h.conn)
+		resp, err := orderRepo.GetByUserId(userId)
 		if err != nil {
 			http.Error(w, "Bad Request", http.StatusBadRequest)
 			fmt.Println(err)

@@ -42,11 +42,9 @@ const mutations = {
 
 const actions = {
   addProduct(context, product) {
-    let inBasket = false;
     for (let i = 0; i < state.products.length; i++)
       if (state.products[i].id === product.id) {
         state.products[i].counter++;
-        inBasket = true;
         return;
       }
     product.counter = 1;

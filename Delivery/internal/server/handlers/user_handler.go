@@ -9,8 +9,10 @@ import (
 	"Delivery/Delivery/internal/services"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type UserHandler struct {
@@ -72,6 +74,7 @@ func (h *UserHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *UserHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
+	requests.SetupCORS(&w, r)
 	switch r.Method {
 	case "GET":
 		requestToken := h.tokenService.GetTokenFromBearerString(r.Header.Get("Authorization"))
@@ -82,6 +85,38 @@ func (h *UserHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 		}
 
 		user, err := h.userRepository.GetUserByID(claims.ID)
+		if err != nil {
+			http.Error(w, "User does not exist", http.StatusBadRequest)
+			return
+		}
+
+		resp := responses.UserResponse{
+			ID:    user.Id,
+			Name:  user.Name,
+			Email: user.Email,
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(resp)
+	default:
+		http.Error(w, "Only GET method is allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+func (h *UserHandler) GetById(w http.ResponseWriter, r *http.Request) {
+	requests.SetupCORS(&w, r)
+	switch r.Method {
+	case "GET":
+		req := r.URL.Query().Get("id")
+		id, err := strconv.Atoi(req)
+		if err != nil {
+			http.Error(w, "Bad Request", http.StatusBadRequest)
+			fmt.Println(err)
+			return
+		}
+		userRepo := database.NewUserRepository(h.conn)
+
+		user, err := userRepo.GetById(id)
 		if err != nil {
 			http.Error(w, "User does not exist", http.StatusBadRequest)
 			return

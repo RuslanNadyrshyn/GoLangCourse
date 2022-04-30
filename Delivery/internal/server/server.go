@@ -45,6 +45,9 @@ func Start(cfg *cfg.Config) {
 	mux.HandleFunc("/get_order", orderHandler.GetById)
 	mux.HandleFunc("/post_order", orderHandler.Add)
 
+	mux.HandleFunc("/user", userHandler.GetById)
+	mux.HandleFunc("/orders", orderHandler.GetByUserId)
+
 	log.Fatal(http.ListenAndServe(cfg.Port, mux))
 }
 
