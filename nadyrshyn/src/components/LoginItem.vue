@@ -78,7 +78,7 @@ export default {
         .post("http://localhost:8080/login", this.login)
         .then((res) => {
           console.log("Login accepted", res.data);
-          localStorage.setItem("tokens", JSON.stringify(res.data));
+          localStorage.setItem("delivery_tokens", JSON.stringify(res.data));
           this.$store.dispatch("auth/AddTokens", res.data);
 
           // let userId = this.$store.getters("auth/getUserId")

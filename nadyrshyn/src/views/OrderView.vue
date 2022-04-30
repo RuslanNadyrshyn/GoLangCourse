@@ -5,7 +5,7 @@
         {{ error }}
       </div>
     </template>
-    <template v-if="$store.getters['orders/getLoaded']">
+    <template v-if="loaded">
       <div class="section">
         <div class="container">
           <div class="title">
@@ -64,7 +64,7 @@ export default {
   data() {
     return {
       order: {
-        products: this.$store.getters["basket/getBasket"],
+        products: JSON.parse(localStorage.getItem("delivery_basket")),
         totalPrice: 0,
         user: {
           name: "",
@@ -83,18 +83,23 @@ export default {
   created() {
     this.$store.dispatch("basket/calcTotalPrice");
     this.order.totalPrice = this.$store.getters["basket/getTotalPrice"];
+    if (this.order.products.length) this.loaded = true;
   },
   methods: {
     setOrder() {
       if (
         this.order.address !== "" &&
-        this.order.address.length < 5 &&
+        this.order.address.length < 50 &&
         this.order.user.name !== "" &&
         this.order.user.name.length < 20
       ) {
-        this.$store.dispatch("orders/fetchOrderPOST", this.order);
-        this.$store.commit("basket/clearBasket");
-        this.$router.push("/");
+        this.$store.dispatch("orders/fetchOrderPOST", this.order).then(() => {
+          this.errors = this.$store.getters["orders/getErrors"];
+          if (!this.errors.length) {
+            this.$store.commit("basket/clearBasket");
+            this.$router.push("/");
+          } else alert(this.errors);
+        });
       } else {
         alert("Введите имя и адрес!");
       }

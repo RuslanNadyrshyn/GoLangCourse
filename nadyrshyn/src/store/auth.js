@@ -49,6 +49,23 @@ const actions = {
 
     context.commit("setAccess", true);
   },
+  fetchProfile(context, id) {
+    context.commit("setLoaded", false);
+    let tokens = localStorage.getItem("delivery_tokens");
+    console.log(tokens);
+    axios
+      .get(context.getters.getUserURL, {
+        headers: { '"Authorization"': tokens.access_token },
+        params: { id: id },
+      })
+      .then((res) => {
+        context.commit("setUser", res.data);
+      })
+      .catch((err) => context.commit("setErrors", err))
+      .finally(() => {
+        context.commit("setLoaded", true);
+      });
+  },
   fetchUser(context, id) {
     context.commit("setLoaded", false);
     axios
