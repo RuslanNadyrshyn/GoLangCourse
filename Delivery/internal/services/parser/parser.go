@@ -3,8 +3,8 @@ package parser
 import (
 	"Delivery/Delivery/internal/repositories/models"
 	"Delivery/Delivery/internal/repositories/requests"
-	"Delivery/Delivery/internal/server/parser/worker_pool"
 	"Delivery/Delivery/internal/services"
+	"Delivery/Delivery/internal/services/parser/worker_pool"
 	"context"
 	"database/sql"
 	"encoding/json"
@@ -136,7 +136,7 @@ func (p Parser) ParseJson(jsonFile string) (supplier requests.SupplierRequest) {
 	return supplier
 }
 
-func Parse(conn *sql.DB) {
+func (p Parser) Parse(conn *sql.DB) {
 	poolConst := func() worker_pool.Worker {
 		return worker{
 			DB: conn,
@@ -146,14 +146,13 @@ func Parse(conn *sql.DB) {
 	pool := worker_pool.NewPool(4, poolConst)
 	go pool.Run()
 
-	parser := Parser{}
-	supplier := parser.ParseHTTP("http://foodapi.true-tech.php.nixdev.co/suppliers")
+	supplier := p.ParseHTTP("http://foodapi.true-tech.php.nixdev.co/suppliers")
 
 	for i := range supplier {
 		pool.DataSource <- supplier[i]
 	}
 
-	parser.UpdateHTTP(supplier, conn)
+	p.UpdateHTTP(supplier, conn)
 	pool.Stop()
 }
 
