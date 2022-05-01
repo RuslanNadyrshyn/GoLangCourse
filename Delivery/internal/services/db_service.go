@@ -57,8 +57,8 @@ func (dbs *DBService) GetAll() (suppliers []requests.SupplierRequest, err error)
 
 func (dbs *DBService) CreateSupplier(sup *requests.SupplierRequest) int {
 	//Supplier
-	var supplier models.Supplier
-	supplier = models.Supplier{
+
+	supplier := models.Supplier{
 		Id:    sup.Id,
 		Name:  sup.Name,
 		Type:  sup.Type,

@@ -51,9 +51,9 @@ func Start(cfg *cfg.Config) {
 	log.Fatal(http.ListenAndServe(cfg.Port, mux))
 }
 
-//func GetBasket(resp http.ResponseWriter, req *http.Request) {
-//	if req.Method != http.MethodGet {
-//		http.Error(resp, "not allowed", http.StatusMethodNotAllowed)
+//func GetBasket(resp parser.ResponseWriter, req *parser.Request) {
+//	if req.Method != parser.MethodGet {
+//		parser.Error(resp, "not allowed", parser.StatusMethodNotAllowed)
 //	}
 //	//
 //	//basket, err := supplierService.BasketRepo.GetById(id)
