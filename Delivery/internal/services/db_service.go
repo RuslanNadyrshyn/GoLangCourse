@@ -143,10 +143,15 @@ func (dbs *DBService) DeleteAll() error {
 }
 
 func (dbs *DBService) AddOrder(req *requests.OrderRequest) (orderId int, err error) {
-	userId, err := dbs.UserRepo.Insert(req.User)
-	if err != nil {
-		log.Println(err)
-		return 0, err
+	var userId int
+	if req.User.Id == 0 {
+		userId, err = dbs.UserRepo.Insert(req.User)
+		if err != nil {
+			log.Println(err)
+			return 0, err
+		}
+	} else {
+		userId = req.User.Id
 	}
 	orderId, err = dbs.OrderRepo.Insert(
 		&models.Order{
@@ -203,11 +208,12 @@ func (dbs *DBService) GetOrderById(orderId int) (order *responses.OrderResponse,
 	}
 
 	order = &responses.OrderResponse{
-		Id:       o.Id,
-		UserId:   o.UserId,
-		Address:  o.Address,
-		Price:    o.Price,
-		Products: respProducts,
+		Id:        o.Id,
+		UserId:    o.UserId,
+		Address:   o.Address,
+		Price:     o.Price,
+		Products:  respProducts,
+		CreatedAt: o.CreatedAt,
 	}
 	return order, nil
 }

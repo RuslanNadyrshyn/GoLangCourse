@@ -90,8 +90,8 @@ const actions = {
   },
   Logout(context) {
     context.commit("setUser", []);
-    localStorage.setItem("delivery_tokens", JSON.stringify([]));
     context.commit("setAccess", false);
+    localStorage.setItem("delivery_tokens", JSON.stringify([]));
   },
 };
 
@@ -119,6 +119,12 @@ const getters = {
   },
   getOrders: (state) => {
     return state.orders;
+  },
+  getLoaded: () => {
+    return state.loaded;
+  },
+  getErrors: () => {
+    return state.errors;
   },
 };
 

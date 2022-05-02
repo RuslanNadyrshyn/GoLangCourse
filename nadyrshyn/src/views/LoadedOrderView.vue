@@ -29,6 +29,7 @@
               </div>
               грн
             </div>
+            <label>{{ $store.state.orders.order.created_at }}</label>
           </div>
         </div>
       </div>
@@ -50,6 +51,7 @@ export default {
   },
   created() {
     this.$store.dispatch("orders/fetchOrder", this.$route.params.id);
+    console.log(this.$store.getters["orders/getOrder"]);
   },
 };
 </script>

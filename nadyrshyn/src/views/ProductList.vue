@@ -94,7 +94,7 @@ export default {
             prod.push(suppliers[i].menu[j]);
 
         this.$store.dispatch("products/fetchP", prod);
-      }, 1500);
+      }, 2000);
     }
   },
 };

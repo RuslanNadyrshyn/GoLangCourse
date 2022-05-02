@@ -32,7 +32,7 @@
             </button>
           </div>
           <div class="user_form">
-            <div class="form_group">
+            <div v-if="!$store.state.auth.Access" class="form_group">
               <label class="form-label">Имя:</label>
               <input
                 v-model="order.user.name"
@@ -87,6 +87,8 @@ export default {
   },
   methods: {
     setOrder() {
+      if (this.$store.getters["auth/getAccess"])
+        this.order.user = this.$store.getters["auth/getUser"];
       if (
         this.order.address !== "" &&
         this.order.address.length < 50 &&
