@@ -32,11 +32,6 @@ func (h *OrderHandler) Add(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "OPTIONS":
 		w.WriteHeader(http.StatusOK)
-		err := json.NewEncoder(w).Encode("OKAY")
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
 	case "POST":
 		req := new(requests.OrderRequest)
 		err := json.NewDecoder(r.Body).Decode(&req)

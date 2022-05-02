@@ -34,6 +34,7 @@
         </div>
       </div>
     </template>
+    <label v-else class="loading">Загрузка...</label>
   </div>
 </template>
 
@@ -43,12 +44,6 @@ import OrderItem from "@/components/OrderItem";
 export default {
   name: "LoadedOrderView",
   components: { OrderItem },
-  data() {
-    return {
-      loaded: false,
-      errors: [],
-    };
-  },
   created() {
     this.$store.dispatch("orders/fetchOrder", this.$route.params.id);
     console.log(this.$store.getters["orders/getOrder"]);

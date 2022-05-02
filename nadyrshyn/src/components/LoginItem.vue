@@ -72,11 +72,9 @@ export default {
   methods: {
     Login() {
       this.$store.dispatch("auth/Login", this.login);
-      this.$router.push({ path: `/` });
     },
     SignIn() {
       this.$store.dispatch("auth/SignIn", this.sign_in);
-      this.$router.push({ path: `/` });
     },
   },
 };

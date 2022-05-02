@@ -3,8 +3,11 @@
     <div class="section">
       <div class="container">
         <template v-if="$store.state.products.loaded">
-          <template v-if="errors.length">
-            <div v-for="(error, index) in errors" :key="index">
+          <template v-if="$store.state.products.errors.length">
+            <div
+              v-for="(error, index) in $store.state.products.errors"
+              :key="index"
+            >
               {{ error }}
             </div>
           </template>
@@ -13,7 +16,7 @@
             :supplier="$store.state.products.product.Supplier"
           ></ProductBlock>
         </template>
-        <div v-else>Loading...</div>
+        <label v-else class="loading">Загрузка...</label>
       </div>
     </div>
   </div>
@@ -25,13 +28,6 @@ import ProductBlock from "@/components/ProductBlock";
 export default {
   name: "ProductView",
   components: { ProductBlock },
-  data() {
-    return {
-      product: null,
-      loaded: false,
-      errors: [],
-    };
-  },
   created() {
     if (JSON.parse(localStorage.getItem("delivery_basket")) == null)
       localStorage.setItem("delivery_basket", JSON.stringify([]));

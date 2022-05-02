@@ -52,7 +52,7 @@
               </div>
             </template>
           </template>
-          <div v-else>Loading...</div>
+          <label v-else class="loading">Загрузка...</label>
         </div>
       </div>
     </template>
