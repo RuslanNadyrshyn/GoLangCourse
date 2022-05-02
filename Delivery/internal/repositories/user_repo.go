@@ -1,4 +1,4 @@
-package database
+package repositories
 
 import (
 	"Delivery/Delivery/internal/repositories/models"
@@ -8,18 +8,26 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type UserDBRepository struct {
+type IUserRepository interface {
+	Insert(u *models.User) (int, error)
+	GetByEmail(email string) (models.User, error)
+	GetById(id int) (models.User, error)
+	Update(u models.User, email string) (int, error)
+	Delete(email string) error
+}
+
+type UserRepository struct {
 	DB *sql.DB
 	TX *sql.Tx
 }
 
-func NewUserRepository(conn *sql.DB) UserDBRepository {
-	return UserDBRepository{
+func NewUserRepository(conn *sql.DB) IUserRepository {
+	return &UserRepository{
 		DB: conn,
 	}
 }
 
-func (r UserDBRepository) Insert(u *models.User) (int, error) {
+func (r *UserRepository) Insert(u *models.User) (int, error) {
 	var id int64
 	if len(u.Name) > 20 {
 		return 0, errors.New("name is too long")
@@ -84,7 +92,7 @@ func (r UserDBRepository) Insert(u *models.User) (int, error) {
 	return int(id), err
 }
 
-func (r UserDBRepository) GetByEmail(email string) (models.User, error) {
+func (r *UserRepository) GetByEmail(email string) (models.User, error) {
 	var user models.User
 
 	err := r.DB.QueryRow("SELECT id, email, password_hash, name FROM users WHERE email = ?", email).
@@ -96,7 +104,7 @@ func (r UserDBRepository) GetByEmail(email string) (models.User, error) {
 	return user, nil
 }
 
-func (r UserDBRepository) GetById(id int) (models.User, error) {
+func (r *UserRepository) GetById(id int) (models.User, error) {
 	var user models.User
 
 	err := r.DB.QueryRow("SELECT id, ifnull(email, ''), name FROM users WHERE id = ?", id).Scan(&user.Id, &user.Email, &user.Name)
@@ -107,7 +115,7 @@ func (r UserDBRepository) GetById(id int) (models.User, error) {
 	return user, nil
 }
 
-func (r UserDBRepository) Update(u models.User, email string) (int, error) {
+func (r *UserRepository) Update(u models.User, email string) (int, error) {
 	var id int
 	PasswordHash, err := bcrypt.GenerateFromPassword([]byte(u.PasswordHash), bcrypt.DefaultCost)
 	u.PasswordHash = string(PasswordHash)
@@ -134,7 +142,7 @@ func (r UserDBRepository) Update(u models.User, email string) (int, error) {
 	return id, err
 }
 
-func (r UserDBRepository) Delete(email string) error {
+func (r *UserRepository) Delete(email string) error {
 	_, err := r.DB.Exec("DELETE FROM users WHERE email = ?", email)
 	if err != nil {
 		return err

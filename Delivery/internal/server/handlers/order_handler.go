@@ -2,10 +2,9 @@ package handlers
 
 import (
 	"Delivery/Delivery/internal/repositories"
-	"Delivery/Delivery/internal/repositories/database"
+	"Delivery/Delivery/internal/repositories/models"
 	"Delivery/Delivery/internal/repositories/requests"
-	"Delivery/Delivery/internal/services"
-	"database/sql"
+	"Delivery/Delivery/internal/repositories/responses"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -13,17 +12,23 @@ import (
 )
 
 type OrderHandler struct {
-	orderRepository repositories.IOrderRepository
-	conn            *sql.DB
+	UserRepository         repositories.IUserRepository
+	OrderRepository        repositories.IOrderRepository
+	OrderProductRepository repositories.IOrderProductRepository
+	ProductRepository      repositories.IProductRepository
 }
 
 func NewOrderHandler(
-	orderRepository repositories.IOrderRepository,
-	conn *sql.DB,
+	UserRepository repositories.IUserRepository,
+	OrderRepository repositories.IOrderRepository,
+	OrderProductRepository repositories.IOrderProductRepository,
+	ProductRepository repositories.IProductRepository,
 ) *OrderHandler {
 	return &OrderHandler{
-		orderRepository: orderRepository,
-		conn:            conn,
+		UserRepository:         UserRepository,
+		OrderRepository:        OrderRepository,
+		OrderProductRepository: OrderProductRepository,
+		ProductRepository:      ProductRepository,
 	}
 }
 
@@ -40,12 +45,38 @@ func (h *OrderHandler) Add(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err)
 			return
 		}
-		dbService := services.NewDBService(h.conn)
-		orderId, err := dbService.AddOrder(req)
+
+		var userId int
+		if req.User.Id == 0 {
+			userId, err = h.UserRepository.Insert(req.User)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				fmt.Println(err)
+				return
+			}
+		} else {
+			userId = req.User.Id
+		}
+
+		orderId, err := h.OrderRepository.Insert(
+			&models.Order{
+				Price:   req.TotalPrice,
+				UserId:  userId,
+				Address: req.Address,
+			})
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			fmt.Println(err)
 			return
+		}
+
+		for _, product := range req.Products {
+			_, err := h.OrderProductRepository.Insert(orderId, product.ProductId, product.Counter, product.ProductPrice)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				fmt.Println(err)
+				return
+			}
 		}
 
 		w.WriteHeader(http.StatusOK)
@@ -70,12 +101,50 @@ func (h *OrderHandler) GetById(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err)
 			return
 		}
-		dbService := services.NewDBService(h.conn)
-		resp, err := dbService.GetOrderById(id)
+
+		order, err := h.OrderRepository.GetById(id)
 		if err != nil {
 			http.Error(w, "Bad Request", http.StatusBadRequest)
 			fmt.Println(err)
 			return
+		}
+
+		orderProducts, err := h.OrderProductRepository.GetByOrderId(order.Id)
+		if err != nil {
+			http.Error(w, "Bad Request", http.StatusBadRequest)
+			fmt.Println(err)
+			return
+		}
+
+		var respProducts []responses.Product
+		for _, orderProd := range orderProducts {
+			product, err := h.ProductRepository.GetById(orderProd.ProductId)
+			if err != nil {
+				http.Error(w, "Bad Request", http.StatusBadRequest)
+				fmt.Println(err)
+				return
+			}
+			prod := responses.Product{
+				Id:          product.Id,
+				MenuId:      product.MenuId,
+				Name:        product.Name,
+				Price:       product.Price,
+				Image:       product.Image,
+				Type:        product.Type,
+				Ingredients: product.Ingredients,
+				Counter:     orderProd.Count,
+				OldPrice:    orderProd.Price,
+			}
+			respProducts = append(respProducts, prod)
+		}
+
+		resp := &responses.OrderResponse{
+			Id:        order.Id,
+			UserId:    order.UserId,
+			Address:   order.Address,
+			Price:     order.Price,
+			Products:  respProducts,
+			CreatedAt: order.CreatedAt,
 		}
 		json.NewEncoder(w).Encode(resp)
 	default:
@@ -94,8 +163,8 @@ func (h *OrderHandler) GetByUserId(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err)
 			return
 		}
-		orderRepo := database.NewOrderRepository(h.conn)
-		resp, err := orderRepo.GetByUserId(userId)
+
+		resp, err := h.OrderRepository.GetByUserId(userId)
 		if err != nil {
 			http.Error(w, "Bad Request", http.StatusBadRequest)
 			fmt.Println(err)

@@ -1,4 +1,4 @@
-package database
+package repositories
 
 import (
 	"Delivery/Delivery/internal/repositories/models"
@@ -7,18 +7,27 @@ import (
 	"log"
 )
 
-type ProductDBRepository struct {
+type IProductRepository interface {
+	Insert(p models.Product) (int, error)
+	UpdatePrice(p models.Product) (int, error)
+	GetAll() (products []models.Product, err error)
+	GetById(id int) (models.Product, error)
+	GetBySupplierId(id int) (products []models.Product, err error)
+	GetByType(t string) (products []models.Product, err error)
+	DeleteAll() error
+}
+type ProductRepository struct {
 	DB *sql.DB
 	TX *sql.Tx
 }
 
-func NewProductRepository(conn *sql.DB) ProductDBRepository {
-	return ProductDBRepository{
+func NewProductRepository(conn *sql.DB) IProductRepository {
+	return &ProductRepository{
 		DB: conn,
 	}
 }
 
-func (r ProductDBRepository) Insert(p models.Product) (int, error) {
+func (r *ProductRepository) Insert(p models.Product) (int, error) {
 	var productId int64
 
 	if r.TX != nil {
@@ -51,7 +60,7 @@ func (r ProductDBRepository) Insert(p models.Product) (int, error) {
 	return int(productId), err
 }
 
-func (r ProductDBRepository) UpdatePrice(p models.Product) (int, error) {
+func (r *ProductRepository) UpdatePrice(p models.Product) (int, error) {
 	var productId int64
 
 	if r.TX != nil {
@@ -81,7 +90,7 @@ func (r ProductDBRepository) UpdatePrice(p models.Product) (int, error) {
 	return int(productId), err
 }
 
-func (r ProductDBRepository) GetAll() (products []models.Product, err error) {
+func (r *ProductRepository) GetAll() (products []models.Product, err error) {
 	var prod models.Product
 
 	rows, err := r.DB.Query("SELECT id, menu_id, name, price, image, type FROM products")
@@ -103,7 +112,7 @@ func (r ProductDBRepository) GetAll() (products []models.Product, err error) {
 	return products, nil
 }
 
-func (r ProductDBRepository) GetById(id int) (models.Product, error) {
+func (r *ProductRepository) GetById(id int) (models.Product, error) {
 	var prod models.Product
 
 	err := r.DB.QueryRow("SELECT id, menu_id, name, price, image, type FROM products WHERE id = (?)", id).
@@ -118,31 +127,7 @@ func (r ProductDBRepository) GetById(id int) (models.Product, error) {
 	return prod, nil
 }
 
-func (r ProductDBRepository) GetByName(n string) (products []models.Product, err error) {
-	var prod models.Product
-
-	rows, err := r.DB.Query("SELECT id, menu_id, name, price, image, type FROM products WHERE name = (?)", n)
-	if err != nil {
-		panic(err)
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&prod.Id, &prod.MenuId, &prod.Name, &prod.Price, &prod.Image, &prod.Type)
-		if err != nil {
-			panic(err)
-		}
-		products = append(products, prod)
-	}
-	IngredientRepo := NewIngredientRepository(r.DB)
-
-	for i := range products {
-		products[i].Ingredients, err = IngredientRepo.GetByProductId(products[i].Id)
-	}
-	return products, nil
-}
-
-func (r ProductDBRepository) GetBySupplierId(id int) (products []models.Product, err error) {
+func (r *ProductRepository) GetBySupplierId(id int) (products []models.Product, err error) {
 	var prod models.Product
 
 	rows, err := r.DB.Query("SELECT id, menu_id, name, price, image, type FROM products "+
@@ -165,7 +150,7 @@ func (r ProductDBRepository) GetBySupplierId(id int) (products []models.Product,
 	return products, nil
 }
 
-func (r ProductDBRepository) GetByType(t string) (products []models.Product, err error) {
+func (r *ProductRepository) GetByType(t string) (products []models.Product, err error) {
 	var prod models.Product
 
 	rows, err := r.DB.Query("SELECT id, menu_id, name, price, image, type FROM products WHERE type = (?)", t)
@@ -189,47 +174,10 @@ func (r ProductDBRepository) GetByType(t string) (products []models.Product, err
 	return products, nil
 }
 
-func (r ProductDBRepository) DeleteAll() error {
+func (r *ProductRepository) DeleteAll() error {
 	_, err := r.DB.Exec("DELETE FROM products")
 	if err != nil {
 		return err
 	}
 	return nil
-}
-
-func (r *ProductDBRepository) BeginTx() error {
-	tx, err := r.DB.Begin()
-	if err != nil {
-		return err
-	}
-	r.TX = tx
-	return nil
-}
-
-func (r *ProductDBRepository) CommitTx() error {
-	defer func() {
-		r.TX = nil
-	}()
-	if r.TX != nil {
-		return r.CommitTx()
-	}
-	return nil
-}
-
-func (r *ProductDBRepository) RollbackTx() error {
-	defer func() {
-		r.TX = nil
-	}()
-	if r.TX != nil {
-		return r.RollbackTx()
-	}
-	return nil
-}
-
-func (r *ProductDBRepository) GetTx() *sql.Tx {
-	return r.TX
-}
-
-func (r *ProductDBRepository) SetTx(tx *sql.Tx) {
-	r.TX = tx
 }

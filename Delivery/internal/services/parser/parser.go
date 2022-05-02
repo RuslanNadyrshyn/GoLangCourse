@@ -63,7 +63,6 @@ func (p Parser) ParseHTTP(SuppliersLink string) (supplier []requests.SupplierReq
 		menuMap := make(map[string][]models.Product, 0)
 		json.NewDecoder(res.Body).Decode(&menuMap)
 		suppliers[i].Menu = menuMap["menu"]
-		//p.PrintSupplier(suppliers[i])
 		res.Body.Close()
 		cancel()
 	}
@@ -71,7 +70,7 @@ func (p Parser) ParseHTTP(SuppliersLink string) (supplier []requests.SupplierReq
 }
 
 func (p Parser) UpdateHTTP(suppliers []requests.SupplierRequest, conn *sql.DB) {
-	dbService := services.NewDBService(conn)
+	rs := services.NewRepositoryService(conn)
 	client := http.DefaultClient
 
 	for {
@@ -92,7 +91,7 @@ func (p Parser) UpdateHTTP(suppliers []requests.SupplierRequest, conn *sql.DB) {
 				if err != nil {
 					log.Println(err)
 				}
-				_, err = dbService.ProductRepo.UpdatePrice(p)
+				_, err = rs.ProductRepo.UpdatePrice(p)
 				if err != nil {
 					log.Println(err)
 				}
@@ -165,9 +164,9 @@ func (c worker) Do(data interface{}, _ int) {
 	if !ok {
 		return
 	}
-	dbService := services.NewDBService(c.DB)
+	rs := services.NewRepositoryService(c.DB)
 
-	dbService.CreateSupplier(&sup)
+	rs.CreateSupplier(&sup)
 }
 
 func (c worker) Stop() {

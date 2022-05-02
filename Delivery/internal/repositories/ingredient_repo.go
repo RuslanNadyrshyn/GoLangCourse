@@ -1,22 +1,27 @@
-package database
+package repositories
 
 import (
 	"database/sql"
 	"log"
 )
 
-type IngredientDBRepository struct {
+type IIngredientRepository interface {
+	Insert(p string) (int, error)
+	GetByProductId(ProductId int) ([]string, error)
+}
+
+type IngredientRepository struct {
 	DB *sql.DB
 	TX *sql.Tx
 }
 
-func NewIngredientRepository(conn *sql.DB) IngredientDBRepository {
-	return IngredientDBRepository{
+func NewIngredientRepository(conn *sql.DB) IIngredientRepository {
+	return &IngredientRepository{
 		DB: conn,
 	}
 }
 
-func (r IngredientDBRepository) Insert(p string) (int, error) {
+func (r *IngredientRepository) Insert(p string) (int, error) {
 	var ingredientId int64
 	if r.TX != nil {
 		result, err := r.TX.Exec("INSERT IGNORE INTO ingredients(name) VALUES (?);", p)
@@ -62,7 +67,7 @@ func (r IngredientDBRepository) Insert(p string) (int, error) {
 	return int(ingredientId), err
 }
 
-func (r IngredientDBRepository) GetByProductId(ProductId int) (ingredients []string, err error) {
+func (r *IngredientRepository) GetByProductId(ProductId int) (ingredients []string, err error) {
 	var ingr string
 	rows, err := r.DB.Query("SELECT name FROM ingredients WHERE id IN "+
 		"(SELECT ingredient_id FROM product_ingredients WHERE product_id = (?))", ProductId)
@@ -79,57 +84,4 @@ func (r IngredientDBRepository) GetByProductId(ProductId int) (ingredients []str
 		ingredients = append(ingredients, ingr)
 	}
 	return ingredients, nil
-}
-
-func (r IngredientDBRepository) DeleteAll() error {
-	_, err := r.DB.Exec("DELETE FROM ingredients")
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (r IngredientDBRepository) DeleteByName(name string) error {
-	_, err := r.DB.Exec("DELETE FROM ingredients WHERE name = ?", name)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (r *IngredientDBRepository) BeginTx() error {
-	tx, err := r.DB.Begin()
-	if err != nil {
-		return err
-	}
-	r.TX = tx
-	return nil
-}
-
-func (r *IngredientDBRepository) CommitTx() error {
-	defer func() {
-		r.TX = nil
-	}()
-	if r.TX != nil {
-		return r.CommitTx()
-	}
-	return nil
-}
-
-func (r *IngredientDBRepository) RollbackTx() error {
-	defer func() {
-		r.TX = nil
-	}()
-	if r.TX != nil {
-		return r.RollbackTx()
-	}
-	return nil
-}
-
-func (r *IngredientDBRepository) GetTx() *sql.Tx {
-	return r.TX
-}
-
-func (r *IngredientDBRepository) SetTx(tx *sql.Tx) {
-	r.TX = tx
 }

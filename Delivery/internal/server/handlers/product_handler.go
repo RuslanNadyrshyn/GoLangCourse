@@ -3,8 +3,7 @@ package handlers
 import (
 	"Delivery/Delivery/internal/repositories"
 	"Delivery/Delivery/internal/repositories/requests"
-	"Delivery/Delivery/internal/services"
-	"database/sql"
+	"Delivery/Delivery/internal/repositories/responses"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -13,17 +12,20 @@ import (
 )
 
 type ProductHandler struct {
-	productRepository repositories.IProductRepository
-	conn              *sql.DB
+	ProductRepository  repositories.IProductRepository
+	MenuRepository     repositories.IMenuRepository
+	SupplierRepository repositories.ISupplierRepository
 }
 
 func NewProductHandler(
-	productRepository repositories.IProductRepository,
-	conn *sql.DB,
+	ProductRepository repositories.IProductRepository,
+	MenuRepository repositories.IMenuRepository,
+	SupplierRepository repositories.ISupplierRepository,
 ) *ProductHandler {
 	return &ProductHandler{
-		productRepository: productRepository,
-		conn:              conn,
+		ProductRepository:  ProductRepository,
+		MenuRepository:     MenuRepository,
+		SupplierRepository: SupplierRepository,
 	}
 }
 
@@ -37,8 +39,7 @@ func (h *ProductHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "not allowed", http.StatusMethodNotAllowed)
 		}
 
-		dbService := services.NewDBService(h.conn)
-		products, err := dbService.ProductRepo.GetAll()
+		products, err := h.ProductRepository.GetAll()
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -50,6 +51,7 @@ func (h *ProductHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GetById ?
 func (h *ProductHandler) GetById(w http.ResponseWriter, r *http.Request) {
 	requests.SetupCORS(&w, r)
 	switch r.Method {
@@ -62,12 +64,20 @@ func (h *ProductHandler) GetById(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		dbService := services.NewDBService(h.conn)
-		resp, err := dbService.GetProductById(id)
+		prod, err := h.ProductRepository.GetById(id)
 		if err != nil {
-			http.Error(w, "Bad Request", http.StatusBadRequest)
 			fmt.Println(err)
-			return
+		}
+
+		supplierId, err := h.MenuRepository.GetById(prod.MenuId)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		supplier, err := h.SupplierRepository.GetById(supplierId)
+		resp := &responses.ProductResponse{
+			Product:  prod,
+			Supplier: supplier,
 		}
 		json.NewEncoder(w).Encode(resp)
 	default:

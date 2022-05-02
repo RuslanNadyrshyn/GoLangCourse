@@ -2,39 +2,142 @@ package handlers
 
 import (
 	"Delivery/Delivery/internal/repositories"
-	"Delivery/Delivery/internal/services"
-	"database/sql"
+	"Delivery/Delivery/internal/repositories/models"
+	"Delivery/Delivery/internal/repositories/requests"
 	"encoding/json"
-	"log"
+	"fmt"
 	"net/http"
 )
 
 type SupplierHandler struct {
-	supplierRepository repositories.ISupplierRepository
-	conn               *sql.DB
+	SupplierRepository          repositories.ISupplierRepository
+	MenuRepository              repositories.IMenuRepository
+	ProductRepository           repositories.IProductRepository
+	ProductIngredientRepository repositories.IProductIngredientRepository
+	IngredientRepository        repositories.IIngredientRepository
 }
 
 func NewSupplierHandler(
-	supplierRepository repositories.ISupplierRepository,
-	conn *sql.DB,
+	SupplierRepository repositories.ISupplierRepository,
+	MenuRepository repositories.IMenuRepository,
+	ProductRepository repositories.IProductRepository,
+	ProductIngredientRepository repositories.IProductIngredientRepository,
+	IngredientRepository repositories.IIngredientRepository,
 ) *SupplierHandler {
 	return &SupplierHandler{
-		supplierRepository: supplierRepository,
-		conn:               conn,
+		SupplierRepository:          SupplierRepository,
+		MenuRepository:              MenuRepository,
+		ProductRepository:           ProductRepository,
+		ProductIngredientRepository: ProductIngredientRepository,
+		IngredientRepository:        IngredientRepository,
+	}
+}
+
+// AddSupplier ?
+func (h *SupplierHandler) AddSupplier(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		req := new(requests.SupplierRequest)
+		err := json.NewDecoder(r.Body).Decode(&req)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			fmt.Println(err)
+			return
+		}
+		supplier := models.Supplier{
+			Id:    req.Id,
+			Name:  req.Name,
+			Type:  req.Type,
+			Image: req.Image,
+			WorkingHours: struct {
+				Opening string `json:"opening"`
+				Closing string `json:"closing"`
+			}{
+				Opening: req.WorkingHours.Opening,
+				Closing: req.WorkingHours.Closing,
+			},
+		}
+		req.Id, err = h.SupplierRepository.Insert(&supplier)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			fmt.Println(err)
+			return
+		}
+
+		//Menu
+		menuId, err := h.MenuRepository.Insert(req.Id)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			fmt.Println(err)
+			return
+		}
+
+		//Products
+		for i := range req.Menu {
+			req.Menu[i].MenuId = menuId
+			req.Menu[i].Id, err = h.ProductRepository.Insert(req.Menu[i])
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				fmt.Println(err)
+				return
+			}
+
+			//Ingredients
+			for j := range req.Menu[i].Ingredients {
+				ingredientId, err := h.IngredientRepository.Insert(req.Menu[i].Ingredients[j])
+				if err != nil {
+					http.Error(w, err.Error(), http.StatusBadRequest)
+					fmt.Println(err)
+					return
+				}
+				//ProductIngredients
+				_, err = h.ProductIngredientRepository.Insert(req.Menu[i].Id, ingredientId)
+				if err != nil {
+					http.Error(w, err.Error(), http.StatusBadRequest)
+					fmt.Println(err)
+					return
+				}
+			}
+		}
+		w.Header().Add("Access-Control-Allow-Origin", "*")
+		json.NewEncoder(w).Encode(req.Id)
+	default:
+		http.Error(w, "Only GET method is allowed", http.StatusMethodNotAllowed)
 	}
 }
 
 func (h *SupplierHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		dbService := services.NewDBService(h.conn)
-		suppliers, err := dbService.GetAll()
+		var resp []requests.SupplierRequest
+		suppliers, err := h.SupplierRepository.GetAll()
 		if err != nil {
-			log.Fatal(err)
+			panic(err)
+		}
+
+		for _, supplier := range suppliers {
+			menu, err := h.ProductRepository.GetBySupplierId(supplier.Id)
+			if err != nil {
+				panic(err)
+			}
+			resp = append(resp, requests.SupplierRequest{
+				Id:    supplier.Id,
+				Name:  supplier.Name,
+				Type:  supplier.Type,
+				Image: supplier.Image,
+				WorkingHours: struct {
+					Opening string `json:"opening"`
+					Closing string `json:"closing"`
+				}{
+					Opening: supplier.WorkingHours.Opening,
+					Closing: supplier.WorkingHours.Closing,
+				},
+				Menu: menu,
+			})
 		}
 
 		w.Header().Add("Access-Control-Allow-Origin", "*")
-		json.NewEncoder(w).Encode(suppliers)
+		json.NewEncoder(w).Encode(resp)
 	default:
 		http.Error(w, "Only GET method is allowed", http.StatusMethodNotAllowed)
 	}

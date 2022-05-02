@@ -1,4 +1,4 @@
-package database
+package repositories
 
 import (
 	"Delivery/Delivery/internal/repositories/models"
@@ -6,21 +6,27 @@ import (
 	"log"
 )
 
-type OrderDBRepository struct {
+type IOrderRepository interface {
+	Insert(o *models.Order) (int, error)
+	GetById(id int) (models.Order, error)
+	GetByUserId(userId int) ([]models.Order, error)
+}
+
+type OrderRepository struct {
 	DB *sql.DB
 	TX *sql.Tx
 }
 
-func NewOrderRepository(conn *sql.DB) OrderDBRepository {
-	return OrderDBRepository{
+func NewOrderRepository(conn *sql.DB) IOrderRepository {
+	return &OrderRepository{
 		DB: conn,
 	}
 }
 
-func (odbr *OrderDBRepository) Insert(o *models.Order) (int, error) {
+func (r *OrderRepository) Insert(o *models.Order) (int, error) {
 	var orderId int64
 
-	result, err := odbr.DB.Exec("INSERT orders(price, user_id, address) VALUES(?, ?, ?)",
+	result, err := r.DB.Exec("INSERT orders(price, user_id, address) VALUES(?, ?, ?)",
 		o.Price, o.UserId, o.Address)
 	if err != nil {
 		log.Println(err)
@@ -35,9 +41,8 @@ func (odbr *OrderDBRepository) Insert(o *models.Order) (int, error) {
 	return int(orderId), err
 }
 
-func (odbr *OrderDBRepository) GetById(id int) (models.Order, error) {
-	var order models.Order
-	err := odbr.DB.QueryRow("SELECT id, price, user_id, address, created_at FROM orders WHERE id = (?)", id).
+func (r *OrderRepository) GetById(id int) (order models.Order, err error) {
+	err = r.DB.QueryRow("SELECT id, price, user_id, address, created_at FROM orders WHERE id = (?)", id).
 		Scan(&order.Id, &order.Price, &order.UserId, &order.Address, &order.CreatedAt)
 	if err != nil {
 		return order, err
@@ -45,9 +50,9 @@ func (odbr *OrderDBRepository) GetById(id int) (models.Order, error) {
 	return order, nil
 }
 
-func (odbr *OrderDBRepository) GetByUserId(userId int) (orders []models.Order, err error) {
+func (r *OrderRepository) GetByUserId(userId int) (orders []models.Order, err error) {
 	var order models.Order
-	rows, err := odbr.DB.Query("SELECT id, price, user_id, address, created_at "+
+	rows, err := r.DB.Query("SELECT id, price, user_id, address, created_at "+
 		"FROM orders WHERE user_id = (?)", userId)
 	if err != nil {
 		panic(err)

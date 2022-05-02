@@ -2,11 +2,10 @@ package handlers
 
 import (
 	"Delivery/Delivery/cfg"
-	"Delivery/Delivery/internal/repositories/database"
+	"Delivery/Delivery/internal/repositories"
 	"Delivery/Delivery/internal/repositories/requests"
 	"Delivery/Delivery/internal/repositories/responses"
 	"Delivery/Delivery/internal/services"
-	"database/sql"
 	"encoding/json"
 	"golang.org/x/crypto/bcrypt"
 	"log"
@@ -14,14 +13,17 @@ import (
 )
 
 type AuthHandler struct {
-	cfg  *cfg.Config
-	conn *sql.DB
+	cfg      *cfg.Config
+	UserRepo repositories.IUserRepository
 }
 
-func NewAuthHandler(cfg *cfg.Config, conn *sql.DB) *AuthHandler {
+func NewAuthHandler(
+	cfg *cfg.Config,
+	UserRepo repositories.IUserRepository,
+) *AuthHandler {
 	return &AuthHandler{
-		cfg:  cfg,
-		conn: conn,
+		cfg:      cfg,
+		UserRepo: UserRepo,
 	}
 }
 
@@ -36,9 +38,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
-		userRepo := database.NewUserRepository(h.conn)
-
-		user, err := userRepo.GetByEmail(req.Email)
+		user, err := h.UserRepo.GetByEmail(req.Email)
 		if err != nil {
 			http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 			log.Println(err)

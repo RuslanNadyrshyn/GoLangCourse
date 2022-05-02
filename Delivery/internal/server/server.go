@@ -2,34 +2,30 @@ package server
 
 import (
 	"Delivery/Delivery/cfg"
-	repos "Delivery/Delivery/internal/repositories"
 	"Delivery/Delivery/internal/repositories/database/Connection"
-	handlers2 "Delivery/Delivery/internal/server/handlers"
+	h "Delivery/Delivery/internal/server/handlers"
 	"Delivery/Delivery/internal/services"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"net/http"
 )
 
-var (
-	conn, err = Connection.Connect()
-)
-
 func Start(cfg *cfg.Config) {
-	userRepository := repos.NewUserRepository()
-	supplierRepository := repos.NewSupplierRepository()
-	orderRepository := repos.NewOrderRepository()
-	productRepository := repos.NewProductRepository()
-	tokenService := services.NewTokenService(cfg)
+	conn, err := Connection.Connect()
 	if err != nil {
 		log.Println(err)
 	}
+	rs := services.NewRepositoryService(conn)
+	tokenService := services.NewTokenService(cfg)
 
-	authHandler := handlers2.NewAuthHandler(cfg, conn)
-	userHandler := handlers2.NewUserHandler(tokenService, userRepository, conn)
-	supplierHandler := handlers2.NewSupplierHandler(supplierRepository, conn)
-	orderHandler := handlers2.NewOrderHandler(orderRepository, conn)
-	productHandler := handlers2.NewProductHandler(productRepository, conn)
+	authHandler := h.NewAuthHandler(cfg, rs.UserRepo)
+	userHandler := h.NewUserHandler(tokenService, rs.UserRepo)
+	supplierHandler := h.NewSupplierHandler(
+		rs.SupplierRepo, rs.MenuRepo, rs.ProductRepo,
+		rs.ProductIngredientRepo, rs.IngredientRepo,
+	)
+	orderHandler := h.NewOrderHandler(rs.UserRepo, rs.OrderRepo, rs.OrderProductRepo, rs.ProductRepo)
+	productHandler := h.NewProductHandler(rs.ProductRepo, rs.MenuRepo, rs.SupplierRepo)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/sign_in", userHandler.SignIn)
@@ -49,18 +45,3 @@ func Start(cfg *cfg.Config) {
 
 	log.Fatal(http.ListenAndServe(cfg.Port, mux))
 }
-
-//func GetBasket(resp parser.ResponseWriter, req *parser.Request) {
-//	if req.Method != parser.MethodGet {
-//		parser.Error(resp, "not allowed", parser.StatusMethodNotAllowed)
-//	}
-//	//
-//	//basket, err := supplierService.BasketRepo.GetById(id)
-//	//if err != nil {
-//	//	log.Fatal(err)
-//	//}
-//	//
-//	//data, _ := json.Marshal(basket)
-//	//resp.Header().Add("Access-Control-Allow-Origin", "*")
-//	//fmt.Fprintln(resp, string(data))
-//}
