@@ -76,6 +76,8 @@ func (h *UserHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 func (h *UserHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 	requests.SetupCORS(&w, r)
 	switch r.Method {
+	case "OPTIONS":
+		w.WriteHeader(http.StatusOK)
 	case "GET":
 		requestToken := h.tokenService.GetTokenFromBearerString(r.Header.Get("Authorization"))
 		claims, err := h.tokenService.ValidateAccessToken(requestToken)
@@ -84,7 +86,10 @@ func (h *UserHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		user, err := h.userRepository.GetUserByID(claims.ID)
+		dbService := services.NewDBService(h.conn)
+		user, err := dbService.UserRepo.GetById(claims.ID)
+
+		//user, err := h.userRepository.GetUserByID(claims.ID)
 		if err != nil {
 			http.Error(w, "User does not exist", http.StatusBadRequest)
 			return

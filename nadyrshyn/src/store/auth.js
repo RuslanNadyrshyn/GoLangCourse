@@ -3,13 +3,11 @@ import axios from "axios";
 const state = {
   urlLogin: "http://localhost:8080/login",
   urlSignIn: "http://localhost:8080/sign_in",
-  urlUser: "http://localhost:8080/user",
+  urlUser: "http://localhost:8080/profile",
   urlOrders: "http://localhost:8080/orders",
   Access: false,
-  user: null,
+  user: [],
   orders: [],
-  accessToken: "",
-  refreshToken: "",
   errors: [],
   loaded: false,
 };
@@ -20,16 +18,6 @@ const mutations = {
   },
   setOrders(state, orders) {
     state.orders = orders;
-  },
-  setAccessToken(state, token) {
-    state.accessToken = token;
-  },
-  setRefreshToken(state, token) {
-    state.refreshToken = token;
-  },
-  clearTokens(state) {
-    state.accessToken = "";
-    state.refreshToken = "";
   },
   setAccess(state, value) {
     state.Access = value;
@@ -43,42 +31,51 @@ const mutations = {
 };
 
 const actions = {
-  AddTokens(context, tokens) {
-    context.commit("addAccessToken", tokens.access_token);
-    context.commit("addRefreshToken", tokens.refresh_token);
-
-    context.commit("setAccess", true);
-  },
-  fetchProfile(context, id) {
-    context.commit("setLoaded", false);
-    let tokens = localStorage.getItem("delivery_tokens");
-    console.log(tokens);
+  SignIn(context, user) {
+    console.log(user);
     axios
-      .get(context.getters.getUserURL, {
-        headers: { '"Authorization"': tokens.access_token },
-        params: { id: id },
+      .post(context.getters.getSignInURL, user)
+      .then(() => {
+        let login = {};
+        login.email = user.email;
+        login.password = user.password;
+        actions.Login(context, login);
       })
-      .then((res) => {
-        context.commit("setUser", res.data);
-      })
-      .catch((err) => context.commit("setErrors", err))
-      .finally(() => {
-        context.commit("setLoaded", true);
+      .catch((err) => {
+        console.log(err);
       });
   },
-  fetchUser(context, id) {
-    context.commit("setLoaded", false);
+  Login(context, login) {
     axios
-      .get(context.getters.getUserURL, {
-        params: { id: id },
-      })
+      .post(context.getters.getLoginURL, login)
       .then((res) => {
-        context.commit("setUser", res.data);
+        localStorage.setItem("delivery_tokens", JSON.stringify(res.data));
+        actions.fetchProfile(context);
       })
-      .catch((err) => context.commit("setErrors", err))
+      .catch((err) => console.log(err))
       .finally(() => {
-        context.commit("setLoaded", true);
+        console.log("finally logged in)");
       });
+  },
+  fetchProfile(context) {
+    context.commit("setLoaded", false);
+    context.commit("setAccess", false);
+    if (localStorage.getItem("delivery_tokens") != null) {
+      let tokens = JSON.parse(localStorage.getItem("delivery_tokens"));
+      axios
+        .get(context.getters.getUserURL, {
+          headers: { Authorization: "Bearer " + tokens.access_token },
+        })
+        .then((res) => {
+          context.commit("setUser", res.data);
+          context.commit("setAccess", true);
+          actions.fetchOrders(context, res.data.id);
+        })
+        .catch((err) => context.commit("setErrors", err))
+        .finally(() => {
+          context.commit("setLoaded", true);
+        });
+    } else localStorage.setItem("delivery_tokens", JSON.stringify([]));
   },
   fetchOrders(context, userId) {
     axios
@@ -86,30 +83,39 @@ const actions = {
         params: { userId: userId },
       })
       .then((res) => {
-        context.commit("setOrders", res.data);
+        if (res.data != null) context.commit("setOrders", res.data);
+        else context.commit("setOrders", []);
       })
       .catch((err) => console.log(err));
+  },
+  Logout(context) {
+    context.commit("setUser", []);
+    localStorage.setItem("delivery_tokens", JSON.stringify([]));
+    context.commit("setAccess", false);
   },
 };
 
 const getters = {
+  getSignInURL: () => {
+    return state.urlSignIn;
+  },
+  getLoginURL: () => {
+    return state.urlLogin;
+  },
   getUserURL: () => {
     return state.urlUser;
   },
   getOrdersURL: () => {
     return state.urlOrders;
   },
-  getAccessToken: () => {
-    return state.accessToken;
-  },
-  getRefreshToken: () => {
-    return state.refreshToken;
-  },
   getAccess: (state) => {
     return state.Access;
   },
   getUser: (state) => {
     return state.user;
+  },
+  getUserID: (state) => {
+    return state.user.id;
   },
   getOrders: (state) => {
     return state.orders;

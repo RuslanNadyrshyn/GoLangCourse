@@ -30,9 +30,9 @@
           <template v-if="$store.getters['auth/getAccess'] === true">
             <router-link
               v-bind:class="
-                $route.path === '/user' ? 'nav_link_active' : 'nav_link'
+                $route.path === '/user/:id' ? 'nav_link_active' : 'nav_link'
               "
-              :to="'/user'"
+              :to="`/user/${$store.getters['auth/getUserID']}`"
             >
               Профиль
             </router-link>
@@ -56,6 +56,9 @@
 <script>
 export default {
   name: "HeaderItem",
+  created() {
+    this.$store.dispatch("auth/fetchProfile");
+  },
 };
 </script>
 

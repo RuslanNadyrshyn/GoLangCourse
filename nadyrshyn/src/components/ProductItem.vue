@@ -218,6 +218,7 @@ export default {
     display: none;
   }
   .product_btn {
+    font-size: 14px;
     margin-top: 0;
     padding: 5px;
   }

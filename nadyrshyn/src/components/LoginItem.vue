@@ -48,8 +48,6 @@
 </template>
 
 <script>
-import axios from "axios";
-
 export default {
   name: "LoginItem",
   data() {
@@ -73,33 +71,23 @@ export default {
   },
   methods: {
     Login() {
-      console.log(this.login);
-      axios
-        .post("http://localhost:8080/login", this.login)
-        .then((res) => {
-          console.log("Login accepted", res.data);
-          localStorage.setItem("delivery_tokens", JSON.stringify(res.data));
-          this.$store.dispatch("auth/AddTokens", res.data);
-
-          // let userId = this.$store.getters("auth/getUserId")
-          this.$router.push({ path: `/` });
-        })
-        .catch((err) => console.log(err));
+      this.$store.dispatch("auth/Login", this.login).then(() => {
+        this.$router.push({ path: `/` });
+      });
     },
     SignIn() {
       console.log(this.sign_in);
-      axios
-        .post("http://localhost:8080/sign_in", this.sign_in)
-        .then((res) => {
-          console.log("Signed In!", res);
-
-          this.login.email = this.sign_in.email;
-          this.login.password = this.sign_in.password;
-          this.Login();
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      this.$store.dispatch("auth/SignIn", this.sign_in);
+      // axios
+      //   .post("http://localhost:8080/sign_in", this.sign_in)
+      //   .then((res) => {
+      //     this.login.email = this.sign_in.email;
+      //     this.login.password = this.sign_in.password;
+      //     this.Login();
+      //   })
+      //   .catch((err) => {
+      //     console.log(err);
+      //   });
     },
   },
 };
