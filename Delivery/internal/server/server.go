@@ -35,6 +35,7 @@ func Start(cfg *cfg.Config) {
 	//user
 	mux.HandleFunc("/sign_in", userHandler.SignIn)
 	mux.HandleFunc("/profile", userHandler.GetProfile)
+	//mux.Handle("/profile", mw.IsAuth(userHandler.GetProfile))
 	//supplier
 	mux.HandleFunc("/get_suppliers", supplierHandler.GetAll)
 	//products
