@@ -2,6 +2,8 @@ import axios from "axios";
 
 const state = {
   url: "http://localhost:8080/get_products",
+  urlGetById: "http://localhost:8080/prod",
+  product: null,
   products: [],
   sortedProducts: [],
   productsTypes: [],
@@ -11,6 +13,9 @@ const state = {
 };
 
 const mutations = {
+  setProduct(state, product) {
+    state.product = product;
+  },
   setProducts(state, products) {
     state.products = products;
   },
@@ -53,6 +58,7 @@ const actions = {
       });
   },
   fetchP(context, products) {
+    context.commit("setLoaded", false);
     let types = [];
     for (let i = 0; i < products.length; i++)
       if (types.includes(products[i].type) === false)
@@ -61,6 +67,20 @@ const actions = {
     context.commit("setSortedProducts", products);
     context.commit("setProductsTypes", types);
     context.commit("setLoaded", true);
+  },
+  fetchById(context, id) {
+    context.commit("setLoaded", false);
+    axios
+      .get(context.getters.getByIdURL, {
+        params: { id: id },
+      })
+      .then((res) => {
+        context.commit("setProduct", res.data);
+      })
+      .catch((err) => console.log(err))
+      .finally(() => {
+        context.commit("setLoaded", true);
+      });
   },
   sortByType(context, type) {
     context.commit("setSelectedType", type);
@@ -80,8 +100,14 @@ const getters = {
   getProductURL: (state) => {
     return state.url;
   },
+  getByIdURL: (state) => {
+    return state.urlGetById;
+  },
   getProducts: (state) => {
     return state.products;
+  },
+  getProduct: (state) => {
+    return state.product;
   },
   getSortedProducts: (state) => {
     return state.sortedProducts;

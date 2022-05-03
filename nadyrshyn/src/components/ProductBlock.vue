@@ -41,8 +41,8 @@
         </div>
       </div>
       <div class="description_container">
-        <label class="description_title">{{ product.supplier_name }}</label>
-        <img class="supplier_logo" :src="product.supplier_image" />
+        <label class="description_title">{{ supplier.name }}</label>
+        <img class="supplier_logo" :src="supplier.image" />
       </div>
     </div>
   </div>
@@ -58,6 +58,9 @@ export default {
   },
   props: {
     product: {
+      type: Object,
+    },
+    supplier: {
       type: Object,
     },
   },
@@ -88,6 +91,7 @@ export default {
   flex-direction: row;
   min-height: 500px;
   max-width: 1200px;
+  width: 90%;
   margin: 10px auto 0;
   background-color: #686e65;
 }
@@ -147,7 +151,7 @@ export default {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  font-size: 40px;
+  font-size: 30px;
   margin-top: 10px;
 }
 
@@ -166,7 +170,7 @@ export default {
 
 .add_to_basket_btn {
   font-size: 18px;
-  padding: 10px;
+  padding: 5px;
   border: #333 solid 1px;
   margin-left: 10px;
 }
@@ -210,7 +214,7 @@ export default {
 .supplier_logo {
   display: block;
   border-radius: 5px;
-  margin: auto;
+  margin: 0 auto 10px;
   max-height: 200px;
   max-width: 80%;
 }
@@ -219,6 +223,9 @@ export default {
   .product_block {
     flex-direction: column;
     align-items: center;
+  }
+  .product_name {
+    font-size: 26px;
   }
   .product_block_item {
     width: 90%;
@@ -230,6 +237,9 @@ export default {
   .product_price_block {
     font-size: 30px;
   }
+  .description_container {
+    margin: 5px auto;
+  }
   .description_block {
     width: 70%;
     margin: 0;
@@ -239,18 +249,18 @@ export default {
   .product_price_block {
     font-size: 26px;
   }
+  .product_name {
+    font-size: 20px;
+  }
   .add_to_basket_btn {
     font-size: 14px;
   }
   .description_title {
-    font-size: 22px;
+    font-size: 16px;
     margin-bottom: 5px;
   }
-  .description_container {
-    margin: 5px 0;
-  }
   .ingredients_container {
-    font-size: 20px;
+    font-size: 15px;
   }
 }
 </style>

@@ -1,25 +1,23 @@
+import axios from "axios";
+
 const state = {
   urlLogin: "http://localhost:8080/login",
   urlSignIn: "http://localhost:8080/sign_in",
+  urlUser: "http://localhost:8080/profile",
+  urlOrders: "http://localhost:8080/orders",
   Access: false,
-  userId: 0,
-  accessToken: "",
-  refreshToken: "",
+  user: [],
+  orders: [],
   errors: [],
   loaded: false,
 };
 
 const mutations = {
-  addAccessToken(state, token) {
-    state.accessToken = token;
-    // state.userId = token.uid;
+  setUser(state, user) {
+    state.user = user;
   },
-  addRefreshToken(state, token) {
-    state.refreshToken = token;
-  },
-  clearTokens(state) {
-    state.accessToken = "";
-    state.refreshToken = "";
+  setOrders(state, orders) {
+    state.orders = orders;
   },
   setAccess(state, value) {
     state.Access = value;
@@ -33,25 +31,94 @@ const mutations = {
 };
 
 const actions = {
-  AddTokens(context, tokens) {
-    context.commit("addAccessToken", tokens.access_token);
-    context.commit("addRefreshToken", tokens.refresh_token);
-    console.log(tokens.access_token.id);
-    console.log(tokens.refresh_token);
-    console.log("id:", tokens.access_token.uid);
-    context.commit("setAccess", true);
+  SignIn(context, user) {
+    console.log(user);
+    axios
+      .post(context.getters.getSignInURL, user)
+      .then(() => {
+        let login = {};
+        login.email = user.email;
+        login.password = user.password;
+        actions.Login(context, login);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  },
+  Login(context, login) {
+    axios
+      .post(context.getters.getLoginURL, login)
+      .then((res) => {
+        localStorage.setItem("delivery_tokens", JSON.stringify(res.data));
+        actions.fetchProfile(context);
+      })
+      .catch((err) => console.log(err))
+      .finally(() => {
+        console.log("finally logged in)");
+      });
+  },
+  fetchProfile(context) {
+    context.commit("setLoaded", false);
+    context.commit("setAccess", false);
+    if (localStorage.getItem("delivery_tokens") != null) {
+      let tokens = JSON.parse(localStorage.getItem("delivery_tokens"));
+      axios
+        .get(context.getters.getUserURL, {
+          headers: { Authorization: "Bearer " + tokens.access_token },
+        })
+        .then((res) => {
+          context.commit("setUser", res.data);
+          context.commit("setAccess", true);
+          actions.fetchOrders(context, res.data.id);
+        })
+        .catch((err) => context.commit("setErrors", err))
+        .finally(() => {
+          context.commit("setLoaded", true);
+        });
+    } else localStorage.setItem("delivery_tokens", JSON.stringify([]));
+  },
+  fetchOrders(context, userId) {
+    axios
+      .get(context.getters.getOrdersURL, {
+        params: { userId: userId },
+      })
+      .then((res) => {
+        if (res.data != null) context.commit("setOrders", res.data);
+        else context.commit("setOrders", []);
+      })
+      .catch((err) => console.log(err));
+  },
+  Logout(context) {
+    context.commit("setUser", []);
+    localStorage.setItem("delivery_tokens", JSON.stringify([]));
+    context.commit("setAccess", false);
   },
 };
 
 const getters = {
-  getAccessToken: () => {
-    return state.accessToken;
+  getSignInURL: () => {
+    return state.urlSignIn;
   },
-  getRefreshToken: () => {
-    return state.refreshToken;
+  getLoginURL: () => {
+    return state.urlLogin;
+  },
+  getUserURL: () => {
+    return state.urlUser;
+  },
+  getOrdersURL: () => {
+    return state.urlOrders;
   },
   getAccess: (state) => {
     return state.Access;
+  },
+  getUser: (state) => {
+    return state.user;
+  },
+  getUserID: (state) => {
+    return state.user.id;
+  },
+  getOrders: (state) => {
+    return state.orders;
   },
 };
 

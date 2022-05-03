@@ -140,15 +140,15 @@ export default {
 @media (max-width: 560px) {
   .counter {
     right: 0;
-    top: -1px;
-    font-size: 10px;
+    top: -4px;
+    font-size: 9px;
     padding: 2px;
     background: none;
     border: none;
   }
   .list_nav {
-    font-size: 18px;
-    padding: 10px;
+    font-size: 16px;
+    padding: 7px 10px;
   }
 }
 </style>

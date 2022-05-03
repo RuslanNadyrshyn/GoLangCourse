@@ -90,19 +90,32 @@ func (r ProductDBRepository) GetAll() (products []models.Product, err error) {
 	}
 	defer rows.Close()
 
+	IngredientRepo := NewIngredientRepository(r.DB)
 	for rows.Next() {
 		err = rows.Scan(&prod.Id, &prod.MenuId, &prod.Name, &prod.Price, &prod.Image, &prod.Type)
 		if err != nil {
 			panic(err)
 		}
+		prod.Ingredients, err = IngredientRepo.GetByProductId(prod.Id)
 		products = append(products, prod)
 	}
-	IngredientRepo := NewIngredientRepository(r.DB)
 
-	for i := range products {
-		products[i].Ingredients, err = IngredientRepo.GetByProductId(products[i].Id)
-	}
 	return products, nil
+}
+
+func (r ProductDBRepository) GetById(id int) (models.Product, error) {
+	var prod models.Product
+
+	err := r.DB.QueryRow("SELECT id, menu_id, name, price, image, type FROM products WHERE id = (?)", id).
+		Scan(&prod.Id, &prod.MenuId, &prod.Name, &prod.Price, &prod.Image, &prod.Type)
+	if err != nil {
+		panic(err)
+	}
+
+	IngredientRepo := NewIngredientRepository(r.DB)
+	prod.Ingredients, err = IngredientRepo.GetByProductId(prod.Id)
+
+	return prod, nil
 }
 
 func (r ProductDBRepository) GetByName(n string) (products []models.Product, err error) {
@@ -129,7 +142,7 @@ func (r ProductDBRepository) GetByName(n string) (products []models.Product, err
 	return products, nil
 }
 
-func (r ProductDBRepository) GetBySupplier(id int) (products []models.Product, err error) {
+func (r ProductDBRepository) GetBySupplierId(id int) (products []models.Product, err error) {
 	var prod models.Product
 
 	rows, err := r.DB.Query("SELECT id, menu_id, name, price, image, type FROM products "+
@@ -139,18 +152,16 @@ func (r ProductDBRepository) GetBySupplier(id int) (products []models.Product, e
 	}
 	defer rows.Close()
 
+	IngredientRepo := NewIngredientRepository(r.DB)
 	for rows.Next() {
 		err = rows.Scan(&prod.Id, &prod.MenuId, &prod.Name, &prod.Price, &prod.Image, &prod.Type)
 		if err != nil {
 			panic(err)
 		}
+		prod.Ingredients, err = IngredientRepo.GetByProductId(prod.Id)
 		products = append(products, prod)
 	}
-	IngredientRepo := NewIngredientRepository(r.DB)
 
-	for i := range products {
-		products[i].Ingredients, err = IngredientRepo.GetByProductId(products[i].Id)
-	}
 	return products, nil
 }
 

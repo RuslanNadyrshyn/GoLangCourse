@@ -5,6 +5,8 @@ import ProductView from "@/views/ProductView";
 import BasketView from "@/views/BasketView";
 import OrderView from "@/views/OrderView";
 import LoginView from "@/views/LoginView";
+import LoadedOrderView from "@/views/LoadedOrderView";
+import UserView from "@/views/UserView";
 
 Vue.use(VueRouter);
 
@@ -30,9 +32,19 @@ const routes = [
     component: OrderView,
   },
   {
+    path: "/order/:id",
+    name: "LoadedOrder",
+    component: LoadedOrderView,
+  },
+  {
     path: "/login",
     name: "Login",
     component: LoginView,
+  },
+  {
+    path: "/user/:id",
+    name: "User",
+    component: UserView,
   },
 ];
 

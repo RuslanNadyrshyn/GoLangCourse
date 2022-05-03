@@ -3,6 +3,7 @@ package database
 import (
 	"Delivery/Delivery/internal/repositories/models"
 	"database/sql"
+	"errors"
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -20,7 +21,12 @@ func NewUserRepository(conn *sql.DB) UserDBRepository {
 
 func (r UserDBRepository) Insert(u *models.User) (int, error) {
 	var id int64
-
+	if len(u.Name) > 20 {
+		return 0, errors.New("name is too long")
+	}
+	if len(u.Email) > 20 {
+		return 0, errors.New("email is too long")
+	}
 	if u.Email == "" {
 		if r.TX != nil {
 			result, err := r.DB.Exec("INSERT users(name) VALUES(?)", u.Name)
@@ -93,7 +99,7 @@ func (r UserDBRepository) GetByEmail(email string) (models.User, error) {
 func (r UserDBRepository) GetById(id int) (models.User, error) {
 	var user models.User
 
-	err := r.DB.QueryRow("SELECT id, email, name FROM users WHERE id = ?", id).Scan(&user.Id, &user.Email, &user.Name)
+	err := r.DB.QueryRow("SELECT id, ifnull(email, ''), name FROM users WHERE id = ?", id).Scan(&user.Id, &user.Email, &user.Name)
 	if err != nil {
 		return user, err
 	}

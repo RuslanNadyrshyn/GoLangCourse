@@ -42,17 +42,13 @@ const mutations = {
 
 const actions = {
   addProduct(context, product) {
-    let inBasket = false;
     for (let i = 0; i < state.products.length; i++)
       if (state.products[i].id === product.id) {
         state.products[i].counter++;
-        inBasket = true;
-        break;
+        return;
       }
-    if (inBasket === false) {
-      product.counter++;
-      context.commit("addProduct", product);
-    }
+    product.counter = 1;
+    context.commit("addProduct", product);
   },
   deleteProduct(context, productId) {
     for (let i = 0; i < context.state.products.length; i++)

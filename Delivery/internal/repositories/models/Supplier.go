@@ -9,5 +9,4 @@ type Supplier struct {
 		Opening string `json:"opening"`
 		Closing string `json:"closing"`
 	} `json:"workingHours"`
-	Menu []Product `json:"menu"`
 }
