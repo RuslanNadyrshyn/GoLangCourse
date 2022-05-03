@@ -5,6 +5,7 @@ const state = {
   urlSignIn: "http://localhost:8080/sign_in",
   urlUser: "http://localhost:8080/profile",
   urlOrders: "http://localhost:8080/orders",
+  urlRefresh: "http://localhost:8080/refresh",
   Access: false,
   user: [],
   orders: [],
@@ -51,6 +52,9 @@ const actions = {
       .then((res) => {
         localStorage.setItem("delivery_tokens", JSON.stringify(res.data));
         actions.fetchProfile(context);
+        setTimeout(async () => {
+          if (context.getters.getAccess) await actions.RefreshTokens(context);
+        }, 3500000);
       })
       .catch((err) => console.log(err))
       .finally(() => {
@@ -94,6 +98,28 @@ const actions = {
     context.commit("setAccess", false);
     localStorage.setItem("delivery_tokens", JSON.stringify([]));
   },
+  RefreshTokens(context) {
+    let tokens = JSON.parse(localStorage.getItem("delivery_tokens"));
+    let refreshRequest = {
+      user_id: context.getters.getUserID,
+      access_token: tokens.access_token,
+      refresh_token: tokens.refresh_token,
+    };
+    axios
+      .post(context.getters.getRefreshURL, refreshRequest)
+      .then((res) => {
+        console.log(res.data);
+        localStorage.setItem("delivery_tokens", JSON.stringify(res.data));
+        setTimeout(async () => {
+          console.log("refresh");
+          if (context.getters.getAccess) await actions.RefreshTokens(context);
+        }, 3500000);
+      })
+      .catch((err) => console.log(err))
+      .finally(() => {
+        console.log("finally logged in)");
+      });
+  },
 };
 
 const getters = {
@@ -108,6 +134,9 @@ const getters = {
   },
   getOrdersURL: () => {
     return state.urlOrders;
+  },
+  getRefreshURL: () => {
+    return state.urlRefresh;
   },
   getAccess: (state) => {
     return state.Access;

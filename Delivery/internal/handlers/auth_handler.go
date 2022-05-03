@@ -79,6 +79,8 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 	requests.SetupCORS(&w, r)
 	switch r.Method {
+	case "OPTIONS":
+		w.WriteHeader(http.StatusOK)
 	case "POST":
 		req := new(requests.RefreshRequest)
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
