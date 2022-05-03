@@ -2,9 +2,11 @@ package handlers
 
 import (
 	config "Delivery/Delivery/cfg"
+	"Delivery/Delivery/internal/handlers"
 	"Delivery/Delivery/internal/repositories"
 	"Delivery/Delivery/internal/repositories/database/Connection"
 	"Delivery/Delivery/internal/services"
+	"Delivery/Delivery/tests"
 	"Delivery/Delivery/tests/helpers"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -18,7 +20,7 @@ const userID = 1
 type UserHandlerTestSuite struct {
 	suite.Suite
 	accessToken string
-	userHandler *UserHandler
+	userHandler *handlers.UserHandler
 	testSrv     *httptest.Server
 	//user        *models.User
 }
@@ -37,10 +39,10 @@ func (suite *UserHandlerTestSuite) SetupSuite() {
 	//	PasswordHash: "TestPassword",
 	//}
 
-	suite.userHandler = NewUserHandler(tokenService, repositories.NewUserRepositoryMock(), conn)
+	suite.userHandler = handlers.NewUserHandler(tokenService, repositories.NewUserRepository(conn))
 	suite.accessToken, _ = tokenService.GenerateAccessToken(userID)
 
-	suite.testSrv = Start(cfg, conn)
+	suite.testSrv = tests.Start(cfg, conn)
 }
 
 func TestUserHandlerTestSuite(t *testing.T) {

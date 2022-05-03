@@ -5,6 +5,7 @@ import (
 	"Delivery/Delivery/internal/repositories/models"
 	"Delivery/Delivery/internal/repositories/requests"
 	"Delivery/Delivery/internal/repositories/responses"
+	"Delivery/Delivery/internal/services"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -12,6 +13,7 @@ import (
 )
 
 type OrderHandler struct {
+	tokenService           *services.TokenService
 	UserRepository         repositories.IUserRepository
 	OrderRepository        repositories.IOrderRepository
 	OrderProductRepository repositories.IOrderProductRepository
@@ -19,12 +21,14 @@ type OrderHandler struct {
 }
 
 func NewOrderHandler(
+	tokenService *services.TokenService,
 	UserRepository repositories.IUserRepository,
 	OrderRepository repositories.IOrderRepository,
 	OrderProductRepository repositories.IOrderProductRepository,
 	ProductRepository repositories.IProductRepository,
 ) *OrderHandler {
 	return &OrderHandler{
+		tokenService:           tokenService,
 		UserRepository:         UserRepository,
 		OrderRepository:        OrderRepository,
 		OrderProductRepository: OrderProductRepository,
@@ -46,7 +50,7 @@ func (h *OrderHandler) Add(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		var userId int
+		var userId int64
 		if req.User.Id == 0 {
 			userId, err = h.UserRepository.Insert(req.User)
 			if err != nil {
@@ -95,14 +99,14 @@ func (h *OrderHandler) GetById(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		req := r.URL.Query().Get("id")
-		id, err := strconv.Atoi(req)
+		id, err := strconv.ParseInt(req, 0, 64)
 		if err != nil {
 			http.Error(w, "Bad Request", http.StatusBadRequest)
 			fmt.Println(err)
 			return
 		}
 
-		order, err := h.OrderRepository.GetById(id)
+		order, err := h.OrderRepository.GetById(int(id))
 		if err != nil {
 			http.Error(w, "Bad Request", http.StatusBadRequest)
 			fmt.Println(err)
@@ -140,7 +144,7 @@ func (h *OrderHandler) GetById(w http.ResponseWriter, r *http.Request) {
 
 		resp := &responses.OrderResponse{
 			Id:        order.Id,
-			UserId:    order.UserId,
+			UserId:    int(order.UserId),
 			Address:   order.Address,
 			Price:     order.Price,
 			Products:  respProducts,
@@ -155,16 +159,17 @@ func (h *OrderHandler) GetById(w http.ResponseWriter, r *http.Request) {
 func (h *OrderHandler) GetByUserId(w http.ResponseWriter, r *http.Request) {
 	requests.SetupCORS(&w, r)
 	switch r.Method {
+	case "OPTIONS":
+		w.WriteHeader(http.StatusOK)
 	case "GET":
-		req := r.URL.Query().Get("userId")
-		userId, err := strconv.Atoi(req)
+		requestToken := h.tokenService.GetTokenFromBearerString(r.Header.Get("Authorization"))
+		claims, err := h.tokenService.ValidateAccessToken(requestToken)
 		if err != nil {
-			http.Error(w, "Bad Request", http.StatusBadRequest)
-			fmt.Println(err)
+			http.Error(w, err.Error(), http.StatusUnauthorized)
 			return
 		}
 
-		resp, err := h.OrderRepository.GetByUserId(userId)
+		resp, err := h.OrderRepository.GetByUserId(claims.ID)
 		if err != nil {
 			http.Error(w, "Bad Request", http.StatusBadRequest)
 			fmt.Println(err)

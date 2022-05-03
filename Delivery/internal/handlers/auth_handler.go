@@ -52,13 +52,13 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		}
 
 		tokenService := services.NewTokenService(h.cfg)
-		accessString, err := tokenService.GenerateAccessToken(user.Id)
+		accessString, err := tokenService.GenerateAccessToken(int(user.Id))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		refreshString, err := tokenService.GenerateRefreshToken(user.Id)
+		refreshString, err := tokenService.GenerateRefreshToken(int(user.Id))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -77,6 +77,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
+	requests.SetupCORS(&w, r)
 	switch r.Method {
 	case "POST":
 		req := new(requests.RefreshRequest)
@@ -102,8 +103,4 @@ func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 	default:
 		http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
 	}
-}
-
-func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
-
 }

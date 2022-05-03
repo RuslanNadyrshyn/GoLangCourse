@@ -34,7 +34,7 @@ func (h *UserHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	case "OPTIONS":
 		w.WriteHeader(http.StatusOK)
 	case "POST":
-		var id int
+		var id int64
 		req := new(models.User)
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -55,7 +55,7 @@ func (h *UserHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 		}
 
 		resp := responses.UserResponse{
-			ID:    id,
+			ID:    int(id),
 			Name:  req.Name,
 			Email: req.Email,
 		}
@@ -87,7 +87,7 @@ func (h *UserHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 		}
 
 		resp := responses.UserResponse{
-			ID:    user.Id,
+			ID:    int(user.Id),
 			Name:  user.Name,
 			Email: user.Email,
 		}
@@ -118,7 +118,7 @@ func (h *UserHandler) GetById(w http.ResponseWriter, r *http.Request) {
 		}
 
 		resp := responses.UserResponse{
-			ID:    user.Id,
+			ID:    int(user.Id),
 			Name:  user.Name,
 			Email: user.Email,
 		}

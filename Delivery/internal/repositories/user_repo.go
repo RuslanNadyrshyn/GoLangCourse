@@ -3,13 +3,12 @@ package repositories
 import (
 	"Delivery/Delivery/internal/repositories/models"
 	"database/sql"
-	"errors"
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type IUserRepository interface {
-	Insert(u *models.User) (int, error)
+	Insert(u *models.User) (int64, error)
 	GetByEmail(email string) (models.User, error)
 	GetById(id int) (models.User, error)
 	Update(u models.User, email string) (int, error)
@@ -27,69 +26,36 @@ func NewUserRepository(conn *sql.DB) IUserRepository {
 	}
 }
 
-func (r *UserRepository) Insert(u *models.User) (int, error) {
-	var id int64
-	if len(u.Name) > 20 {
-		return 0, errors.New("name is too long")
-	}
-	if len(u.Email) > 20 {
-		return 0, errors.New("email is too long")
-	}
+func (r *UserRepository) Insert(u *models.User) (id int64, err error) {
 	if u.Email == "" {
-		if r.TX != nil {
-			result, err := r.DB.Exec("INSERT users(name) VALUES(?)", u.Name)
-			if err != nil {
-				_ = r.TX.Rollback()
-			}
-			id, err = result.LastInsertId()
-			if err != nil {
-				_ = r.TX.Rollback()
-			}
-			err = r.TX.Commit()
-			if err != nil {
-				_ = r.TX.Rollback()
-			}
-			return int(id), err
-		}
 		result, err := r.DB.Exec("INSERT users(name) VALUES(?)", u.Name)
 		if err != nil {
 			fmt.Println(err)
-			return int(id), err
+			return 0, err
 		}
 		id, err = result.LastInsertId()
 		if err != nil {
 			fmt.Println(err)
-			return int(id), err
+			return 0, err
 		}
-		return int(id), err
+		return id, nil
 	}
 
 	PasswordHash, err := bcrypt.GenerateFromPassword([]byte(u.PasswordHash), bcrypt.DefaultCost)
 	u.PasswordHash = string(PasswordHash)
-	if r.TX != nil {
-		err := r.TX.QueryRow("INSERT users(name, email, password_hash) VALUES(?, ?, ?) RETURNING id", u.Name, u.Email, u.PasswordHash).Scan(&id)
-		if err != nil {
-			_ = r.TX.Rollback()
-		}
-		err = r.TX.Commit()
-		if err != nil {
-			_ = r.TX.Rollback()
-		}
-		return int(id), err
-	}
 
 	result, err := r.DB.Exec("INSERT users(name, email, password_hash) VALUES(?, ?, ?)", u.Name, u.Email, u.PasswordHash)
 	if err != nil {
 		fmt.Println(err)
-		return int(id), err
+		return 0, err
 	}
 	id, err = result.LastInsertId()
 	if err != nil {
 		fmt.Println(err)
-		return int(id), err
+		return 0, err
 	}
 
-	return int(id), err
+	return id, nil
 }
 
 func (r *UserRepository) GetByEmail(email string) (models.User, error) {
@@ -98,9 +64,9 @@ func (r *UserRepository) GetByEmail(email string) (models.User, error) {
 	err := r.DB.QueryRow("SELECT id, email, password_hash, name FROM users WHERE email = ?", email).
 		Scan(&user.Id, &user.Email, &user.PasswordHash, &user.Name)
 	if err != nil {
+		fmt.Println(err)
 		return user, err
 	}
-
 	return user, nil
 }
 
