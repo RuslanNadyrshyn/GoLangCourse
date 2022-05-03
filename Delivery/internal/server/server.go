@@ -17,6 +17,7 @@ func Start(cfg *cfg.Config) {
 	}
 	rs := services.NewRepositoryService(conn)
 	tokenService := services.NewTokenService(cfg)
+	//mw := middleware.NewMiddleware(tokenService)
 
 	authHandler := handlers.NewAuthHandler(cfg, rs.UserRepo)
 	userHandler := handlers.NewUserHandler(tokenService, rs.UserRepo)
