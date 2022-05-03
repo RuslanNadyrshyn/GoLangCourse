@@ -69,7 +69,6 @@ const actions = {
         .then((res) => {
           context.commit("setUser", res.data);
           context.commit("setAccess", true);
-          actions.fetchOrders(context, res.data.id);
         })
         .catch((err) => context.commit("setErrors", err))
         .finally(() => {
@@ -77,10 +76,12 @@ const actions = {
         });
     } else localStorage.setItem("delivery_tokens", JSON.stringify([]));
   },
-  fetchOrders(context, userId) {
+  fetchOrders(context) {
+    let tokens = JSON.parse(localStorage.getItem("delivery_tokens"));
+    console.log("tokens: ", tokens);
     axios
       .get(context.getters.getOrdersURL, {
-        params: { userId: userId },
+        headers: { Authorization: "Bearer " + tokens.access_token },
       })
       .then((res) => {
         if (res.data != null) context.commit("setOrders", res.data);
