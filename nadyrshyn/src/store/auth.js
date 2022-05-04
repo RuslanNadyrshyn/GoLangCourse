@@ -37,9 +37,10 @@ const actions = {
     axios
       .post(context.getters.getSignInURL, user)
       .then(() => {
-        let login = {};
-        login.email = user.email;
-        login.password = user.password;
+        let login = {
+          email: user.email,
+          password: user.password,
+        };
         actions.Login(context, login);
       })
       .catch((err) => {
@@ -64,13 +65,15 @@ const actions = {
   fetchProfile(context) {
     context.commit("setLoaded", false);
     context.commit("setAccess", false);
-    if (localStorage.getItem("delivery_tokens") != null) {
+
+    if (localStorage.getItem("delivery_tokens").length) {
       let tokens = JSON.parse(localStorage.getItem("delivery_tokens"));
       axios
         .get(context.getters.getUserURL, {
           headers: { Authorization: "Bearer " + tokens.access_token },
         })
         .then((res) => {
+          console.log("user fetched");
           context.commit("setUser", res.data);
           context.commit("setAccess", true);
         })
@@ -78,25 +81,26 @@ const actions = {
         .finally(() => {
           context.commit("setLoaded", true);
         });
-    } else localStorage.setItem("delivery_tokens", JSON.stringify([]));
+    }
   },
   fetchOrders(context) {
-    let tokens = JSON.parse(localStorage.getItem("delivery_tokens"));
-    console.log("tokens: ", tokens);
-    axios
-      .get(context.getters.getOrdersURL, {
-        headers: { Authorization: "Bearer " + tokens.access_token },
-      })
-      .then((res) => {
-        if (res.data != null) context.commit("setOrders", res.data);
-        else context.commit("setOrders", []);
-      })
-      .catch((err) => console.log(err));
+    if (localStorage.getItem("delivery_tokens").length) {
+      let tokens = JSON.parse(localStorage.getItem("delivery_tokens"));
+      axios
+        .get(context.getters.getOrdersURL, {
+          headers: { Authorization: "Bearer " + tokens.access_token },
+        })
+        .then((res) => {
+          if (res.data != null) context.commit("setOrders", res.data);
+          else context.commit("setOrders", []);
+        })
+        .catch((err) => console.log(err));
+    }
   },
   Logout(context) {
     context.commit("setUser", []);
     context.commit("setAccess", false);
-    localStorage.setItem("delivery_tokens", JSON.stringify([]));
+    localStorage.setItem("delivery_tokens", JSON.stringify(""));
   },
   RefreshTokens(context) {
     let tokens = JSON.parse(localStorage.getItem("delivery_tokens"));
