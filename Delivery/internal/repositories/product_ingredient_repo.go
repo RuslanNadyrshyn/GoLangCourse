@@ -6,7 +6,7 @@ import (
 )
 
 type IProductIngredientRepository interface {
-	Insert(productId int, ingredientId int) (int, error)
+	Insert(productId int64, ingredientId int64) (int64, error)
 }
 type ProductIngredientRepository struct {
 	DB *sql.DB
@@ -19,32 +19,32 @@ func NewProductIngredientRepository(conn *sql.DB) IProductIngredientRepository {
 	}
 }
 
-func (r *ProductIngredientRepository) Insert(productId int, ingredientId int) (int, error) {
+func (r *ProductIngredientRepository) Insert(productId int64, ingredientId int64) (int64, error) {
 	var ProductIngredientId int64
 	if r.TX != nil {
 		result, err := r.TX.Exec("INSERT INTO product_ingredients(product_id, ingredient_id)"+
 			"VALUES (?, ?)", productId, ingredientId)
 		if err != nil {
 			log.Println(err)
-			return int(ProductIngredientId), err
+			return 0, err
 		}
 		ProductIngredientId, err = result.LastInsertId()
 		if err != nil {
 			log.Println(err)
-			return int(ProductIngredientId), err
+			return 0, err
 		}
-		return int(ProductIngredientId), err
+		return ProductIngredientId, nil
 	}
 	result, err := r.DB.Exec("INSERT INTO product_ingredients(product_id, ingredient_id)"+
 		"VALUES (?, ?)", productId, ingredientId)
 	if err != nil {
 		log.Println(err)
-		return int(ProductIngredientId), err
+		return 0, err
 	}
 	ProductIngredientId, err = result.LastInsertId()
 	if err != nil {
 		log.Println(err)
-		return int(ProductIngredientId), err
+		return 0, err
 	}
-	return int(ProductIngredientId), err
+	return ProductIngredientId, nil
 }

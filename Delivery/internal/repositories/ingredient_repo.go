@@ -6,8 +6,8 @@ import (
 )
 
 type IIngredientRepository interface {
-	Insert(p string) (int, error)
-	GetByProductId(ProductId int) ([]string, error)
+	Insert(p string) (int64, error)
+	GetByProductId(ProductId int64) ([]string, error)
 }
 
 type IngredientRepository struct {
@@ -21,8 +21,7 @@ func NewIngredientRepository(conn *sql.DB) IIngredientRepository {
 	}
 }
 
-func (r *IngredientRepository) Insert(p string) (int, error) {
-	var ingredientId int64
+func (r *IngredientRepository) Insert(p string) (ingredientId int64, err error) {
 	if r.TX != nil {
 		result, err := r.TX.Exec("INSERT IGNORE INTO ingredients(name) VALUES (?);", p)
 		if err != nil {
@@ -42,7 +41,7 @@ func (r *IngredientRepository) Insert(p string) (int, error) {
 				return 0, err
 			}
 		}
-		return int(ingredientId), err
+		return ingredientId, nil
 	}
 
 	result, err := r.DB.Exec("INSERT IGNORE INTO ingredients(name) VALUES (?);", p)
@@ -64,24 +63,26 @@ func (r *IngredientRepository) Insert(p string) (int, error) {
 			return 0, err
 		}
 	}
-	return int(ingredientId), err
+	return ingredientId, nil
 }
 
-func (r *IngredientRepository) GetByProductId(ProductId int) (ingredients []string, err error) {
-	var ingr string
+func (r *IngredientRepository) GetByProductId(ProductId int64) (ingredients []string, err error) {
+	var ingredient string
 	rows, err := r.DB.Query("SELECT name FROM ingredients WHERE id IN "+
 		"(SELECT ingredient_id FROM product_ingredients WHERE product_id = (?))", ProductId)
 	if err != nil {
-		panic(err)
+		log.Println(err)
+		return nil, err
 	}
 	defer rows.Close()
 
 	for rows.Next() {
-		err = rows.Scan(&ingr)
+		err = rows.Scan(&ingredient)
 		if err != nil {
-			panic(err)
+			log.Println(err)
+			return nil, err
 		}
-		ingredients = append(ingredients, ingr)
+		ingredients = append(ingredients, ingredient)
 	}
 	return ingredients, nil
 }

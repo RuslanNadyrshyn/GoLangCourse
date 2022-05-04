@@ -20,15 +20,15 @@ func NewTokenService(cfg *cfg.Config) *TokenService {
 	}
 }
 
-func (s *TokenService) GenerateAccessToken(userID int) (string, error) {
+func (s *TokenService) GenerateAccessToken(userID int64) (string, error) {
 	return s.GenerateToken(userID, s.cfg.AccessLifetimeMinutes, s.cfg.AccessSecret)
 }
 
-func (s *TokenService) GenerateRefreshToken(userID int) (string, error) {
+func (s *TokenService) GenerateRefreshToken(userID int64) (string, error) {
 	return s.GenerateToken(userID, s.cfg.RefreshLifetimeMinutes, s.cfg.RefreshSecret)
 }
 
-func (s *TokenService) GenerateToken(userID, lifetimeMinutes int, secret string) (string, error) {
+func (s *TokenService) GenerateToken(userID int64, lifetimeMinutes int, secret string) (string, error) {
 	claims := &helper.JwtCustomClaims{
 		userID,
 		jwt.StandardClaims{

@@ -25,8 +25,11 @@ func Start(cfg *cfg.Config) {
 		rs.SupplierRepo, rs.MenuRepo, rs.ProductRepo,
 		rs.ProductIngredientRepo, rs.IngredientRepo,
 	)
-	orderHandler := handlers.NewOrderHandler(tokenService, rs.UserRepo, rs.OrderRepo, rs.OrderProductRepo, rs.ProductRepo)
-	productHandler := handlers.NewProductHandler(rs.ProductRepo, rs.MenuRepo, rs.SupplierRepo)
+	orderHandler := handlers.NewOrderHandler(
+		tokenService, rs.UserRepo, rs.OrderRepo,
+		rs.OrderProductRepo, rs.ProductRepo,
+	)
+	productHandler := handlers.NewProductHandler(rs.ProductRepo, rs.SupplierRepo)
 
 	mux := http.NewServeMux()
 	//auth

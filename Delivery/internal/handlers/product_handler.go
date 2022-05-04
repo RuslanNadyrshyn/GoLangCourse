@@ -6,25 +6,21 @@ import (
 	"Delivery/Delivery/internal/repositories/responses"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 )
 
 type ProductHandler struct {
 	ProductRepository  repositories.IProductRepository
-	MenuRepository     repositories.IMenuRepository
 	SupplierRepository repositories.ISupplierRepository
 }
 
 func NewProductHandler(
 	ProductRepository repositories.IProductRepository,
-	MenuRepository repositories.IMenuRepository,
 	SupplierRepository repositories.ISupplierRepository,
 ) *ProductHandler {
 	return &ProductHandler{
 		ProductRepository:  ProductRepository,
-		MenuRepository:     MenuRepository,
 		SupplierRepository: SupplierRepository,
 	}
 }
@@ -34,18 +30,21 @@ func (h *ProductHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "OPTIONS":
 		w.WriteHeader(http.StatusOK)
-	case "POST":
-		if r.Method != http.MethodGet {
-			http.Error(w, "not allowed", http.StatusMethodNotAllowed)
-		}
-
+	case "GET":
 		products, err := h.ProductRepository.GetAll()
 		if err != nil {
-			log.Fatal(err)
+			http.Error(w, "Bad Request", http.StatusBadRequest)
+			fmt.Println(err)
+			return
 		}
 
 		w.Header().Add("Access-Control-Allow-Origin", "*")
-		json.NewEncoder(w).Encode(products)
+		w.WriteHeader(http.StatusOK)
+		err = json.NewEncoder(w).Encode(products)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 	default:
 		http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
 	}
@@ -64,22 +63,31 @@ func (h *ProductHandler) GetById(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		prod, err := h.ProductRepository.GetById(id)
+		prod, err := h.ProductRepository.GetById(int64(id))
 		if err != nil {
+			http.Error(w, "Bad Request", http.StatusBadRequest)
 			fmt.Println(err)
+			return
 		}
 
-		supplierId, err := h.MenuRepository.GetById(prod.MenuId)
+		supplier, err := h.SupplierRepository.GetByProductId(prod.MenuId)
 		if err != nil {
+			http.Error(w, "Bad Request", http.StatusBadRequest)
 			fmt.Println(err)
+			return
 		}
 
-		supplier, err := h.SupplierRepository.GetById(supplierId)
 		resp := &responses.ProductResponse{
 			Product:  prod,
 			Supplier: supplier,
 		}
-		json.NewEncoder(w).Encode(resp)
+
+		w.WriteHeader(http.StatusOK)
+		err = json.NewEncoder(w).Encode(resp)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 	default:
 		http.Error(w, "Only GET method is allowed", http.StatusMethodNotAllowed)
 	}

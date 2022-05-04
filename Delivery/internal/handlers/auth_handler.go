@@ -29,7 +29,6 @@ func NewAuthHandler(
 
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	requests.SetupCORS(&w, r)
-
 	switch r.Method {
 	case "OPTIONS":
 		w.WriteHeader(http.StatusOK)
@@ -52,13 +51,13 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		}
 
 		tokenService := services.NewTokenService(h.cfg)
-		accessString, err := tokenService.GenerateAccessToken(int(user.Id))
+		accessString, err := tokenService.GenerateAccessToken(user.Id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		refreshString, err := tokenService.GenerateRefreshToken(int(user.Id))
+		refreshString, err := tokenService.GenerateRefreshToken(user.Id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -69,8 +68,11 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 			RefreshToken: refreshString,
 		}
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(resp)
-
+		err = json.NewEncoder(w).Encode(resp)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 	default:
 		http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
 	}
@@ -84,15 +86,16 @@ func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 	case "POST":
 		req := new(requests.RefreshRequest)
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+			log.Println(err)
 			return
 		}
 
 		tokenService := services.NewTokenService(h.cfg)
-
 		accessString, refreshString, err := tokenService.RefreshToken(req.AccessToken, req.RefreshToken, h.cfg.AccessSecret, h.cfg.RefreshSecret)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+			log.Println(err)
 			return
 		}
 
@@ -101,8 +104,12 @@ func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 			RefreshToken: refreshString,
 		}
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(resp)
+		err = json.NewEncoder(w).Encode(resp)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 	default:
-		http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
+		http.Error(w, "Only POST Method is Allowed", http.StatusMethodNotAllowed)
 	}
 }

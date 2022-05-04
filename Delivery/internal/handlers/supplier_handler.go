@@ -6,6 +6,7 @@ import (
 	"Delivery/Delivery/internal/repositories/requests"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -36,6 +37,8 @@ func NewSupplierHandler(
 // AddSupplier ?
 func (h *SupplierHandler) AddSupplier(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
+	case "OPTIONS":
+		w.WriteHeader(http.StatusOK)
 	case "GET":
 		req := new(requests.SupplierRequest)
 		err := json.NewDecoder(r.Body).Decode(&req)
@@ -100,7 +103,12 @@ func (h *SupplierHandler) AddSupplier(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		w.Header().Add("Access-Control-Allow-Origin", "*")
-		json.NewEncoder(w).Encode(req.Id)
+		w.WriteHeader(http.StatusOK)
+		err = json.NewEncoder(w).Encode(req.Id)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 	default:
 		http.Error(w, "Only GET method is allowed", http.StatusMethodNotAllowed)
 	}
@@ -112,13 +120,16 @@ func (h *SupplierHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 		var resp []requests.SupplierRequest
 		suppliers, err := h.SupplierRepository.GetAll()
 		if err != nil {
-			panic(err)
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			log.Println(err)
+			return
 		}
-
 		for _, supplier := range suppliers {
 			menu, err := h.ProductRepository.GetBySupplierId(supplier.Id)
 			if err != nil {
-				panic(err)
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				log.Println(err)
+				return
 			}
 			resp = append(resp, requests.SupplierRequest{
 				Id:    supplier.Id,
@@ -137,7 +148,12 @@ func (h *SupplierHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 		}
 
 		w.Header().Add("Access-Control-Allow-Origin", "*")
-		json.NewEncoder(w).Encode(resp)
+		w.WriteHeader(http.StatusOK)
+		err = json.NewEncoder(w).Encode(resp)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 	default:
 		http.Error(w, "Only GET method is allowed", http.StatusMethodNotAllowed)
 	}

@@ -33,9 +33,8 @@ func NewRepositoryService(conn *sql.DB) RepositoryService {
 	}
 }
 
-func (rs *RepositoryService) CreateSupplier(sup *requests.SupplierRequest) int {
+func (rs *RepositoryService) CreateSupplier(sup *requests.SupplierRequest) (id int64, err error) {
 	//Supplier
-
 	supplier := models.Supplier{
 		Id:    sup.Id,
 		Name:  sup.Name,
@@ -49,18 +48,17 @@ func (rs *RepositoryService) CreateSupplier(sup *requests.SupplierRequest) int {
 			Closing: sup.WorkingHours.Closing,
 		},
 	}
-	var err error
 	sup.Id, err = rs.SupplierRepo.Insert(&supplier)
 	if err != nil {
 		log.Println(err)
-		return 0
+		return 0, err
 	}
 
 	//Menu
 	menuId, err := rs.MenuRepo.Insert(sup.Id)
 	if err != nil {
 		log.Println(err)
-		return 0
+		return 0, err
 	}
 
 	//Products
@@ -69,7 +67,7 @@ func (rs *RepositoryService) CreateSupplier(sup *requests.SupplierRequest) int {
 		sup.Menu[i].Id, err = rs.ProductRepo.Insert(sup.Menu[i])
 		if err != nil {
 			fmt.Println(err)
-			return 0
+			return 0, err
 		}
 
 		//Ingredients
@@ -77,16 +75,16 @@ func (rs *RepositoryService) CreateSupplier(sup *requests.SupplierRequest) int {
 			ingredientId, err := rs.IngredientRepo.Insert(sup.Menu[i].Ingredients[j])
 			if err != nil {
 				log.Println(err)
-				return 0
+				return 0, err
 			}
 
 			//ProductIngredients
 			_, err = rs.ProductIngredientRepo.Insert(sup.Menu[i].Id, ingredientId)
 			if err != nil {
 				log.Println(err)
-				return 0
+				return 0, err
 			}
 		}
 	}
-	return supplier.Id
+	return supplier.Id, nil
 }

@@ -8,6 +8,7 @@ import (
 	"Delivery/Delivery/internal/services"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -106,7 +107,7 @@ func (h *OrderHandler) GetById(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		order, err := h.OrderRepository.GetById(int(id))
+		order, err := h.OrderRepository.GetById(id)
 		if err != nil {
 			http.Error(w, "Bad Request", http.StatusBadRequest)
 			fmt.Println(err)
@@ -144,13 +145,17 @@ func (h *OrderHandler) GetById(w http.ResponseWriter, r *http.Request) {
 
 		resp := &responses.OrderResponse{
 			Id:        order.Id,
-			UserId:    int(order.UserId),
+			UserId:    order.UserId,
 			Address:   order.Address,
 			Price:     order.Price,
 			Products:  respProducts,
 			CreatedAt: order.CreatedAt,
 		}
-		json.NewEncoder(w).Encode(resp)
+		err = json.NewEncoder(w).Encode(resp)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 	default:
 		http.Error(w, "Only GET method is allowed", http.StatusMethodNotAllowed)
 	}
@@ -165,7 +170,8 @@ func (h *OrderHandler) GetByUserId(w http.ResponseWriter, r *http.Request) {
 		requestToken := h.tokenService.GetTokenFromBearerString(r.Header.Get("Authorization"))
 		claims, err := h.tokenService.ValidateAccessToken(requestToken)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusUnauthorized)
+			http.Error(w, "Bad Request", http.StatusBadRequest)
+			fmt.Println(err)
 			return
 		}
 
@@ -176,7 +182,12 @@ func (h *OrderHandler) GetByUserId(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		json.NewEncoder(w).Encode(resp)
+		w.WriteHeader(http.StatusOK)
+		err = json.NewEncoder(w).Encode(resp)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 	default:
 		http.Error(w, "Only GET method is allowed", http.StatusMethodNotAllowed)
 	}

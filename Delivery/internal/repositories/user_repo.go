@@ -5,14 +5,14 @@ import (
 	"database/sql"
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
+	"log"
 )
 
 type IUserRepository interface {
 	Insert(u *models.User) (int64, error)
 	GetByEmail(email string) (models.User, error)
-	GetById(id int) (models.User, error)
-	Update(u models.User, email string) (int, error)
-	Delete(email string) error
+	GetById(id int64) (models.User, error)
+	Update(u models.User, email string) (int64, error)
 }
 
 type UserRepository struct {
@@ -58,10 +58,8 @@ func (r *UserRepository) Insert(u *models.User) (id int64, err error) {
 	return id, nil
 }
 
-func (r *UserRepository) GetByEmail(email string) (models.User, error) {
-	var user models.User
-
-	err := r.DB.QueryRow("SELECT id, email, password_hash, name FROM users WHERE email = ?", email).
+func (r *UserRepository) GetByEmail(email string) (user models.User, err error) {
+	err = r.DB.QueryRow("SELECT id, email, password_hash, name FROM users WHERE email = ?", email).
 		Scan(&user.Id, &user.Email, &user.PasswordHash, &user.Name)
 	if err != nil {
 		fmt.Println(err)
@@ -70,24 +68,22 @@ func (r *UserRepository) GetByEmail(email string) (models.User, error) {
 	return user, nil
 }
 
-func (r *UserRepository) GetById(id int) (models.User, error) {
-	var user models.User
-
-	err := r.DB.QueryRow("SELECT id, ifnull(email, ''), name FROM users WHERE id = ?", id).Scan(&user.Id, &user.Email, &user.Name)
+func (r *UserRepository) GetById(id int64) (user models.User, err error) {
+	err = r.DB.QueryRow("SELECT id, ifnull(email, ''), name FROM users WHERE id = ?", id).Scan(&user.Id, &user.Email, &user.Name)
 	if err != nil {
+		log.Println(err)
 		return user, err
 	}
 
 	return user, nil
 }
 
-func (r *UserRepository) Update(u models.User, email string) (int, error) {
-	var id int
+func (r *UserRepository) Update(u models.User, email string) (id int64, err error) {
 	PasswordHash, err := bcrypt.GenerateFromPassword([]byte(u.PasswordHash), bcrypt.DefaultCost)
 	u.PasswordHash = string(PasswordHash)
 
 	if r.TX != nil {
-		err := r.TX.QueryRow("UPDATE users SET name=?, email=?, password_hash=? WHERE email = ? RETURNING id", u.Name, u.Email, u.PasswordHash, email).Scan(&id)
+		_, err = r.TX.Exec("UPDATE users SET name=?, email=?, password_hash=? WHERE email = ?", u.Name, u.Email, u.PasswordHash, email)
 		if err != nil {
 			_ = r.TX.Rollback()
 		}
@@ -95,24 +91,15 @@ func (r *UserRepository) Update(u models.User, email string) (int, error) {
 		if err != nil {
 			_ = r.TX.Rollback()
 		}
-		return id, err
+		return id, nil
 	}
 
 	_, err = r.DB.Exec("UPDATE users SET name=?, email=?, password_hash=? WHERE email = ?", u.Name, u.Email, u.PasswordHash, email)
 
 	if err != nil {
 		fmt.Println(err)
-		return id, err
+		return 0, err
 	}
 
-	return id, err
-}
-
-func (r *UserRepository) Delete(email string) error {
-	_, err := r.DB.Exec("DELETE FROM users WHERE email = ?", email)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return id, nil
 }
