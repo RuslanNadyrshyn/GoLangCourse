@@ -7,10 +7,10 @@ import (
 )
 
 type Middleware struct {
-	service *services.TokenService
+	service *services.ServiceManager
 }
 
-func NewMiddleware(service *services.TokenService) *Middleware {
+func NewMiddleware(service *services.ServiceManager) *Middleware {
 	return &Middleware{
 		service: service,
 	}
@@ -18,9 +18,9 @@ func NewMiddleware(service *services.TokenService) *Middleware {
 
 func (m *Middleware) AuthCheck(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		accessToken := m.service.GetTokenFromBearerString(r.Header.Get("Authorization"))
+		accessToken := m.service.Token.GetTokenFromBearerString(r.Header.Get("Authorization"))
 
-		_, err := m.service.ValidateAccessToken(accessToken)
+		_, err := m.service.Token.ValidateAccessToken(accessToken)
 		if err != nil {
 			http.Error(w, "(middleware) not authorized", http.StatusUnauthorized)
 			return
@@ -33,9 +33,8 @@ func (m *Middleware) AuthCheck(next http.Handler) http.Handler {
 func (m *Middleware) IsAuth(endpoint func(http.ResponseWriter, *http.Request)) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requests.SetupCORS(&w, r)
-		accessToken := m.service.GetTokenFromBearerString(r.Header.Get("Authorization"))
-
-		_, err := m.service.ValidateAccessToken(accessToken)
+		accessToken := m.service.Token.GetTokenFromBearerString(r.Header.Get("Authorization"))
+		_, err := m.service.Token.ValidateAccessToken(accessToken)
 		if err != nil {
 			http.Error(w, "(middleware) not authorized", http.StatusUnauthorized)
 			return

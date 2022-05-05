@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"Delivery/Delivery/cfg"
-	"Delivery/Delivery/internal/repositories"
 	"Delivery/Delivery/internal/repositories/requests"
 	"Delivery/Delivery/internal/repositories/responses"
 	"Delivery/Delivery/internal/services"
@@ -12,22 +11,22 @@ import (
 	"net/http"
 )
 
-type AuthHandler struct {
+type AuthH struct {
+	services *services.ServiceManager
 	cfg      *cfg.Config
-	UserRepo repositories.IUserRepository
 }
 
-func NewAuthHandler(
+func NewAuthH(
+	services *services.ServiceManager,
 	cfg *cfg.Config,
-	UserRepo repositories.IUserRepository,
-) *AuthHandler {
-	return &AuthHandler{
+) *AuthH {
+	return &AuthH{
+		services: services,
 		cfg:      cfg,
-		UserRepo: UserRepo,
 	}
 }
 
-func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
+func (h *AuthH) Login(w http.ResponseWriter, r *http.Request) {
 	requests.SetupCORS(&w, r)
 	switch r.Method {
 	case "OPTIONS":
@@ -37,7 +36,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
-		user, err := h.UserRepo.GetByEmail(req.Email)
+		user, err := h.services.User.GetByEmail(req.Email)
 		if err != nil {
 			http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 			log.Println(err)
@@ -50,14 +49,13 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		tokenService := services.NewTokenService(h.cfg)
-		accessString, err := tokenService.GenerateAccessToken(user.Id)
+		accessString, err := h.services.Token.GenerateAccessToken(user.Id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		refreshString, err := tokenService.GenerateRefreshToken(user.Id)
+		refreshString, err := h.services.Token.GenerateRefreshToken(user.Id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -78,7 +76,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
+func (h *AuthH) Refresh(w http.ResponseWriter, r *http.Request) {
 	requests.SetupCORS(&w, r)
 	switch r.Method {
 	case "OPTIONS":
@@ -91,8 +89,7 @@ func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		tokenService := services.NewTokenService(h.cfg)
-		accessString, refreshString, err := tokenService.RefreshToken(req.AccessToken, req.RefreshToken, h.cfg.AccessSecret, h.cfg.RefreshSecret)
+		accessString, refreshString, err := h.services.Token.RefreshToken(req.AccessToken, req.RefreshToken, h.cfg.AccessSecret, h.cfg.RefreshSecret)
 		if err != nil {
 			http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 			log.Println(err)

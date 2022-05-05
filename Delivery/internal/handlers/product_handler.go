@@ -1,37 +1,31 @@
 package handlers
 
 import (
-	"Delivery/Delivery/internal/repositories"
 	"Delivery/Delivery/internal/repositories/requests"
-	"Delivery/Delivery/internal/repositories/responses"
+	"Delivery/Delivery/internal/services"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
 )
 
-type ProductHandler struct {
-	ProductRepository  repositories.IProductRepository
-	SupplierRepository repositories.ISupplierRepository
+type ProductH struct {
+	services *services.ServiceManager
 }
 
-func NewProductHandler(
-	ProductRepository repositories.IProductRepository,
-	SupplierRepository repositories.ISupplierRepository,
-) *ProductHandler {
-	return &ProductHandler{
-		ProductRepository:  ProductRepository,
-		SupplierRepository: SupplierRepository,
+func NewProductH(services *services.ServiceManager) *ProductH {
+	return &ProductH{
+		services: services,
 	}
 }
 
-func (h *ProductHandler) GetAll(w http.ResponseWriter, r *http.Request) {
+func (h *ProductH) GetAll(w http.ResponseWriter, r *http.Request) {
 	requests.SetupCORS(&w, r)
 	switch r.Method {
 	case "OPTIONS":
 		w.WriteHeader(http.StatusOK)
 	case "GET":
-		products, err := h.ProductRepository.GetAll()
+		products, err := h.services.Product.GetAll()
 		if err != nil {
 			http.Error(w, "Bad Request", http.StatusBadRequest)
 			fmt.Println(err)
@@ -50,8 +44,7 @@ func (h *ProductHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// GetById ?
-func (h *ProductHandler) GetById(w http.ResponseWriter, r *http.Request) {
+func (h *ProductH) GetById(w http.ResponseWriter, r *http.Request) {
 	requests.SetupCORS(&w, r)
 	switch r.Method {
 	case "GET":
@@ -63,27 +56,15 @@ func (h *ProductHandler) GetById(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		prod, err := h.ProductRepository.GetById(int64(id))
+		prod, err := h.services.Product.GetById(int64(id))
 		if err != nil {
 			http.Error(w, "Bad Request", http.StatusBadRequest)
 			fmt.Println(err)
 			return
-		}
-
-		supplier, err := h.SupplierRepository.GetByProductId(prod.MenuId)
-		if err != nil {
-			http.Error(w, "Bad Request", http.StatusBadRequest)
-			fmt.Println(err)
-			return
-		}
-
-		resp := &responses.ProductResponse{
-			Product:  prod,
-			Supplier: supplier,
 		}
 
 		w.WriteHeader(http.StatusOK)
-		err = json.NewEncoder(w).Encode(resp)
+		err = json.NewEncoder(w).Encode(prod)
 		if err != nil {
 			fmt.Println(err)
 			return

@@ -56,7 +56,7 @@
 <script>
 export default {
   name: "HeaderItem",
-  created: function () {
+  created() {
     this.$store.dispatch("auth/fetchProfile");
   },
 };

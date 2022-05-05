@@ -1,10 +1,7 @@
 package handlers
 
 import (
-	"Delivery/Delivery/internal/repositories"
-	"Delivery/Delivery/internal/repositories/models"
 	"Delivery/Delivery/internal/repositories/requests"
-	"Delivery/Delivery/internal/repositories/responses"
 	"Delivery/Delivery/internal/services"
 	"encoding/json"
 	"fmt"
@@ -13,31 +10,17 @@ import (
 	"strconv"
 )
 
-type OrderHandler struct {
-	tokenService           *services.TokenService
-	UserRepository         repositories.IUserRepository
-	OrderRepository        repositories.IOrderRepository
-	OrderProductRepository repositories.IOrderProductRepository
-	ProductRepository      repositories.IProductRepository
+type OrderH struct {
+	services *services.ServiceManager
 }
 
-func NewOrderHandler(
-	tokenService *services.TokenService,
-	UserRepository repositories.IUserRepository,
-	OrderRepository repositories.IOrderRepository,
-	OrderProductRepository repositories.IOrderProductRepository,
-	ProductRepository repositories.IProductRepository,
-) *OrderHandler {
-	return &OrderHandler{
-		tokenService:           tokenService,
-		UserRepository:         UserRepository,
-		OrderRepository:        OrderRepository,
-		OrderProductRepository: OrderProductRepository,
-		ProductRepository:      ProductRepository,
+func NewOrderH(services *services.ServiceManager) *OrderH {
+	return &OrderH{
+		services: services,
 	}
 }
 
-func (h *OrderHandler) Add(w http.ResponseWriter, r *http.Request) {
+func (h *OrderH) Add(w http.ResponseWriter, r *http.Request) {
 	requests.SetupCORS(&w, r)
 	switch r.Method {
 	case "OPTIONS":
@@ -51,41 +34,14 @@ func (h *OrderHandler) Add(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		var userId int64
-		if req.User.Id == 0 {
-			userId, err = h.UserRepository.Insert(req.User)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				fmt.Println(err)
-				return
-			}
-		} else {
-			userId = req.User.Id
-		}
-
-		orderId, err := h.OrderRepository.Insert(
-			&models.Order{
-				Price:   req.TotalPrice,
-				UserId:  userId,
-				Address: req.Address,
-			})
+		resp, err := h.services.Order.AddOrder(req)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			fmt.Println(err)
 			return
 		}
-
-		for _, product := range req.Products {
-			_, err := h.OrderProductRepository.Insert(orderId, product.ProductId, product.Counter, product.ProductPrice)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				fmt.Println(err)
-				return
-			}
-		}
-
 		w.WriteHeader(http.StatusOK)
-		err = json.NewEncoder(w).Encode(orderId)
+		err = json.NewEncoder(w).Encode(resp)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -95,7 +51,7 @@ func (h *OrderHandler) Add(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *OrderHandler) GetById(w http.ResponseWriter, r *http.Request) {
+func (h *OrderH) GetById(w http.ResponseWriter, r *http.Request) {
 	requests.SetupCORS(&w, r)
 	switch r.Method {
 	case "GET":
@@ -106,51 +62,14 @@ func (h *OrderHandler) GetById(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err)
 			return
 		}
-
-		order, err := h.OrderRepository.GetById(id)
+		resp, err := h.services.Order.GetById(id)
 		if err != nil {
 			http.Error(w, "Bad Request", http.StatusBadRequest)
 			fmt.Println(err)
 			return
 		}
 
-		orderProducts, err := h.OrderProductRepository.GetByOrderId(order.Id)
-		if err != nil {
-			http.Error(w, "Bad Request", http.StatusBadRequest)
-			fmt.Println(err)
-			return
-		}
-
-		var respProducts []responses.Product
-		for _, orderProd := range orderProducts {
-			product, err := h.ProductRepository.GetById(orderProd.ProductId)
-			if err != nil {
-				http.Error(w, "Bad Request", http.StatusBadRequest)
-				fmt.Println(err)
-				return
-			}
-			prod := responses.Product{
-				Id:          product.Id,
-				MenuId:      product.MenuId,
-				Name:        product.Name,
-				Price:       product.Price,
-				Image:       product.Image,
-				Type:        product.Type,
-				Ingredients: product.Ingredients,
-				Counter:     orderProd.Count,
-				OldPrice:    orderProd.Price,
-			}
-			respProducts = append(respProducts, prod)
-		}
-
-		resp := &responses.OrderResponse{
-			Id:        order.Id,
-			UserId:    order.UserId,
-			Address:   order.Address,
-			Price:     order.Price,
-			Products:  respProducts,
-			CreatedAt: order.CreatedAt,
-		}
+		w.WriteHeader(http.StatusOK)
 		err = json.NewEncoder(w).Encode(resp)
 		if err != nil {
 			log.Println(err)
@@ -161,21 +80,20 @@ func (h *OrderHandler) GetById(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *OrderHandler) GetByUserId(w http.ResponseWriter, r *http.Request) {
+func (h *OrderH) GetByUserId(w http.ResponseWriter, r *http.Request) {
 	requests.SetupCORS(&w, r)
 	switch r.Method {
 	case "OPTIONS":
 		w.WriteHeader(http.StatusOK)
 	case "GET":
-		requestToken := h.tokenService.GetTokenFromBearerString(r.Header.Get("Authorization"))
-		claims, err := h.tokenService.ValidateAccessToken(requestToken)
+		requestToken := h.services.Token.GetTokenFromBearerString(r.Header.Get("Authorization"))
+		claims, err := h.services.Token.ValidateAccessToken(requestToken)
 		if err != nil {
 			http.Error(w, "Bad Request", http.StatusBadRequest)
 			fmt.Println(err)
 			return
 		}
-
-		resp, err := h.OrderRepository.GetByUserId(claims.ID)
+		resp, err := h.services.Order.GetByUserId(claims.ID)
 		if err != nil {
 			http.Error(w, "Bad Request", http.StatusBadRequest)
 			fmt.Println(err)
