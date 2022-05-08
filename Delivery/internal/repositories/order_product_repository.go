@@ -18,6 +18,18 @@ func NewOrderProductRepo(conn *sql.DB) *OrderProductRepo {
 
 func (r *OrderProductRepo) Insert(orderId int64, productId int64, count int64, price float64) (int64, error) {
 	var orderProductId int64
+	if r.TX != nil {
+		result, err := r.TX.Exec("INSERT order_product(order_id, product_id, count, price) VALUES(?, ?, ?, ?)",
+			orderId, productId, count, price)
+		if err != nil {
+			return orderProductId, err
+		}
+		orderProductId, err = result.LastInsertId()
+		if err != nil {
+			return orderProductId, err
+		}
+		return orderProductId, nil
+	}
 	result, err := r.DB.Exec("INSERT order_product(order_id, product_id, count, price) VALUES(?, ?, ?, ?)",
 		orderId, productId, count, price)
 	if err != nil {
@@ -64,7 +76,7 @@ func (r *OrderProductRepo) CommitTx() error {
 		r.TX = nil
 	}()
 	if r.TX != nil {
-		return r.CommitTx()
+		return r.TX.Commit()
 	}
 	return nil
 }
@@ -74,7 +86,7 @@ func (r *OrderProductRepo) RollbackTx() error {
 		r.TX = nil
 	}()
 	if r.TX != nil {
-		return r.RollbackTx()
+		return r.TX.Rollback()
 	}
 	return nil
 }

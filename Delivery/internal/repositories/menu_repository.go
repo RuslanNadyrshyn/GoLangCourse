@@ -60,7 +60,7 @@ func (r *MenuRepo) CommitTx() error {
 		r.TX = nil
 	}()
 	if r.TX != nil {
-		return r.CommitTx()
+		return r.TX.Commit()
 	}
 	return nil
 }
@@ -70,7 +70,7 @@ func (r *MenuRepo) RollbackTx() error {
 		r.TX = nil
 	}()
 	if r.TX != nil {
-		return r.RollbackTx()
+		return r.TX.Rollback()
 	}
 	return nil
 }

@@ -18,6 +18,19 @@ func NewOrderRepo(conn *sql.DB) *OrderRepo {
 }
 
 func (r *OrderRepo) Insert(o *models.Order) (orderId int64, err error) {
+	if r.TX != nil {
+		result, err := r.TX.Exec("INSERT orders(price, user_id, address) VALUES(?, ?, ?)",
+			o.Price, o.UserId, o.Address)
+		if err != nil {
+			return 0, err
+		}
+		orderId, err = result.LastInsertId()
+		if err != nil {
+			return 0, err
+		}
+
+		return orderId, nil
+	}
 	result, err := r.DB.Exec("INSERT orders(price, user_id, address) VALUES(?, ?, ?)",
 		o.Price, o.UserId, o.Address)
 	if err != nil {
@@ -77,7 +90,7 @@ func (r *OrderRepo) CommitTx() error {
 		r.TX = nil
 	}()
 	if r.TX != nil {
-		return r.CommitTx()
+		return r.TX.Commit()
 	}
 	return nil
 }
@@ -87,7 +100,7 @@ func (r *OrderRepo) RollbackTx() error {
 		r.TX = nil
 	}()
 	if r.TX != nil {
-		return r.RollbackTx()
+		return r.TX.Rollback()
 	}
 	return nil
 }

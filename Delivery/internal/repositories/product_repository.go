@@ -3,7 +3,6 @@ package repositories
 import (
 	"Delivery/Delivery/internal/repositories/models"
 	"database/sql"
-	"fmt"
 )
 
 type ProductRepo struct {
@@ -45,18 +44,6 @@ func (r *ProductRepo) Insert(p *models.Product) (productId int64, err error) {
 }
 
 func (r *ProductRepo) UpdatePrice(p *models.Product) (productId int64, err error) {
-	if r.TX != nil {
-		result, err := r.TX.Exec("UPDATE products SET price=? WHERE id=?", p.Price, p.Id)
-		if err != nil {
-			return 0, err
-		}
-		productId, err = result.LastInsertId()
-		if err != nil {
-			fmt.Println(err)
-			return 0, err
-		}
-		return productId, nil
-	}
 	result, err := r.DB.Exec("UPDATE products SET price=? WHERE id=?", p.Price, p.Id)
 	if err != nil {
 		return 0, err
@@ -134,7 +121,7 @@ func (r *ProductRepo) CommitTx() error {
 		r.TX = nil
 	}()
 	if r.TX != nil {
-		return r.CommitTx()
+		return r.TX.Commit()
 	}
 	return nil
 }
@@ -144,7 +131,7 @@ func (r *ProductRepo) RollbackTx() error {
 		r.TX = nil
 	}()
 	if r.TX != nil {
-		return r.RollbackTx()
+		return r.TX.Rollback()
 	}
 	return nil
 }
