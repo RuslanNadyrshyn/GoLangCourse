@@ -53,7 +53,6 @@ func (h *SupplierH) AddSupplier(w http.ResponseWriter, r *http.Request) {
 func (h *SupplierH) GetAll(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-
 		resp, err := h.services.Supplier.GetAll()
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)

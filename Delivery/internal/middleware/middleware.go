@@ -16,30 +16,21 @@ func NewMiddleware(service *services.ServiceManager) *Middleware {
 	}
 }
 
-func (m *Middleware) AuthCheck(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		accessToken := m.service.Token.GetTokenFromBearerString(r.Header.Get("Authorization"))
-
-		_, err := m.service.Token.ValidateAccessToken(accessToken)
-		if err != nil {
-			http.Error(w, "(middleware) not authorized", http.StatusUnauthorized)
-			return
-		} else {
-			next.ServeHTTP(w, r)
-		}
-	})
-}
-
-func (m *Middleware) IsAuth(endpoint func(http.ResponseWriter, *http.Request)) http.Handler {
+func (m *Middleware) Validation(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requests.SetupCORS(&w, r)
-		accessToken := m.service.Token.GetTokenFromBearerString(r.Header.Get("Authorization"))
-		_, err := m.service.Token.ValidateAccessToken(accessToken)
-		if err != nil {
-			http.Error(w, "(middleware) not authorized", http.StatusUnauthorized)
-			return
-		} else {
-			endpoint(w, r)
+		switch r.Method {
+		case "OPTIONS":
+			w.WriteHeader(http.StatusOK)
+		case "GET":
+			accessToken := m.service.Token.GetTokenFromBearerString(r.Header.Get("Authorization"))
+			_, err := m.service.Token.ValidateAccessToken(accessToken)
+			if err != nil {
+				http.Error(w, "(middleware) not authorized", http.StatusUnauthorized)
+				return
+			}
+			w.Header().Add("Access-Control-Allow-Origin", "*")
+			next.ServeHTTP(w, r)
 		}
 	})
 }

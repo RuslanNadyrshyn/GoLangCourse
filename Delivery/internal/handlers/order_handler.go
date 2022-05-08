@@ -99,7 +99,6 @@ func (h *OrderH) GetByUserId(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err)
 			return
 		}
-
 		w.WriteHeader(http.StatusOK)
 		err = json.NewEncoder(w).Encode(resp)
 		if err != nil {

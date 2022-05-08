@@ -88,8 +88,7 @@
 export default {
   name: "UserView",
   created() {
-    if (this.$store.getters["auth/getAccess"])
-      this.$store.dispatch("auth/fetchOrders");
+    this.$store.dispatch("auth/fetchOrders");
   },
   methods: {
     Logout() {
