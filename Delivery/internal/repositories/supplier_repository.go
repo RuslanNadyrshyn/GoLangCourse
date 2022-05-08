@@ -2,68 +2,111 @@ package repositories
 
 import (
 	"Delivery/Delivery/internal/repositories/models"
-	"errors"
+	"database/sql"
+	"log"
 )
 
-type ISupplierRepository interface {
-	GetAll() (suppliers []*models.Supplier, err error)
-	Add(supplier *models.Supplier) (supplierId int, err error)
-	Delete(supplierId int) error
+type SupplierRepo struct {
+	DB *sql.DB
+	TX *sql.Tx
 }
 
-type SupplierRepository struct {
-	suppliers []*models.Supplier
-}
-
-func NewSupplierRepository() ISupplierRepository {
-	suppliers := []*models.Supplier{
-		{
-			Id:    1,
-			Name:  "pizza hub",
-			Type:  "cafe",
-			Image: "fsd",
-			WorkingHours: struct {
-				Opening string `json:"opening"`
-				Closing string `json:"closing"`
-			}{
-				Opening: "7:00",
-				Closing: "21:00",
-			},
-		},
-		{
-			Id:    2,
-			Name:  "burger hub",
-			Type:  "fastfood",
-			Image: "fdfs",
-			WorkingHours: struct {
-				Opening string `json:"opening"`
-				Closing string `json:"closing"`
-			}{
-				Opening: "7:00",
-				Closing: "21:00",
-			},
-		},
+func NewSupplierRepo(conn *sql.DB) *SupplierRepo {
+	return &SupplierRepo{
+		DB: conn,
 	}
-
-	return &SupplierRepository{suppliers: suppliers}
 }
 
-func (s *SupplierRepository) GetAll() (suppliers []*models.Supplier, err error) {
-	return s.suppliers, nil
+func (r *SupplierRepo) Insert(s *models.Supplier) (id int64, err error) {
+	result, err := r.DB.Exec("INSERT INTO suppliers(id, name, type, image, opening, closing) "+
+		"VALUES(?, ?, ?, ?, ?, ?)", s.Id, s.Name, s.Type, s.Image, s.WorkingHours.Opening, s.WorkingHours.Closing)
+	if err != nil {
+		return 0, err
+	}
+	id, err = result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
 }
 
-func (s *SupplierRepository) Add(supplier *models.Supplier) (supplierId int, err error) {
-	s.suppliers = append(s.suppliers, supplier)
+func (r *SupplierRepo) GetAll() (*[]models.Supplier, error) {
+	var suppliers []models.Supplier
+	rows, err := r.DB.Query("SELECT id, name, type, image, opening, closing FROM suppliers")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
 
-	return supplier.Id, nil
-}
-
-func (s *SupplierRepository) Delete(supplierId int) error {
-	for i, sup := range s.suppliers {
-		if sup.Id == supplierId {
-			s.suppliers = append(s.suppliers[:i], s.suppliers[i+1:]...)
-			return nil
+	for rows.Next() {
+		var s models.Supplier
+		err = rows.Scan(&s.Id, &s.Name, &s.Type, &s.Image,
+			&s.WorkingHours.Opening, &s.WorkingHours.Closing)
+		if err != nil {
+			return nil, err
 		}
+		suppliers = append(suppliers, s)
 	}
-	return errors.New("supplier not found")
+	return &suppliers, nil
+}
+
+func (r *SupplierRepo) GetById(id int64) (*models.Supplier, error) {
+	var supplier models.Supplier
+	err := r.DB.QueryRow("SELECT id, name, type, image, opening, closing FROM suppliers "+
+		"WHERE id = ?", id).Scan(&supplier.Id, &supplier.Name, &supplier.Type, &supplier.Image,
+		&supplier.WorkingHours.Opening, &supplier.WorkingHours.Closing)
+	if err != nil {
+		return nil, err
+	}
+	return &supplier, nil
+}
+
+func (r *SupplierRepo) GetByProductId(id int64) (*models.Supplier, error) {
+	var supplier models.Supplier
+	err := r.DB.QueryRow("SELECT id, name, type, image, opening, closing FROM suppliers "+
+		"WHERE id = (SELECT supplier_id FROM menus WHERE id = (?))", id).
+		Scan(&supplier.Id, &supplier.Name, &supplier.Type, &supplier.Image,
+			&supplier.WorkingHours.Opening, &supplier.WorkingHours.Closing)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	return &supplier, nil
+}
+
+func (r *SupplierRepo) BeginTx() error {
+	tx, err := r.DB.Begin()
+	if err != nil {
+		return err
+	}
+	r.TX = tx
+	return nil
+}
+
+func (r *SupplierRepo) CommitTx() error {
+	defer func() {
+		r.TX = nil
+	}()
+	if r.TX != nil {
+		return r.TX.Commit()
+	}
+	return nil
+}
+
+func (r *SupplierRepo) RollbackTx() error {
+	defer func() {
+		r.TX = nil
+	}()
+	if r.TX != nil {
+		return r.TX.Rollback()
+	}
+	return nil
+}
+
+func (r *SupplierRepo) GetTx() *sql.Tx {
+	return r.TX
+}
+
+func (r *SupplierRepo) SetTx(tx *sql.Tx) {
+	r.TX = tx
 }

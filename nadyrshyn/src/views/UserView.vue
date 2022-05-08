@@ -19,18 +19,34 @@
             </div>
             <div class="user_container">
               <button class="logout_btn" @click="Logout">Logout</button>
-              <label>Id: {{ $store.state.auth.user.id }}</label>
-              <label>Name: {{ $store.state.auth.user.name }}</label>
-              <label>Email: {{ $store.state.auth.user.email }}</label>
-              <label>Orders: {{ $store.state.auth.orders.length }}</label>
+              <label class="user_text">
+                Id: {{ $store.state.auth.user.id }}
+              </label>
+              <label class="user_text">
+                Имя: {{ $store.state.auth.user.name }}
+              </label>
+              <label class="user_text">
+                Email: {{ $store.state.auth.user.email }}
+              </label>
+              <label class="user_text">
+                Заказов: {{ $store.state.auth.orders.length }}
+              </label>
             </div>
             <template v-if="$store.state.auth.orders.length > 0">
               <div class="orders_container">
-                <div class="order_item order_nav">
-                  <div class="order">Заказ:</div>
-                  <div class="order">Стоимость:</div>
-                  <div class="order wide">Адрес:</div>
-                  <div class="order wide">Дата:</div>
+                <div class="order_nav">
+                  <div class="order_cell">
+                    <label class="cell_text">Заказ:</label>
+                  </div>
+                  <div class="order_cell">
+                    <label class="cell_text">Цена:</label>
+                  </div>
+                  <div class="order_cell wide">
+                    <label class="cell_text">Адрес:</label>
+                  </div>
+                  <div class="order_cell wide">
+                    <label class="cell_text">Дата:</label>
+                  </div>
                 </div>
                 <div v-for="order in $store.state.auth.orders" :key="order.id">
                   <a
@@ -41,18 +57,26 @@
                       })
                     "
                   >
-                    <div class="order">{{ order.id }}</div>
-                    <div class="order">{{ order.price }}</div>
-                    <div class="order wide">
-                      {{ order.address }}
+                    <div class="order_cell">
+                      <label class="cell_text">{{ order.id }}</label>
                     </div>
-                    <div class="order wide">{{ order.created_at }}</div>
+                    <div class="order_cell">
+                      <label class="cell_text">{{ order.price }}</label>
+                    </div>
+                    <div class="order_cell wide">
+                      <label class="cell_text small">{{ order.address }}</label>
+                    </div>
+                    <div class="order_cell wide">
+                      <label class="cell_text small">
+                        {{ order.created_at }}
+                      </label>
+                    </div>
                   </a>
                 </div>
               </div>
             </template>
           </template>
-          <div v-else>Loading...</div>
+          <label v-else class="loading">Загрузка...</label>
         </div>
       </div>
     </template>
@@ -63,6 +87,9 @@
 <script>
 export default {
   name: "UserView",
+  created() {
+    this.$store.dispatch("auth/fetchOrders");
+  },
   methods: {
     Logout() {
       console.log("logout");
@@ -81,9 +108,12 @@ export default {
   display: flex;
   flex-direction: column;
   margin: 20px auto;
-  padding: 10px;
-  width: 680px;
+  width: 700px;
   border: solid #222 2px;
+  overflow-x: scroll;
+}
+.user_text {
+  margin: 5px 0 5px 10px;
 }
 .logout_btn {
   position: absolute;
@@ -93,10 +123,10 @@ export default {
 }
 
 .orders_container {
-  font-size: 18px;
   display: flex;
   flex-direction: column;
   height: max-content;
+  max-height: 500px;
   width: 700px;
   max-width: 1200px;
   margin: 0 auto;
@@ -120,19 +150,42 @@ export default {
 
 .order_nav {
   background-color: #444;
-  cursor: none;
+  cursor: default;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  max-height: min-content;
+  font-size: 18px;
 }
 
-.order {
+.order_cell {
   display: flex;
-  width: 150px;
+  width: 20%;
   overflow: auto;
   align-items: center;
   border: solid #222 1px;
-  padding: 3px;
 }
 
 .wide {
-  width: 200px;
+  width: 30%;
+}
+.cell_text {
+  font-size: 16px;
+  margin: 3px;
+}
+.cell_text.small {
+  font-size: 12px;
+}
+
+@media (max-width: 810px) {
+  .user_container {
+    width: 90%;
+  }
+  .orders_container {
+    width: 90%;
+  }
+  .cell_text {
+    font-size: 12px;
+  }
 }
 </style>

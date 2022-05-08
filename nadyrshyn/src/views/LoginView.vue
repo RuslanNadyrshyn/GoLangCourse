@@ -1,39 +1,44 @@
 <template>
   <div class="intro">
-    <div class="title">
-      <label class="title_text">{{ title }}</label>
-    </div>
-    <div class="login_form">
-      <template v-if="status === 'login'">
-        <div class="login_choice">
-          <div class="login_choice_btn active">Войти</div>
-          <div
-            class="login_choice_btn"
-            @click="
-              status = 'signIn';
-              title = 'Регистрация';
-            "
-          >
-            Регистрация
+    <template v-if="$store.getters['auth/getAccess']">
+      {{ $router.push({ path: `/user/${$store.state.auth.user.id}` }) }}
+    </template>
+    <template v-else>
+      <div class="title">
+        <label class="title_text">{{ title }}</label>
+      </div>
+      <div class="login_form">
+        <template v-if="status === 'login'">
+          <div class="login_choice">
+            <div class="login_choice_btn active">Войти</div>
+            <div
+              class="login_choice_btn"
+              @click="
+                status = 'signIn';
+                title = 'Регистрация';
+              "
+            >
+              Регистрация
+            </div>
           </div>
-        </div>
-      </template>
-      <template v-else>
-        <div class="login_choice">
-          <div
-            class="login_choice_btn"
-            @click="
-              status = 'login';
-              title = 'Войти';
-            "
-          >
-            Войти
+        </template>
+        <template v-else>
+          <div class="login_choice">
+            <div
+              class="login_choice_btn"
+              @click="
+                status = 'login';
+                title = 'Войти';
+              "
+            >
+              Войти
+            </div>
+            <div class="login_choice_btn active">Регистрация</div>
           </div>
-          <div class="login_choice_btn active">Регистрация</div>
-        </div>
-      </template>
-      <LoginItem :status="status"></LoginItem>
-    </div>
+        </template>
+        <LoginItem :status="status"></LoginItem>
+      </div>
+    </template>
   </div>
 </template>
 

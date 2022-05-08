@@ -2,32 +2,32 @@ package handlers
 
 import (
 	"Delivery/Delivery/cfg"
-	"Delivery/Delivery/internal/repositories/database"
 	"Delivery/Delivery/internal/repositories/requests"
 	"Delivery/Delivery/internal/repositories/responses"
 	"Delivery/Delivery/internal/services"
-	"database/sql"
 	"encoding/json"
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
 )
 
-type AuthHandler struct {
-	cfg  *cfg.Config
-	conn *sql.DB
+type AuthH struct {
+	services *services.ServiceManager
+	cfg      *cfg.Config
 }
 
-func NewAuthHandler(cfg *cfg.Config, conn *sql.DB) *AuthHandler {
-	return &AuthHandler{
-		cfg:  cfg,
-		conn: conn,
+func NewAuthH(
+	services *services.ServiceManager,
+	cfg *cfg.Config,
+) *AuthH {
+	return &AuthH{
+		services: services,
+		cfg:      cfg,
 	}
 }
 
-func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
+func (h *AuthH) Login(w http.ResponseWriter, r *http.Request) {
 	requests.SetupCORS(&w, r)
-
 	switch r.Method {
 	case "OPTIONS":
 		w.WriteHeader(http.StatusOK)
@@ -36,9 +36,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
-		userRepo := database.NewUserRepository(h.conn)
-
-		user, err := userRepo.GetByEmail(req.Email)
+		user, err := h.services.User.GetByEmail(req.Email)
 		if err != nil {
 			http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 			log.Println(err)
@@ -51,14 +49,13 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		tokenService := services.NewTokenService(h.cfg)
-		accessString, err := tokenService.GenerateAccessToken(user.Id)
+		accessString, err := h.services.Token.GenerateAccessToken(user.Id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		refreshString, err := tokenService.GenerateRefreshToken(user.Id)
+		refreshString, err := h.services.Token.GenerateRefreshToken(user.Id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -69,27 +66,33 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 			RefreshToken: refreshString,
 		}
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(resp)
-
+		err = json.NewEncoder(w).Encode(resp)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 	default:
 		http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
 	}
 }
 
-func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
+func (h *AuthH) Refresh(w http.ResponseWriter, r *http.Request) {
+	requests.SetupCORS(&w, r)
 	switch r.Method {
+	case "OPTIONS":
+		w.WriteHeader(http.StatusOK)
 	case "POST":
 		req := new(requests.RefreshRequest)
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+			log.Println(err)
 			return
 		}
 
-		tokenService := services.NewTokenService(h.cfg)
-
-		accessString, refreshString, err := tokenService.RefreshToken(req.AccessToken, req.RefreshToken, h.cfg.AccessSecret, h.cfg.RefreshSecret)
+		accessString, refreshString, err := h.services.Token.RefreshToken(req.AccessToken, req.RefreshToken, h.cfg.AccessSecret, h.cfg.RefreshSecret)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+			log.Println(err)
 			return
 		}
 
@@ -98,12 +101,12 @@ func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 			RefreshToken: refreshString,
 		}
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(resp)
+		err = json.NewEncoder(w).Encode(resp)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 	default:
-		http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
+		http.Error(w, "Only POST Method is Allowed", http.StatusMethodNotAllowed)
 	}
-}
-
-func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
-
 }

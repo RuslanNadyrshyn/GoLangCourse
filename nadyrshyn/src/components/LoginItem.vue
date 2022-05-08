@@ -4,7 +4,7 @@
       <div class="login_block">
         <div class="form_group">
           <label class="form_label">E-mail:</label>
-          <input v-model="login.email" class="form_control" type="email" />
+          <input v-model="login.email" class="form_control" type="email"/>
         </div>
         <div class="form_group">
           <label>Пароль:</label>
@@ -23,7 +23,7 @@
       <div class="login_block">
         <div class="form_group">
           <label>E-mail:</label>
-          <input v-model="sign_in.email" class="form_control" type="email" />
+          <input v-model="sign_in.email" class="form_control" type="email"/>
         </div>
         <div class="form_group">
           <label>Пароль:</label>
@@ -35,7 +35,7 @@
         </div>
         <div class="form_group">
           <label>Имя:</label>
-          <input v-model="sign_in.name" class="form_control" type="text" />
+          <input v-model="sign_in.name" class="form_control" type="text"/>
         </div>
         <div class="form_group">
           <button class="reg_btn" type="submit" @click="SignIn">
@@ -71,23 +71,10 @@ export default {
   },
   methods: {
     Login() {
-      this.$store.dispatch("auth/Login", this.login).then(() => {
-        this.$router.push({ path: `/` });
-      });
+      this.$store.dispatch("auth/Login", this.login);
     },
     SignIn() {
-      console.log(this.sign_in);
       this.$store.dispatch("auth/SignIn", this.sign_in);
-      // axios
-      //   .post("http://localhost:8080/sign_in", this.sign_in)
-      //   .then((res) => {
-      //     this.login.email = this.sign_in.email;
-      //     this.login.password = this.sign_in.password;
-      //     this.Login();
-      //   })
-      //   .catch((err) => {
-      //     console.log(err);
-      //   });
     },
   },
 };

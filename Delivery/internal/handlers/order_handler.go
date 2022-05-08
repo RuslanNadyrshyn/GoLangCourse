@@ -1,42 +1,30 @@
 package handlers
 
 import (
-	"Delivery/Delivery/internal/repositories"
-	"Delivery/Delivery/internal/repositories/database"
 	"Delivery/Delivery/internal/repositories/requests"
 	"Delivery/Delivery/internal/services"
-	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 )
 
-type OrderHandler struct {
-	orderRepository repositories.IOrderRepository
-	conn            *sql.DB
+type OrderH struct {
+	services *services.ServiceManager
 }
 
-func NewOrderHandler(
-	orderRepository repositories.IOrderRepository,
-	conn *sql.DB,
-) *OrderHandler {
-	return &OrderHandler{
-		orderRepository: orderRepository,
-		conn:            conn,
+func NewOrderH(services *services.ServiceManager) *OrderH {
+	return &OrderH{
+		services: services,
 	}
 }
 
-func (h *OrderHandler) Add(w http.ResponseWriter, r *http.Request) {
+func (h *OrderH) Add(w http.ResponseWriter, r *http.Request) {
 	requests.SetupCORS(&w, r)
 	switch r.Method {
 	case "OPTIONS":
 		w.WriteHeader(http.StatusOK)
-		err := json.NewEncoder(w).Encode("OKAY")
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
 	case "POST":
 		req := new(requests.OrderRequest)
 		err := json.NewDecoder(r.Body).Decode(&req)
@@ -45,16 +33,15 @@ func (h *OrderHandler) Add(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err)
 			return
 		}
-		dbService := services.NewDBService(h.conn)
-		orderId, err := dbService.AddOrder(req)
+
+		resp, err := h.services.Order.AddOrder(req)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			fmt.Println(err)
 			return
 		}
-
 		w.WriteHeader(http.StatusOK)
-		err = json.NewEncoder(w).Encode(orderId)
+		err = json.NewEncoder(w).Encode(resp)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -64,51 +51,60 @@ func (h *OrderHandler) Add(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *OrderHandler) GetById(w http.ResponseWriter, r *http.Request) {
+func (h *OrderH) GetById(w http.ResponseWriter, r *http.Request) {
 	requests.SetupCORS(&w, r)
 	switch r.Method {
 	case "GET":
 		req := r.URL.Query().Get("id")
-		id, err := strconv.Atoi(req)
+		id, err := strconv.ParseInt(req, 0, 64)
 		if err != nil {
 			http.Error(w, "Bad Request", http.StatusBadRequest)
 			fmt.Println(err)
 			return
 		}
-		dbService := services.NewDBService(h.conn)
-		resp, err := dbService.GetOrderById(id)
+		resp, err := h.services.Order.GetById(id)
 		if err != nil {
 			http.Error(w, "Bad Request", http.StatusBadRequest)
 			fmt.Println(err)
 			return
 		}
 
-		json.NewEncoder(w).Encode(resp)
+		w.WriteHeader(http.StatusOK)
+		err = json.NewEncoder(w).Encode(resp)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 	default:
 		http.Error(w, "Only GET method is allowed", http.StatusMethodNotAllowed)
 	}
 }
 
-func (h *OrderHandler) GetByUserId(w http.ResponseWriter, r *http.Request) {
+func (h *OrderH) GetByUserId(w http.ResponseWriter, r *http.Request) {
 	requests.SetupCORS(&w, r)
 	switch r.Method {
+	case "OPTIONS":
+		w.WriteHeader(http.StatusOK)
 	case "GET":
-		req := r.URL.Query().Get("userId")
-		userId, err := strconv.Atoi(req)
+		requestToken := h.services.Token.GetTokenFromBearerString(r.Header.Get("Authorization"))
+		claims, err := h.services.Token.ValidateAccessToken(requestToken)
 		if err != nil {
 			http.Error(w, "Bad Request", http.StatusBadRequest)
 			fmt.Println(err)
 			return
 		}
-		orderRepo := database.NewOrderRepository(h.conn)
-		resp, err := orderRepo.GetByUserId(userId)
+		resp, err := h.services.Order.GetByUserId(claims.ID)
 		if err != nil {
 			http.Error(w, "Bad Request", http.StatusBadRequest)
 			fmt.Println(err)
 			return
 		}
-
-		json.NewEncoder(w).Encode(resp)
+		w.WriteHeader(http.StatusOK)
+		err = json.NewEncoder(w).Encode(resp)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 	default:
 		http.Error(w, "Only GET method is allowed", http.StatusMethodNotAllowed)
 	}

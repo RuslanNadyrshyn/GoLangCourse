@@ -50,8 +50,6 @@ export default {
     return {
       products: [],
       price: Number,
-      loaded: false,
-      errors: [],
     };
   },
   created() {
