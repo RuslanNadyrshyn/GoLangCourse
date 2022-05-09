@@ -3,7 +3,7 @@ package services
 import (
 	config "Delivery/Delivery/cfg"
 	"Delivery/Delivery/internal/helper"
-	"Delivery/Delivery/tests/helpers"
+	helpers2 "Delivery/Delivery/internal/tests/helpers"
 	"github.com/golang-jwt/jwt"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const userID = 1
+const userID int64 = 1
 
 type TokenServiceTestSuite struct {
 	suite.Suite
@@ -43,7 +43,7 @@ func TestTokenServiceTestSuite(t *testing.T) {
 }
 
 func (suite *TokenServiceTestSuite) TestGetTokenFromBearerString() {
-	testCases := []helpers.TestCaseGetBearerToken{
+	testCases := []helpers2.TestCaseGetBearerToken{
 		{
 			Name:         "Get token successfully",
 			BearerString: "Bearer test_token",
@@ -93,7 +93,7 @@ func (suite *TokenServiceTestSuite) TestValidateAccessToken() {
 	suite.cfg.AccessLifetimeMinutes = 0
 	expiredTokenString, _ := suite.tokenService.GenerateAccessToken(userID)
 
-	testCases := []helpers.TestCaseValidate{
+	testCases := []helpers2.TestCaseValidate{
 		{
 			Name:         "Valid token",
 			AccessToken:  tokenString,
@@ -129,7 +129,7 @@ func (suite *TokenServiceTestSuite) TestValidateAccessToken() {
 			time.Sleep(500 * time.Millisecond)
 			gotClaims, err := suite.tokenService.ValidateAccessToken(testCase.AccessToken)
 
-			helpers.AssertTokenResponse(suite.T(), testCase, gotClaims, err)
+			helpers2.AssertTokenResponse(suite.T(), testCase, gotClaims, err)
 		})
 	}
 }
@@ -138,7 +138,7 @@ func (suite *TokenServiceTestSuite) TestRefreshToken() {
 	accessToken, _ := suite.tokenService.GenerateAccessToken(userID)
 	refreshToken, _ := suite.tokenService.GenerateRefreshToken(userID)
 
-	testCases := []helpers.TestCaseRefresh{
+	testCases := []helpers2.TestCaseRefresh{
 		{
 			Name:         "Generated new valid refresh tokens",
 			AccessToken:  accessToken,
