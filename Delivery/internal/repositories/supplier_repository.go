@@ -3,7 +3,6 @@ package repositories
 import (
 	"Delivery/Delivery/internal/repositories/models"
 	"database/sql"
-	"log"
 )
 
 type SupplierRepo struct {
@@ -56,19 +55,6 @@ func (r *SupplierRepo) GetById(id int64) (*models.Supplier, error) {
 		"WHERE id = ?", id).Scan(&supplier.Id, &supplier.Name, &supplier.Type, &supplier.Image,
 		&supplier.WorkingHours.Opening, &supplier.WorkingHours.Closing)
 	if err != nil {
-		return nil, err
-	}
-	return &supplier, nil
-}
-
-func (r *SupplierRepo) GetByProductId(id int64) (*models.Supplier, error) {
-	var supplier models.Supplier
-	err := r.DB.QueryRow("SELECT id, name, type, image, opening, closing FROM suppliers "+
-		"WHERE id = (SELECT supplier_id FROM menus WHERE id = (?))", id).
-		Scan(&supplier.Id, &supplier.Name, &supplier.Type, &supplier.Image,
-			&supplier.WorkingHours.Opening, &supplier.WorkingHours.Closing)
-	if err != nil {
-		log.Println(err)
 		return nil, err
 	}
 	return &supplier, nil

@@ -66,8 +66,8 @@ func (r *UserRepo) InsertName(u *models.User) (id int64, err error) {
 
 func (r *UserRepo) GetByEmail(email string) (*models.User, error) {
 	var user models.User
-	err := r.DB.QueryRow("SELECT id, email, password_hash, name FROM users WHERE email = ?", email).
-		Scan(&user.Id, &user.Email, &user.PasswordHash, &user.Name)
+	err := r.DB.QueryRow("SELECT id, email, name FROM users WHERE email = ?", email).
+		Scan(&user.Id, &user.Email, &user.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +85,7 @@ func (r *UserRepo) GetById(id int64) (*models.User, error) {
 }
 
 func (r *UserRepo) Update(u *models.User) (id int64, err error) {
-	_, err = r.DB.Exec("UPDATE users SET name=?, email=?, password_hash=? WHERE id = ?",
+	_, err = r.DB.Exec("UPDATE users SET name=?, email=?, password_hash=? WHERE id=?",
 		&u.Name, &u.Email, &u.PasswordHash, &u.Id)
 	if err != nil {
 		return 0, err
