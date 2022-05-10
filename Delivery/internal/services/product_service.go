@@ -43,7 +43,12 @@ func (r *ProductService) GetById(id int64) (*responses.ProductResponse, error) {
 		return nil, err
 	}
 
-	supplier, err := r.store.SupplierRepo.GetByProductId(product.MenuId)
+	supplierId, err := r.store.MenuRepo.GetById(product.MenuId)
+	if err != nil {
+		return nil, err
+	}
+
+	supplier, err := r.store.SupplierRepo.GetById(supplierId)
 	if err != nil {
 		return nil, err
 	}
