@@ -38,7 +38,15 @@ func (r *MenuRepo) Insert(supId int64) (menuId int64, err error) {
 	return menuId, nil
 }
 
-func (r *MenuRepo) GetById(id int64) (supplierId int64, err error) {
+func (r *MenuRepo) GetIdBySupId(id int64) (menuId int64, err error) {
+	err = r.DB.QueryRow("SELECT id FROM menus WHERE supplier_id = ?", id).Scan(&menuId)
+	if err != nil {
+		return 0, err
+	}
+	return menuId, nil
+}
+
+func (r *MenuRepo) GetSupIdById(id int64) (supplierId int64, err error) {
 	err = r.DB.QueryRow("SELECT supplier_id FROM menus WHERE id = ?", id).Scan(&supplierId)
 	if err != nil {
 		return 0, err

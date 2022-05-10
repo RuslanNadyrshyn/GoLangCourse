@@ -102,7 +102,8 @@ func (r *SupplierService) GetAll() (*[]requests.SupplierRequest, error) {
 
 	var resp []requests.SupplierRequest
 	for _, s := range *suppliers {
-		menu, err := r.store.ProductRepo.GetBySupplierId(s.Id)
+		menuId, err := r.store.MenuRepo.GetIdBySupId(s.Id)
+		menu, err := r.store.ProductRepo.GetByMenuId(menuId)
 		if err != nil {
 			return nil, err
 		}

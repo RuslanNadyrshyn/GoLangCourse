@@ -44,16 +44,12 @@ func (r *ProductRepo) Insert(p *models.Product) (productId int64, err error) {
 }
 
 func (r *ProductRepo) UpdatePrice(p *models.Product) (productId int64, err error) {
-	result, err := r.DB.Exec("UPDATE products SET price=? WHERE id=?", p.Price, p.Id)
-	if err != nil {
-		return 0, err
-	}
-	productId, err = result.LastInsertId()
+	_, err = r.DB.Exec("UPDATE products SET price=? WHERE id=?", p.Price, p.Id)
 	if err != nil {
 		return 0, err
 	}
 
-	return productId, nil
+	return p.Id, nil
 }
 
 func (r *ProductRepo) GetAll() (*[]models.Product, error) {
@@ -86,11 +82,11 @@ func (r *ProductRepo) GetById(id int64) (*models.Product, error) {
 	return &product, nil
 }
 
-func (r *ProductRepo) GetBySupplierId(id int64) ([]models.Product, error) {
+func (r *ProductRepo) GetByMenuId(menuId int64) ([]models.Product, error) {
 	var products []models.Product
 
 	rows, err := r.DB.Query("SELECT id, menu_id, name, price, image, type FROM products "+
-		"WHERE menu_id = (SELECT id FROM menus WHERE supplier_id =(?))", id)
+		"WHERE menu_id = (?)", menuId)
 	if err != nil {
 		return nil, err
 	}

@@ -19,7 +19,7 @@ func (r *ProductIngredientRepo) Insert(productId int64, ingredientId int64) (int
 	var ProductIngredientId int64
 	if r.TX != nil {
 		result, err := r.TX.Exec("INSERT INTO product_ingredients(product_id, ingredient_id)"+
-			"VALUES (?, ?)", productId, ingredientId)
+			" VALUES(?, ?)", productId, ingredientId)
 		if err != nil {
 			return 0, err
 		}
@@ -29,8 +29,8 @@ func (r *ProductIngredientRepo) Insert(productId int64, ingredientId int64) (int
 		}
 		return ProductIngredientId, nil
 	}
-	result, err := r.DB.Exec("INSERT INTO product_ingredients(product_id, ingredient_id)"+
-		"VALUES (?, ?)", productId, ingredientId)
+	result, err := r.DB.Exec("INSERT INTO product_ingredients(product_id, ingredient_id) "+
+		"VALUES(?, ?)", productId, ingredientId)
 	if err != nil {
 		return 0, err
 	}
