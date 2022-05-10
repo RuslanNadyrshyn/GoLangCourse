@@ -11,7 +11,7 @@ type LoginRequest struct {
 }
 
 type RefreshRequest struct {
-	UserID       int    `json:"user_id"`
+	UserID       int64  `json:"user_id"`
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 }
@@ -19,11 +19,11 @@ type RefreshRequest struct {
 func SetupCORS(w *http.ResponseWriter, req *http.Request) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, authorization")
+	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 }
 
 type SupplierRequest struct {
-	Id           int    `json:"id"`
+	Id           int64  `json:"id"`
 	Name         string `json:"name"`
 	Type         string `json:"type"`
 	Image        string `json:"image"`
@@ -39,8 +39,8 @@ type OrderRequest struct {
 	TotalPrice float64      `json:"totalPrice"`
 	Address    string       `json:"address"`
 	Products   []struct {
-		ProductId    int     `json:"id"`
+		ProductId    int64   `json:"id"`
 		ProductPrice float64 `json:"price"`
-		Counter      int     `json:"counter"`
+		Counter      int64   `json:"counter"`
 	} `json:"products"`
 }

@@ -17,7 +17,7 @@ type TestCaseValidate struct {
 	AccessToken  string
 	WantError    bool
 	WantErrorMsg string
-	WantID       int
+	WantID       int64
 }
 
 type Request struct {
@@ -27,7 +27,7 @@ type Request struct {
 }
 
 type ExpectedResponse struct {
-	StatusCode int
+	StatusCode int64
 	BodyPart   string
 }
 
@@ -44,7 +44,7 @@ type TestCaseRefresh struct {
 	RefreshToken     string
 	WantError        bool
 	WantErrorMsg     string
-	WantID           int
+	WantID           int64
 	WantAccessToken  string
 	WantRefreshToken string
 }

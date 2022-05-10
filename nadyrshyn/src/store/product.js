@@ -37,27 +37,7 @@ const mutations = {
 };
 
 const actions = {
-  fetchProducts(context) {
-    context.commit("setLoaded", false);
-    axios
-      .get(context.getters.getProductURL)
-      .then((res) => {
-        let types = [];
-        for (let i = 0; i < res.data.length; i++) {
-          if (types.includes(res.data[i].type) === false)
-            types.push(res.data[i].type);
-        }
-        context.commit("setProducts", res.data);
-        context.commit("setSortedProducts", res.data);
-        context.commit("setProductsTypes", types);
-        context.commit("setSelectedType", "все");
-      })
-      .catch((err) => [context.commit("setErrors", [err])])
-      .finally(() => {
-        context.commit("setLoaded", true);
-      });
-  },
-  fetchP(context, products) {
+  fetchProducts(context, products) {
     context.commit("setLoaded", false);
     let types = [];
     for (let i = 0; i < products.length; i++)

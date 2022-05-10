@@ -156,6 +156,7 @@ input[type="number"] {
 }
 .title_product {
   font-size: 30px;
+  margin: auto;
 }
 .title_product:hover {
   cursor: pointer;

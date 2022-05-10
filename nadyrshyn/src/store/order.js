@@ -38,9 +38,7 @@ const actions = {
     context.commit("setLoaded", false);
     axios
       .get(context.getters.getOrderURL, {
-        params: {
-          id: orderId,
-        },
+        params: { id: orderId },
       })
       .then((res) => {
         context.commit("setOrder", res.data);

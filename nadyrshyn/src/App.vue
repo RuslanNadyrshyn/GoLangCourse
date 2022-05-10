@@ -20,6 +20,10 @@ body {
   max-width: 1200px;
   margin: 0 auto;
 }
+.loading {
+  text-align: center;
+  margin-top: 30px;
+}
 .title {
   display: flex;
   justify-content: center;
