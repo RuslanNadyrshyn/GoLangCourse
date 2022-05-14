@@ -66,8 +66,8 @@ func (r *UserRepo) InsertName(u *models.User) (id int64, err error) {
 
 func (r *UserRepo) GetByEmail(email string) (*models.User, error) {
 	var user models.User
-	err := r.DB.QueryRow("SELECT id, email, name FROM users WHERE email = ?", email).
-		Scan(&user.Id, &user.Email, &user.Name)
+	err := r.DB.QueryRow("SELECT id, email, password_hash, name FROM users WHERE email = ?", email).
+		Scan(&user.Id, &user.Email, &user.PasswordHash, &user.Name)
 	if err != nil {
 		return nil, err
 	}
