@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	//http://foodapi.true-tech.php.nixdev.co/swagger/doc.json
+	// comment
 	config := cfg.NewConfig(false)
 	server.Start(config)
 }
