@@ -7,7 +7,6 @@ import (
 )
 
 func main() {
-	// comment
 	config := cfg.NewConfig(false)
 	server.Start(config)
 }
