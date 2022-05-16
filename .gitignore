@@ -1,6 +1,4 @@
 .idea
 .vscode
-/Delivery/go.mod
-/Delivery/go.sum
 /Delivery/cfg/.env
 /Delivery/vendor/
