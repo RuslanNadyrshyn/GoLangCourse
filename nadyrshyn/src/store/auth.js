@@ -1,11 +1,11 @@
 import axios from "axios";
 
 const state = {
-  urlLogin: "http://localhost:8080/login",
-  urlSignIn: "http://localhost:8080/sign_in",
-  urlUser: "http://localhost:8080/profile",
-  urlOrders: "http://localhost:8080/orders",
-  urlRefresh: "http://localhost:8080/refresh",
+  urlLogin: "http://45.148.29.14:8080/login",
+  urlSignIn: "http://45.148.29.14:8080/sign_in",
+  urlUser: "http://45.148.29.14:8080/profile",
+  urlOrders: "http://45.148.29.14:8080/orders",
+  urlRefresh: "http://45.148.29.14:8080/refresh",
   Access: false,
   user: [],
   orders: [],

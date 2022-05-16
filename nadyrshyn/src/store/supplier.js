@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const state = {
-  url: "http://localhost:8080/get_suppliers",
+  url: "http://45.148.29.14:8080/get_suppliers",
   suppliers: [],
   sortedSuppliers: [],
   suppliersTypes: [],

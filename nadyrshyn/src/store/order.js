@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const state = {
-  orderURL: "http://localhost:8080/get_order",
-  postOrderURL: "http://localhost:8080/post_order",
+  orderURL: "http://45.148.29.14:8080/get_order",
+  postOrderURL: "http://45.148.29.14:8080/post_order",
   order: Object,
   errors: [],
   loaded: false,
