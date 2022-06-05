@@ -3,13 +3,14 @@ package Connection
 import (
 	"database/sql"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 	"log"
 	"os"
 )
 
 func Connect() (*sql.DB, error) {
-	envName := "cfg/.env"
+	envName := "Delivery/cfg/.env"
 	err := godotenv.Load(envName)
 	if err != nil {
 		log.Println("Error loading .env file")
@@ -18,10 +19,7 @@ func Connect() (*sql.DB, error) {
 	dataSource := os.Getenv("DB_USER") + ":" + os.Getenv("PASS") +
 		"@tcp(" + os.Getenv("HOST") + os.Getenv("DB_PORT") + ")/" + os.Getenv("DB")
 
-	db, err := sql.Open(
-		"mysql",
-		dataSource,
-	)
+	db, err := sql.Open("mysql", dataSource)
 	if err != nil {
 		log.Println(err)
 	}
@@ -31,7 +29,7 @@ func Connect() (*sql.DB, error) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("Database connected.")
+	fmt.Println("Database connected. Port: ", os.Getenv("PORT"))
 
 	return db, err
 }

@@ -1,124 +1,144 @@
 <template>
-  <div>
-    <div v-if="loaded">
-      <template v-if="errors.length">
-        <div v-for="(error, index) in errors" :key="index">
+  <div class="intro">
+    <template v-if="$store.state.products.loaded">
+      <template v-if="$store.state.suppliers.errors.length">
+        <div
+          v-for="(error, index) in $store.state.suppliers.errors"
+          :key="index"
+        >
           {{ error }}
         </div>
       </template>
-      <Header></Header>
-      <div class="intro">
-        <div class="section">
-          <div class="container">
-            <div class="product_list_block">
-              <div v-for="product in products" :key="product.id">
-                <ProductListNav :type="product.type"></ProductListNav>
+      <template v-if="$store.state.products.errors.length">
+        <div
+          v-for="(error, index) in $store.state.products.errors"
+          :key="index"
+        >
+          {{ error }}
+        </div>
+      </template>
+      <div class="section">
+        <div class="container">
+          <div class="title">
+            <label class="title_text">Доставка</label>
+          </div>
+          <div class="list_block">
+            <div class="list_nav">
+              <ListNavItem :type="'все'" :isProduct="false"></ListNavItem>
+              <ListNavItem :type="'Открыто'" :isProduct="false"></ListNavItem>
+              <div
+                v-for="type in $store.getters['suppliers/getSuppliersTypes']"
+                :key="type"
+              >
+                <ListNavItem :type="type" :isProduct="false"></ListNavItem>
               </div>
-              <div class="Product_list">
-                <div v-for="product in products" :key="product.id">
-                  <Product
-                    :id="product.id"
-                    :name="product.name"
-                    :image="product.image"
-                    :price="product.price"
-                    :type="product.type"
-                    :ingredients="product.ingredients"
-                  >
-                    {{ products }}
-                  </Product>
-                </div>
+            </div>
+            <div class="list">
+              <div
+                v-for="supplier in $store.getters[
+                  'suppliers/getSortedSuppliers'
+                ]"
+                :key="supplier.id"
+              >
+                <SupplierItem :supplier="supplier"></SupplierItem>
+              </div>
+            </div>
+          </div>
+          <div class="list_block">
+            <div class="list_nav">
+              <ListNavItem :type="'все'" :isProduct="true"></ListNavItem>
+              <div
+                v-for="type in $store.getters['products/getProductsTypes']"
+                :key="type"
+              >
+                <ListNavItem :type="type" :isProduct="true"></ListNavItem>
+              </div>
+            </div>
+            <div class="list product_list">
+              <div
+                v-for="product in $store.getters['products/getSortedProducts']"
+                :key="product.id"
+              >
+                <ProductItem :product="product"></ProductItem>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <div v-else>Loading...</div>
+    </template>
+    <label v-else class="loading">Загрузка...</label>
   </div>
 </template>
 
 <script>
-import Product from "@/components/Product";
-import axios from "axios";
-import Header from "@/components/Header";
-import ProductListNav from "@/components/ProductListNav";
+import ListNavItem from "@/components/ListNavItem";
+import ProductItem from "@/components/ProductItem";
+import SupplierItem from "@/components/SupplierItem";
 
 export default {
   name: "ProductList",
-  components: { ProductListNav, Header, Product },
-  data() {
-    return {
-      suppliers: [],
-      products: [],
-      loaded: false,
-      errors: [],
-    };
-  },
-  mounted() {
-    // const suppliers_url = "http://localhost:8082/get_supppliers";
-    // axios
-    //     .get(suppliers_url)
-    //     .then((res) => {
-    //       this.suppliers = res.data;
-    //       console.log(this.suppliers);
-    //     })
-    //     .catch((err) => {
-    //       this.errors.push(err);
-    //     })
-    //     .finally(() => {
-    //       this.loaded = true;
-    //     });
-    const url = "http://localhost:8082/get_products";
-    axios
-      .get(url)
-      .then((res) => {
-        this.products = res.data;
-        console.log(this.products);
-      })
-      .catch((err) => {
-        this.errors.push(err);
-      })
-      .finally(() => {
-        this.loaded = true;
-      });
+  components: { SupplierItem, ProductItem, ListNavItem },
+  created() {
+    if (JSON.parse(localStorage.getItem("delivery_basket")) == null)
+      localStorage.setItem("delivery_basket", JSON.stringify([]));
+    if (this.$store.getters["suppliers/getSuppliers"].length === 0) {
+      this.$store.dispatch("suppliers/fetchSuppliers");
+      setTimeout(() => {
+        let suppliers = this.$store.getters["suppliers/getSuppliers"];
+        let prod = [];
+        for (let i = 0; i < suppliers.length; i++)
+          for (let j = 0; j < suppliers[i].menu.length; j++)
+            prod.push(suppliers[i].menu[j]);
+
+        this.$store.dispatch("products/fetchProducts", prod);
+      }, 2000);
+    }
   },
 };
 </script>
 
 <style scoped>
-.intro {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  width: 100%;
-  background-color: #ffcfb4;
-  background-size: cover;
-}
-.product_list_block {
+.list_block {
   display: flex;
   flex-direction: column;
   justify-content: center;
   background-color: #686e65;
-  border-radius: 20px;
-  margin-top: 10px;
+  margin-bottom: 40px;
 }
-.product_list_nav {
+
+.list_nav {
+  position: relative;
   display: flex;
   font-size: 20px;
-  background-color: coral;
-  min-height: 50px;
-  border-radius: 14px 10px 0 0;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 700;
+  background-color: #4b4242ff;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
 }
-.container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-.Product_list {
+
+.list {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-evenly;
+  justify-content: space-around;
   width: 100%;
+  height: 210px;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+  margin: auto;
+}
+.list.product_list {
+  height: 880px;
+}
+
+@media (max-width: 560px) {
+  .list {
+    flex-wrap: nowrap;
+    height: 150px;
+  }
+  .list.product_list {
+    flex-wrap: wrap;
+    height: 600px;
+  }
 }
 </style>
