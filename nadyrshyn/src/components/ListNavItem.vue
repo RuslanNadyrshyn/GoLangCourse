@@ -104,7 +104,7 @@ export default {
   color: #111;
   border-radius: 5px;
   right: 2px;
-  top: 2px;
+  top: 0;
   font-size: 12px;
 }
 .counter:hover {
