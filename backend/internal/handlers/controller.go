@@ -6,21 +6,21 @@ import (
 )
 
 type Controller struct {
-	Auth     *AuthH
-	User     *UserH
-	Supplier *SupplierH
-	Product  *ProductH
-	Order    *OrderH
+	Auth     *AuthHandler
+	User     *UserHandler
+	Supplier *SupplierHandler
+	Product  *ProductHandler
+	Order    *OrderHandler
 }
 
 func NewController(
 	services *services.ServiceManager, cfg *cfg.Config,
 ) *Controller {
 	return &Controller{
-		Auth:     NewAuthH(services, cfg),
-		User:     NewUserH(services),
-		Supplier: NewSupplierH(services),
-		Product:  NewProductH(services),
-		Order:    NewOrderH(services),
+		Auth:     NewAuthHandler(services, cfg),
+		User:     NewUserHandler(services),
+		Supplier: NewSupplierHandler(services),
+		Product:  NewProductHandler(services),
+		Order:    NewOrderHandler(services),
 	}
 }

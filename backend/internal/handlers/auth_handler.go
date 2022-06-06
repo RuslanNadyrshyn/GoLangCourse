@@ -11,22 +11,22 @@ import (
 	"net/http"
 )
 
-type AuthH struct {
+type AuthHandler struct {
 	services *services.ServiceManager
 	cfg      *cfg.Config
 }
 
-func NewAuthH(
+func NewAuthHandler(
 	services *services.ServiceManager,
 	cfg *cfg.Config,
-) *AuthH {
-	return &AuthH{
+) *AuthHandler {
+	return &AuthHandler{
 		services: services,
 		cfg:      cfg,
 	}
 }
 
-func (h *AuthH) Login(w http.ResponseWriter, r *http.Request) {
+func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	requests.SetupCORS(&w, r)
 	switch r.Method {
 	case "OPTIONS":
@@ -76,7 +76,7 @@ func (h *AuthH) Login(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *AuthH) Refresh(w http.ResponseWriter, r *http.Request) {
+func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 	requests.SetupCORS(&w, r)
 	switch r.Method {
 	case "OPTIONS":

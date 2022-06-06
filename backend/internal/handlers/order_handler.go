@@ -10,17 +10,17 @@ import (
 	"strconv"
 )
 
-type OrderH struct {
+type OrderHandler struct {
 	services *services.ServiceManager
 }
 
-func NewOrderH(services *services.ServiceManager) *OrderH {
-	return &OrderH{
+func NewOrderHandler(services *services.ServiceManager) *OrderHandler {
+	return &OrderHandler{
 		services: services,
 	}
 }
 
-func (h *OrderH) Add(w http.ResponseWriter, r *http.Request) {
+func (h *OrderHandler) Add(w http.ResponseWriter, r *http.Request) {
 	requests.SetupCORS(&w, r)
 	switch r.Method {
 	case "OPTIONS":
@@ -51,7 +51,7 @@ func (h *OrderH) Add(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *OrderH) GetById(w http.ResponseWriter, r *http.Request) {
+func (h *OrderHandler) GetById(w http.ResponseWriter, r *http.Request) {
 	requests.SetupCORS(&w, r)
 	switch r.Method {
 	case "GET":
@@ -80,7 +80,7 @@ func (h *OrderH) GetById(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *OrderH) GetByUserId(w http.ResponseWriter, r *http.Request) {
+func (h *OrderHandler) GetByUserId(w http.ResponseWriter, r *http.Request) {
 	requests.SetupCORS(&w, r)
 	switch r.Method {
 	case "OPTIONS":

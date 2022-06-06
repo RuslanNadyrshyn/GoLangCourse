@@ -10,17 +10,17 @@ import (
 	"net/http"
 )
 
-type UserH struct {
+type UserHandler struct {
 	services *services.ServiceManager
 }
 
-func NewUserH(services *services.ServiceManager) *UserH {
-	return &UserH{
+func NewUserHandler(services *services.ServiceManager) *UserHandler {
+	return &UserHandler{
 		services: services,
 	}
 }
 
-func (h *UserH) SignUp(w http.ResponseWriter, r *http.Request) {
+func (h *UserHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	requests.SetupCORS(&w, r)
 	switch r.Method {
 	case "OPTIONS":
@@ -33,12 +33,6 @@ func (h *UserH) SignUp(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 			return
 		}
-		//err := h.userRepository.BeginTx()
-		//if err != nil {
-		//	http.Error(w, err.Error(), http.StatusUnauthorized)
-		//	log.Println(err)
-		//	return
-		//}
 
 		_, err := h.services.User.GetByEmail(req.Email)
 		if err != nil {
@@ -71,7 +65,7 @@ func (h *UserH) SignUp(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *UserH) GetProfile(w http.ResponseWriter, r *http.Request) {
+func (h *UserHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 	requests.SetupCORS(&w, r)
 	switch r.Method {
 	case "OPTIONS":

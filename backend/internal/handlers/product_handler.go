@@ -9,17 +9,17 @@ import (
 	"strconv"
 )
 
-type ProductH struct {
+type ProductHandler struct {
 	services *services.ServiceManager
 }
 
-func NewProductH(services *services.ServiceManager) *ProductH {
-	return &ProductH{
+func NewProductHandler(services *services.ServiceManager) *ProductHandler {
+	return &ProductHandler{
 		services: services,
 	}
 }
 
-func (h *ProductH) GetAll(w http.ResponseWriter, r *http.Request) {
+func (h *ProductHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	requests.SetupCORS(&w, r)
 	switch r.Method {
 	case "OPTIONS":
@@ -44,7 +44,7 @@ func (h *ProductH) GetAll(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *ProductH) GetById(w http.ResponseWriter, r *http.Request) {
+func (h *ProductHandler) GetById(w http.ResponseWriter, r *http.Request) {
 	requests.SetupCORS(&w, r)
 	switch r.Method {
 	case "GET":

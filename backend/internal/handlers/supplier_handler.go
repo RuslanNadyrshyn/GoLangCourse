@@ -8,17 +8,17 @@ import (
 	"net/http"
 )
 
-type SupplierH struct {
+type SupplierHandler struct {
 	services *services.ServiceManager
 }
 
-func NewSupplierH(services *services.ServiceManager) *SupplierH {
-	return &SupplierH{
+func NewSupplierHandler(services *services.ServiceManager) *SupplierHandler {
+	return &SupplierHandler{
 		services: services,
 	}
 }
 
-func (h *SupplierH) AddSupplier(w http.ResponseWriter, r *http.Request) {
+func (h *SupplierHandler) AddSupplier(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "OPTIONS":
 		w.WriteHeader(http.StatusOK)
@@ -50,7 +50,7 @@ func (h *SupplierH) AddSupplier(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *SupplierH) GetAll(w http.ResponseWriter, r *http.Request) {
+func (h *SupplierHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		resp, err := h.services.Supplier.GetAll()
