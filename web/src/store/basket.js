@@ -1,5 +1,8 @@
+//const ip = "http://45.148.29.14:8080";
+const ip = "http://localhost:8080";
+
 const state = {
-  url: "http://45.148.29.14:8080/get_basket",
+  url: ip + "/get_basket",
   products: JSON.parse(localStorage.getItem("delivery_basket")),
   totalPrice: 0,
   errors: [],

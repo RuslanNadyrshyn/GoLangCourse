@@ -1,8 +1,11 @@
 import axios from "axios";
 
+//const ip = "http://45.148.29.14:8080";
+const ip = "http://localhost:8080";
+
 const state = {
-  url: "http://45.148.29.14:8080/get_products",
-  urlGetById: "http://45.148.29.14:8080/prod",
+  url: ip + "/get_products",
+  urlGetById: ip + "/prod",
   product: null,
   products: [],
   sortedProducts: [],

@@ -1,11 +1,13 @@
 import axios from "axios";
+//const ip = "http://45.148.29.14:8080";
+const ip = "http://localhost:8080";
 
 const state = {
-  urlLogin: "http://45.148.29.14:8080/login",
-  urlSignUp: "http://45.148.29.14:8080/sign_up",
-  urlUser: "http://45.148.29.14:8080/profile",
-  urlOrders: "http://45.148.29.14:8080/orders",
-  urlRefresh: "http://45.148.29.14:8080/refresh",
+  urlLogin: ip + "/login",
+  urlSignUp: ip + "/sign_up",
+  urlUser: ip + "/profile",
+  urlOrders: ip + "/orders",
+  urlRefresh: ip + "/refresh",
   Access: false,
   user: [],
   orders: [],
@@ -43,9 +45,8 @@ const actions = {
         };
         actions.Login(context, login);
       })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch((err) => [context.commit("setErrors", [err])])
+      .finally(() => context.commit("setLoaded", true));
   },
   Login(context, login) {
     axios
@@ -57,10 +58,8 @@ const actions = {
           if (context.getters.getAccess) await actions.RefreshTokens(context);
         }, 3500000);
       })
-      .catch((err) => console.log(err))
-      .finally(() => {
-        console.log("finally logged in)");
-      });
+      .catch((err) => [context.commit("setErrors", [err])])
+      .finally(() => context.commit("setLoaded", true));
   },
   fetchProfile(context) {
     context.commit("setLoaded", false);
@@ -77,10 +76,8 @@ const actions = {
           context.commit("setUser", res.data);
           context.commit("setAccess", true);
         })
-        .catch((err) => context.commit("setErrors", err))
-        .finally(() => {
-          context.commit("setLoaded", true);
-        });
+        .catch((err) => [context.commit("setErrors", [err])])
+        .finally(() => context.commit("setLoaded", true));
     }
   },
   fetchOrders(context) {
@@ -94,7 +91,8 @@ const actions = {
           if (res.data != null) context.commit("setOrders", res.data);
           else context.commit("setOrders", []);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => [context.commit("setErrors", [err])])
+        .finally(() => context.commit("setLoaded", true));
     }
   },
   Logout(context) {
@@ -120,9 +118,7 @@ const actions = {
         }, 3500000);
       })
       .catch((err) => console.log(err))
-      .finally(() => {
-        console.log("finally logged in)");
-      });
+      .finally(() => context.commit("setLoaded", true));
   },
 };
 

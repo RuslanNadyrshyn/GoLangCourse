@@ -56,7 +56,7 @@
 <script>
 export default {
   name: "HeaderItem",
-  created() {
+  mounted() {
     this.$store.dispatch("auth/fetchProfile");
   },
 };
