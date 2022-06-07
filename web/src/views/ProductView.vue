@@ -28,7 +28,7 @@ import ProductBlock from "@/components/ProductBlock";
 export default {
   name: "ProductView",
   components: { ProductBlock },
-  created() {
+  mounted() {
     if (JSON.parse(localStorage.getItem("delivery_basket")) == null)
       localStorage.setItem("delivery_basket", JSON.stringify([]));
     this.$store.dispatch("products/fetchById", this.$route.params.id);

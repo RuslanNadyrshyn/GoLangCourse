@@ -52,7 +52,7 @@ export default {
       price: Number,
     };
   },
-  created() {
+  mounted() {
     if (JSON.parse(localStorage.getItem("delivery_basket")) == null)
       localStorage.setItem("delivery_basket", JSON.stringify(this.products));
     this.$store.dispatch("basket/calcTotalPrice");

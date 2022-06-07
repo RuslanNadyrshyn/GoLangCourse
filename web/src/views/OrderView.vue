@@ -80,7 +80,7 @@ export default {
       },
     };
   },
-  created() {
+  mounted() {
     this.$store.dispatch("basket/calcTotalPrice");
     this.order.totalPrice = this.$store.getters["basket/getTotalPrice"];
     if (this.order.products.length) this.loaded = true;
@@ -90,9 +90,9 @@ export default {
       if (this.$store.getters["auth/getAccess"])
         this.order.user = this.$store.getters["auth/getUser"];
       if (
-        this.order.address !== "" &&
+        this.order.address.length !== 0 &&
         this.order.address.length < 50 &&
-        this.order.user.name !== "" &&
+        this.order.user.name.length !== 0 &&
         this.order.user.name.length < 20
       ) {
         this.$store.dispatch("orders/fetchOrderPOST", this.order).then(() => {
@@ -103,7 +103,7 @@ export default {
           } else alert(this.errors);
         });
       } else {
-        alert("Введите имя и адрес!");
+        alert("Все поля должны быть заполнены!");
       }
     },
   },

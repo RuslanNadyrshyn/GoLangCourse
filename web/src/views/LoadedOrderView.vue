@@ -55,7 +55,7 @@ import OrderItem from "@/components/OrderItem";
 export default {
   name: "LoadedOrderView",
   components: { OrderItem },
-  created() {
+  mounted() {
     this.$store.dispatch("orders/fetchOrder", this.$route.params.id);
   },
 };

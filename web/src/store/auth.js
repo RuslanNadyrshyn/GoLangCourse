@@ -49,6 +49,7 @@ const actions = {
       .finally(() => context.commit("setLoaded", true));
   },
   Login(context, login) {
+    context.commit("setErrors", []);
     axios
       .post(context.getters.getLoginURL, login)
       .then((res) => {
@@ -58,14 +59,21 @@ const actions = {
           if (context.getters.getAccess) await actions.RefreshTokens(context);
         }, 3500000);
       })
-      .catch((err) => [context.commit("setErrors", [err])])
+      .catch((err) => {
+        context.commit("setErrors", err);
+        alert("Неверный email и/или пароль!");
+      })
       .finally(() => context.commit("setLoaded", true));
   },
   fetchProfile(context) {
     context.commit("setLoaded", false);
     context.commit("setAccess", false);
+    context.commit("setErrors", []);
 
-    if (localStorage.getItem("delivery_tokens") !== null) {
+    if (
+      localStorage.getItem("delivery_tokens") !== null &&
+      localStorage.getItem("delivery_tokens").length
+    ) {
       let tokens = JSON.parse(localStorage.getItem("delivery_tokens"));
       axios
         .get(context.getters.getUserURL, {

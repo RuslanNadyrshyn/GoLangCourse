@@ -78,7 +78,7 @@ import SupplierItem from "@/components/SupplierItem";
 export default {
   name: "ProductList",
   components: { SupplierItem, ProductItem, ListNavItem },
-  created() {
+  mounted() {
     if (JSON.parse(localStorage.getItem("delivery_basket")) == null)
       localStorage.setItem("delivery_basket", JSON.stringify([]));
     if (this.$store.getters["suppliers/getSuppliers"].length === 0) {

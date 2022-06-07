@@ -71,10 +71,26 @@ export default {
   },
   methods: {
     Login() {
-      this.$store.dispatch("auth/Login", this.login);
+      if (this.login.email.length !== 0 && this.login.password.length !== 0) {
+        this.$store.dispatch("auth/Login", this.login);
+      } else alert("Введите email и пароль!");
     },
     SignUp() {
-      this.$store.dispatch("auth/SignUp", this.sign_up);
+      if (
+        this.sign_up.name.length !== 0 &&
+        this.sign_up.name.length < 20 &&
+        this.sign_up.email.length !== 0 &&
+        this.sign_up.email.length < 20 &&
+        this.sign_up.password.length >= 4
+      ) {
+        this.$store.dispatch("auth/SignUp", this.sign_up);
+      } else
+        alert(
+          "Неверный ввод!\n" +
+            "Все поля дожны быть заполнены!\n" +
+            "Длина имени и email не должна превышать 20 символов!\n" +
+            "Минимальная длина пароля: 4 символа"
+        );
     },
   },
 };

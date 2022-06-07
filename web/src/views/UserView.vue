@@ -3,10 +3,10 @@
     <template v-if="$store.getters['auth/getUserID'] == $route.params.id">
       <div class="section">
         <div class="container">
-          <template v-if="$store.state.auth.loaded">
+          <template v-if="$store.getters['auth/getLoaded']">
             <template v-if="$store.state.auth.errors.length">
               <div
-                v-for="(error, index) in $store.state.auth.errors"
+                v-for="(error, index) in $store.getters['auth/getErrors']"
                 :key="index"
               >
                 {{ error }}
@@ -48,7 +48,10 @@
                     <label class="cell_text">Дата:</label>
                   </div>
                 </div>
-                <div v-for="order in $store.state.auth.orders" :key="order.id">
+                <div
+                  v-for="order in $store.getters['auth/getOrders']"
+                  :key="order.id"
+                >
                   <a
                     class="order_item"
                     @click="
@@ -87,7 +90,7 @@
 <script>
 export default {
   name: "UserView",
-  created() {
+  mounted() {
     this.$store.dispatch("auth/fetchOrders");
   },
   methods: {

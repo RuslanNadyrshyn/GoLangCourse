@@ -14,7 +14,7 @@
             <div
               class="login_choice_btn"
               @click="
-                status = 'signIn';
+                status = 'signUp';
                 title = 'Регистрация';
               "
             >
