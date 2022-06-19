@@ -15,9 +15,9 @@ func Connect() (*sql.DB, error) {
 	if err != nil {
 		log.Println("Error loading .env file")
 	}
-	//dataSource := os.Getenv("DB_LINK")
-	dataSource := os.Getenv("DB_USER") + ":" + os.Getenv("PASS") +
-		"@tcp(" + os.Getenv("HOST") + os.Getenv("DB_PORT") + ")/" + os.Getenv("DB")
+	dataSource := os.Getenv("DB_LINK")
+	//dataSource := os.Getenv("DB_USER") + ":" + os.Getenv("PASS") +
+	//	"@tcp(" + os.Getenv("HOST") + os.Getenv("DB_PORT") + ")/" + os.Getenv("DB")
 
 	db, err := sql.Open("mysql", dataSource)
 	if err != nil {

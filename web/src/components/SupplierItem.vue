@@ -1,5 +1,12 @@
 <template>
-  <div class="supplier_item" @click="sortBySupplier()">
+  <div
+    v-bind:class="
+      this.supplier.id === $store.getters['suppliers/getSelectedSupplier']
+        ? 'supplier_item selected'
+        : 'supplier_item'
+    "
+    @click="sortBySupplier()"
+  >
     <div class="supplier_img">
       <img class="supplier_logo" :src="supplier.image" alt="supplier_logo" />
     </div>
@@ -22,7 +29,13 @@ export default {
   },
   methods: {
     sortBySupplier() {
-      this.$store.dispatch("products/sortBySupplier", this.supplier.menu);
+      let params = {
+        supId: this.supplier.id,
+        supType: "",
+        prodType: "все",
+      };
+      this.$store.commit("suppliers/setSelectedSupplier", this.supplier.id);
+      this.$store.dispatch("products/getByParams", params);
     },
   },
 };
@@ -37,9 +50,13 @@ export default {
   text-align: center;
   width: 170px;
   height: 180px;
-  margin: 5px;
+  margin: 5px auto;
   padding: 10px 5px;
   border-radius: 10px;
+}
+.selected {
+  background-color: #4b4242ff;
+  color: #d3c7c7;
 }
 
 .supplier_item:hover {

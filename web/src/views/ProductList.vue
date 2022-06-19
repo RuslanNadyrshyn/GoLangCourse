@@ -1,72 +1,67 @@
 <template>
   <div class="intro">
-    <template v-if="$store.state.products.loaded">
-      <template v-if="$store.state.suppliers.errors.length">
-        <div
-          v-for="(error, index) in $store.state.suppliers.errors"
-          :key="index"
-        >
-          {{ error }}
+    <template v-if="$store.state.suppliers.errors.length">
+      <div v-for="(error, index) in $store.state.suppliers.errors" :key="index">
+        {{ error }}
+      </div>
+    </template>
+    <template v-if="$store.state.products.errors.length">
+      <div v-for="(error, index) in $store.state.products.errors" :key="index">
+        {{ error }}
+      </div>
+    </template>
+    <div class="section">
+      <div class="container">
+        <div class="title">
+          <label class="title_text">Доставка</label>
         </div>
-      </template>
-      <template v-if="$store.state.products.errors.length">
-        <div
-          v-for="(error, index) in $store.state.products.errors"
-          :key="index"
-        >
-          {{ error }}
-        </div>
-      </template>
-      <div class="section">
-        <div class="container">
-          <div class="title">
-            <label class="title_text">Доставка</label>
-          </div>
-          <div class="list_block">
-            <div class="list_nav">
-              <ListNavItem :type="'все'" :isProduct="false"></ListNavItem>
-              <ListNavItem :type="'Открыто'" :isProduct="false"></ListNavItem>
-              <div
-                v-for="type in $store.getters['suppliers/getSuppliersTypes']"
-                :key="type"
-              >
-                <ListNavItem :type="type" :isProduct="false"></ListNavItem>
-              </div>
+        <div class="list_block">
+          <div class="list_nav">
+            <ListNavItem :type="'все'" :isProduct="false"></ListNavItem>
+            <ListNavItem :type="'Открыто'" :isProduct="false"></ListNavItem>
+            <div
+              v-for="type in $store.getters['suppliers/getSuppliersTypes']"
+              :key="type"
+            >
+              <ListNavItem :type="type" :isProduct="false"></ListNavItem>
             </div>
-            <div class="list">
+          </div>
+          <div class="list">
+            <template v-if="$store.state.suppliers.loaded">
               <div
-                v-for="supplier in $store.getters[
-                  'suppliers/getSortedSuppliers'
-                ]"
+                v-for="supplier in $store.getters['suppliers/getSuppliers']"
                 :key="supplier.id"
               >
                 <SupplierItem :supplier="supplier"></SupplierItem>
               </div>
+            </template>
+            <label v-else class="loading">Загрузка...</label>
+          </div>
+        </div>
+        <div class="list_block">
+          <div class="list_nav">
+            <ListNavItem :type="'все'" :isProduct="true"></ListNavItem>
+            <div
+              v-for="type in $store.getters['products/getProductsTypes']"
+              :key="type"
+            >
+              <ListNavItem :type="type" :isProduct="true"></ListNavItem>
             </div>
           </div>
-          <div class="list_block">
-            <div class="list_nav">
-              <ListNavItem :type="'все'" :isProduct="true"></ListNavItem>
+          <div class="list product_list">
+            <template v-if="$store.state.products.loaded">
               <div
-                v-for="type in $store.getters['products/getProductsTypes']"
-                :key="type"
-              >
-                <ListNavItem :type="type" :isProduct="true"></ListNavItem>
-              </div>
-            </div>
-            <div class="list product_list">
-              <div
-                v-for="product in $store.getters['products/getSortedProducts']"
+                v-for="product in $store.getters['products/getProducts']"
                 :key="product.id"
               >
                 <ProductItem :product="product"></ProductItem>
               </div>
-            </div>
+            </template>
+            <label v-else class="loading">Загрузка...</label>
           </div>
         </div>
       </div>
-    </template>
-    <label v-else class="loading">Загрузка...</label>
+    </div>
   </div>
 </template>
 
@@ -83,15 +78,7 @@ export default {
       localStorage.setItem("delivery_basket", JSON.stringify([]));
     if (this.$store.getters["suppliers/getSuppliers"].length === 0) {
       this.$store.dispatch("suppliers/fetchSuppliers");
-      setTimeout(() => {
-        let suppliers = this.$store.getters["suppliers/getSuppliers"];
-        let prod = [];
-        for (let i = 0; i < suppliers.length; i++)
-          for (let j = 0; j < suppliers[i].menu.length; j++)
-            prod.push(suppliers[i].menu[j]);
-
-        this.$store.dispatch("products/fetchProducts", prod);
-      }, 2000);
+      this.$store.dispatch("products/fetchProducts");
     }
   },
 };
@@ -118,27 +105,29 @@ export default {
 }
 
 .list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   width: 100%;
   height: 210px;
   overflow-y: scroll;
   scroll-behavior: smooth;
   margin: auto;
 }
+
 .list.product_list {
   height: 880px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
 
 @media (max-width: 560px) {
   .list {
-    flex-wrap: nowrap;
     height: 150px;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
   }
   .list.product_list {
     flex-wrap: wrap;
     height: 600px;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
   }
 }
 </style>

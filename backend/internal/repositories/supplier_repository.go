@@ -3,6 +3,7 @@ package repositories
 import (
 	"Delivery/backend/internal/repositories/models"
 	"database/sql"
+	"time"
 )
 
 type SupplierRepo struct {
@@ -49,10 +50,87 @@ func (r *SupplierRepo) GetAll() (*[]models.Supplier, error) {
 	return &suppliers, nil
 }
 
+func (r *SupplierRepo) GetTypes() ([]string, error) {
+	var types []string
+	rows, err := r.DB.Query("SELECT DISTINCT type FROM suppliers")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var t string
+		err = rows.Scan(&t)
+		if err != nil {
+			return nil, err
+		}
+		types = append(types, t)
+	}
+
+	return types, nil
+}
+
 func (r *SupplierRepo) GetById(id int64) (*models.Supplier, error) {
 	var supplier models.Supplier
 	err := r.DB.QueryRow("SELECT id, name, type, image, opening, closing FROM suppliers "+
 		"WHERE id = ?", id).Scan(&supplier.Id, &supplier.Name, &supplier.Type, &supplier.Image,
+		&supplier.WorkingHours.Opening, &supplier.WorkingHours.Closing)
+	if err != nil {
+		return nil, err
+	}
+	return &supplier, nil
+}
+
+func (r *SupplierRepo) GetByType(t string) (*[]models.Supplier, error) {
+	var suppliers []models.Supplier
+	rows, err := r.DB.Query("SELECT id, name, type, image, opening, closing FROM suppliers WHERE type = (?)", t)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var s models.Supplier
+		err = rows.Scan(&s.Id, &s.Name, &s.Type, &s.Image,
+			&s.WorkingHours.Opening, &s.WorkingHours.Closing)
+		if err != nil {
+			return nil, err
+		}
+		suppliers = append(suppliers, s)
+	}
+	return &suppliers, nil
+}
+
+func (r *SupplierRepo) GetByWorkingHours() (*[]models.Supplier, error) {
+	var suppliers []models.Supplier
+	time := time.Now().Format("15:04")
+
+	rows, err := r.DB.Query("SELECT id, name, type, image, opening, closing "+
+		"FROM suppliers WHERE (SELECT CONVERT(closing, TIME)) >= (?) "+
+		"AND (SELECT CONVERT(opening, TIME)) <= (?)", time, time)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var s models.Supplier
+		err = rows.Scan(&s.Id, &s.Name, &s.Type, &s.Image,
+			&s.WorkingHours.Opening, &s.WorkingHours.Closing)
+		if err != nil {
+			return nil, err
+		}
+		suppliers = append(suppliers, s)
+	}
+	return &suppliers, nil
+}
+
+func (r *SupplierRepo) GetByProductId(prodId int64) (*models.Supplier, error) {
+	var supplier models.Supplier
+	err := r.DB.QueryRow("SELECT id, name, type, image, opening, closing FROM suppliers WHERE id = "+
+		"(SELECT supplier_id FROM menus WHERE id = (SELECT menu_id FROM products WHERE id = ?))",
+		prodId).Scan(&supplier.Id, &supplier.Name, &supplier.Type, &supplier.Image,
 		&supplier.WorkingHours.Opening, &supplier.WorkingHours.Closing)
 	if err != nil {
 		return nil, err

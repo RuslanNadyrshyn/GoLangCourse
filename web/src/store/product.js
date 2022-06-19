@@ -5,10 +5,10 @@ const ip = "http://localhost:8080";
 
 const state = {
   url: ip + "/get_products",
-  urlGetById: ip + "/prod",
-  product: null,
+  urlGetTypes: ip + "/get_prod_types",
+  urlGetById: ip + "/get_prod_by_id",
+  urlGetByType: ip + "/get_prod_by_type",
   products: [],
-  sortedProducts: [],
   productsTypes: [],
   selectedType: "все",
   errors: [],
@@ -16,17 +16,11 @@ const state = {
 };
 
 const mutations = {
-  setProduct(state, product) {
-    state.product = product;
-  },
   setProducts(state, products) {
     state.products = products;
   },
   setProductsTypes(state, productsTypes) {
     state.productsTypes = productsTypes;
-  },
-  setSortedProducts(state, sortedProducts) {
-    state.sortedProducts = sortedProducts;
   },
   setSelectedType(state, selected) {
     state.selectedType = selected;
@@ -40,42 +34,55 @@ const mutations = {
 };
 
 const actions = {
-  fetchProducts(context, products) {
-    context.commit("setLoaded", false);
-    let types = [];
-    for (let i = 0; i < products.length; i++)
-      if (types.includes(products[i].type) === false)
-        types.push(products[i].type);
-    context.commit("setProducts", products);
-    context.commit("setSortedProducts", products);
-    context.commit("setProductsTypes", types);
-    context.commit("setLoaded", true);
-  },
-  fetchById(context, id) {
+  fetchProducts(context) {
     context.commit("setLoaded", false);
     axios
-      .get(context.getters.getByIdURL, {
-        params: { id: id },
-      })
+      .get(context.getters.getProductURL)
       .then((res) => {
-        context.commit("setProduct", res.data);
+        context.commit("setProducts", res.data.Products);
+        context.commit("setProductsTypes", res.data.Types);
       })
-      .catch((err) => console.log(err))
-      .finally(() => {
-        context.commit("setLoaded", true);
-      });
+      .catch((err) => [context.commit("setErrors", [err])])
+      .finally(() => context.commit("setLoaded", true));
   },
-  sortByType(context, type) {
-    context.commit("setSelectedType", type);
-    let products = context.getters.getSortedProducts;
-    if (type === "все") context.commit("setSortedProducts", products);
-    else {
-      let SortedArray = products.filter((product) => product.type === type);
-      context.commit("setSortedProducts", SortedArray);
+  getByType(context, type) {
+    if (type === "все") {
+      actions.fetchProducts(context);
+    } else {
+      axios
+        .get(context.getters.getByTypeURL, {
+          params: { type: type },
+        })
+        .then((res) => context.commit("setProducts", res.data))
+        .catch((err) => context.commit("setErrors", err))
+        .finally(() => context.commit("setLoaded", true));
     }
   },
-  sortBySupplier(context, products) {
-    context.commit("setSortedProducts", products);
+  getByParams(context, params) {
+    console.log("getting by params ", params);
+    context.commit("setSelectedType", params.prodType);
+
+    if (params.supType === "все") {
+      params.supType = "";
+      // actions.getByType(context, params.prodType);
+    }
+    if (params.prodType === "все") params.prodType = "";
+    if (params.supType === "Открыто") params.supType = "workingHours";
+    axios
+      .get("http://localhost:8080/get_prod_by_params", {
+        params: {
+          sup_id: params.supId,
+          sup_type: params.supType,
+          prod_type: params.prodType,
+        },
+      })
+      .then((res) => {
+        console.log(res.data);
+        context.commit("setProducts", res.data.Products);
+        context.commit("setProductsTypes", res.data.Types);
+      })
+      .catch((err) => context.commit("setErrors", err))
+      .finally(() => context.commit("setLoaded", true));
   },
 };
 
@@ -86,17 +93,17 @@ const getters = {
   getByIdURL: (state) => {
     return state.urlGetById;
   },
+  getByTypeURL: (state) => {
+    return state.urlGetByType;
+  },
   getProducts: (state) => {
     return state.products;
   },
-  getProduct: (state) => {
-    return state.product;
-  },
-  getSortedProducts: (state) => {
-    return state.sortedProducts;
-  },
   getProductsTypes: (state) => {
     return state.productsTypes;
+  },
+  getSelectedType: (state) => {
+    return state.selectedType;
   },
 };
 

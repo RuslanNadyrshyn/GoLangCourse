@@ -19,7 +19,7 @@
         "
         @click="sortType()"
       >
-        {{ $store.state.suppliers.sortedSuppliers.length }}
+        {{ $store.state.suppliers.suppliers.length }}
       </label>
     </template>
 
@@ -41,7 +41,7 @@
             : 'counter hidden'
         "
       >
-        {{ $store.state.products.sortedProducts.length }}
+        {{ this.$store.state.products.products.length }}
       </label>
     </template>
   </div>
@@ -60,34 +60,23 @@ export default {
   },
   methods: {
     sortType() {
-      if (this.isProduct === false) {
-        let suppliers;
-        if (this.type === "Открыто") {
-          suppliers = this.$store.dispatch("suppliers/sortByWorkingHours");
-        } else {
-          suppliers = this.$store.dispatch("suppliers/sortByType", this.type);
+      if (this.isProduct) {
+        if (this.type !== this.$store.getters["products/getSelectedType"]) {
+          let params = {
+            supId: this.$store.getters["suppliers/getSelectedSupplier"],
+            supType: this.$store.getters["suppliers/getSelectedType"],
+            prodType: this.type,
+          };
+          this.$store.dispatch("products/getByParams", params);
         }
-        suppliers.then((res) => {
-          let prod = [];
-          for (let i = 0; i < res.length; i++)
-            for (let j = 0; j < res[i].menu.length; j++)
-              prod.push(res[i].menu[j]);
-          this.$store.dispatch("products/sortBySupplier", prod).then(() => {
-            this.$store.dispatch(
-              "products/sortByType",
-              this.$store.state.products.selectedType
-            );
-          });
-        });
       } else {
-        let sortedSuppliers =
-          this.$store.getters["suppliers/getSortedSuppliers"];
-        let sortedProducts = [];
-        for (let i = 0; i < sortedSuppliers.length; i++)
-          for (let j = 0; j < sortedSuppliers[i].menu.length; j++)
-            sortedProducts.push(sortedSuppliers[i].menu[j]);
-        this.$store.dispatch("products/sortBySupplier", sortedProducts);
-        this.$store.dispatch("products/sortByType", this.type);
+        let params = {
+          supId: 0,
+          supType: this.type,
+          prodType: "все",
+        };
+        this.$store.dispatch("suppliers/getByType", this.type);
+        this.$store.dispatch("products/getByParams", params);
       }
     },
   },

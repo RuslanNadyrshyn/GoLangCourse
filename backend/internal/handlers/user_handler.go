@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"net/mail"
 )
 
 type UserHandler struct {
@@ -33,8 +34,14 @@ func (h *UserHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 			return
 		}
+		_, err := mail.ParseAddress(req.Email)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusUnauthorized)
+			log.Println(err)
+			return
+		}
 
-		_, err := h.services.User.GetByEmail(req.Email)
+		_, err = h.services.User.GetByEmail(req.Email)
 		if err != nil {
 			id, err = h.services.User.Insert(req)
 			if err != nil {
@@ -43,7 +50,7 @@ func (h *UserHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		} else {
-			http.Error(w, "User with this email already exists", http.StatusUnauthorized)
+			http.Error(w, "User with this email already exists", http.StatusBadRequest)
 			log.Println(err)
 			return
 		}

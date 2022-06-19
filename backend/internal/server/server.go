@@ -29,9 +29,11 @@ func Start(cfg *cfg.Config) {
 	mux.Handle("/profile", mw.Validation(http.HandlerFunc(h.User.GetProfile)))
 	//supplier
 	mux.HandleFunc("/get_suppliers", h.Supplier.GetAll)
+	mux.HandleFunc("/get_sup_by_type", h.Supplier.GetByType)
 	//products
 	mux.HandleFunc("/get_products", h.Product.GetAll)
-	mux.HandleFunc("/prod", h.Product.GetById)
+	mux.HandleFunc("/get_prod_by_id", h.Product.GetById)
+	mux.HandleFunc("/get_prod_by_params", h.Product.GetByParams)
 	//auth
 	mux.HandleFunc("/login", h.Auth.Login)
 	mux.HandleFunc("/refresh", h.Auth.Refresh)

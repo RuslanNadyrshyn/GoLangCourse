@@ -3,6 +3,8 @@ package repositories
 import (
 	"Delivery/backend/internal/repositories/models"
 	"database/sql"
+	"fmt"
+	"time"
 )
 
 type ProductRepo struct {
@@ -52,7 +54,7 @@ func (r *ProductRepo) UpdatePrice(p *models.Product) (productId int64, err error
 	return p.Id, nil
 }
 
-func (r *ProductRepo) GetAll() (*[]models.Product, error) {
+func (r *ProductRepo) GetAll() ([]models.Product, error) {
 	var products []models.Product
 	rows, err := r.DB.Query("SELECT id, menu_id, name, price, image, type FROM products")
 	if err != nil {
@@ -69,7 +71,7 @@ func (r *ProductRepo) GetAll() (*[]models.Product, error) {
 		products = append(products, p)
 	}
 
-	return &products, nil
+	return products, nil
 }
 
 func (r *ProductRepo) GetById(id int64) (*models.Product, error) {
@@ -82,11 +84,9 @@ func (r *ProductRepo) GetById(id int64) (*models.Product, error) {
 	return &product, nil
 }
 
-func (r *ProductRepo) GetByMenuId(menuId int64) ([]models.Product, error) {
+func (r *ProductRepo) GetByType(t string) ([]models.Product, error) {
 	var products []models.Product
-
-	rows, err := r.DB.Query("SELECT id, menu_id, name, price, image, type FROM products "+
-		"WHERE menu_id = (?)", menuId)
+	rows, err := r.DB.Query("SELECT id, menu_id, name, price, image, type FROM products WHERE type = (?)", t)
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +100,154 @@ func (r *ProductRepo) GetByMenuId(menuId int64) ([]models.Product, error) {
 		}
 		products = append(products, p)
 	}
+
 	return products, nil
+}
+
+func (r *ProductRepo) GetByWorkingHours(prodType string) ([]models.Product, error) {
+	var products []models.Product
+	timeNow := time.Now().Format("15:04")
+	rows, err := r.DB.Query(fmt.Sprintf("SELECT id, menu_id, name, price, image, type "+
+		"FROM products WHERE menu_id IN "+
+		"(SELECT id FROM menus WHERE supplier_id IN "+
+		"(SELECT id FROM suppliers WHERE (SELECT CONVERT(closing, TIME)) >= '%s' "+
+		"AND (SELECT CONVERT(opening, TIME)) <= '%s'))%s", timeNow, timeNow, prodType))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var p models.Product
+		err = rows.Scan(&p.Id, &p.MenuId, &p.Name, &p.Price, &p.Image, &p.Type)
+		if err != nil {
+			return nil, err
+		}
+		products = append(products, p)
+	}
+
+	return products, nil
+}
+
+func (r *ProductRepo) GetBySupId(supId int64, prodType string) ([]models.Product, error) {
+	var products []models.Product
+	rows, err := r.DB.Query(fmt.Sprintf("SELECT id, menu_id, name, price, image, type "+
+		"FROM products WHERE menu_id IN "+
+		"(SELECT id FROM menus WHERE supplier_id IN "+
+		"(SELECT id FROM suppliers WHERE id = %d))%s", supId, prodType))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var p models.Product
+		err = rows.Scan(&p.Id, &p.MenuId, &p.Name, &p.Price, &p.Image, &p.Type)
+		if err != nil {
+			return nil, err
+		}
+		products = append(products, p)
+	}
+
+	return products, nil
+}
+
+func (r *ProductRepo) GetBySupType(supType string, prodType string) ([]models.Product, error) {
+	var products []models.Product
+	rows, err := r.DB.Query(fmt.Sprintf("SELECT id, menu_id, name, price, image, type "+
+		"FROM products WHERE menu_id IN "+
+		"(SELECT id FROM menus WHERE supplier_id IN "+
+		"(SELECT id FROM suppliers WHERE type = '%s'))%s", supType, prodType))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var p models.Product
+		err = rows.Scan(&p.Id, &p.MenuId, &p.Name, &p.Price, &p.Image, &p.Type)
+		if err != nil {
+			return nil, err
+		}
+		products = append(products, p)
+	}
+
+	return products, nil
+}
+
+func (r *ProductRepo) GetAllTypes() ([]string, error) {
+	var types []string
+	rows, err := r.DB.Query("SELECT DISTINCT type FROM products")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var t string
+		err = rows.Scan(&t)
+		if err != nil {
+			return nil, err
+		}
+		types = append(types, t)
+	}
+
+	return types, nil
+}
+
+func (r *ProductRepo) GetTypesBySupType(supType string) ([]string, error) {
+	var types []string
+	var query string
+	if supType == "workingHours" {
+		timeNow := time.Now().Format("15:04")
+		query = fmt.Sprintf("SELECT DISTINCT type FROM products WHERE menu_id IN "+
+			"(SELECT id FROM menus WHERE supplier_id IN "+
+			"(SELECT id FROM suppliers WHERE "+
+			"(SELECT CONVERT(closing, TIME)) >= '%s' AND "+
+			"(SELECT CONVERT(opening, TIME)) <= '%s'))", timeNow, timeNow)
+	} else {
+		query = fmt.Sprintf("SELECT DISTINCT type FROM products WHERE menu_id IN "+
+			"(SELECT id FROM menus WHERE supplier_id IN "+
+			"(SELECT id FROM suppliers WHERE type = '%s'))", supType)
+	}
+	rows, err := r.DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var t string
+		err = rows.Scan(&t)
+		if err != nil {
+			return nil, err
+		}
+		types = append(types, t)
+	}
+
+	return types, nil
+}
+
+func (r *ProductRepo) GetTypesBySupId(supId int64) ([]string, error) {
+	var types []string
+	rows, err := r.DB.Query(fmt.Sprintf("SELECT DISTINCT type FROM products WHERE menu_id IN "+
+		"(SELECT id FROM menus WHERE supplier_id IN "+
+		"(SELECT id FROM suppliers WHERE id = %d))", supId))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var t string
+		err = rows.Scan(&t)
+		if err != nil {
+			return nil, err
+		}
+		types = append(types, t)
+	}
+
+	return types, nil
 }
 
 func (r *ProductRepo) BeginTx() error {

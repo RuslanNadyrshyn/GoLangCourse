@@ -39,13 +39,21 @@ const actions = {
     axios
       .post(context.getters.getSignUpURL, user)
       .then(() => {
-        let login = {
-          email: user.email,
-          password: user.password,
-        };
-        actions.Login(context, login);
+        // let login = {
+        //   email: user.email,
+        //   password: user.password,
+        // };
+        alert("Вы успешно зарегистрировались!");
+        // actions.Login(context, login);
       })
-      .catch((err) => [context.commit("setErrors", [err])])
+      .catch((err) => {
+        if (err.response.status === 400)
+          alert(
+            "Пользователь с таким адресом " +
+              "электронной почты уже существует!"
+          );
+        context.commit("setErrors", [err]);
+      })
       .finally(() => context.commit("setLoaded", true));
   },
   Login(context, login) {

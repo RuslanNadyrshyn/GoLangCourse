@@ -5,10 +5,12 @@ const ip = "http://localhost:8080";
 
 const state = {
   url: ip + "/get_suppliers",
+  urlGetByType: ip + "/get_sup_by_type",
+  urlGetByWorkingHours: ip + "/get_sup_by_working_hours",
   suppliers: [],
-  sortedSuppliers: [],
   suppliersTypes: [],
   selectedType: "все",
+  selectedSupplierId: 0,
   errors: [],
   loaded: false,
 };
@@ -17,14 +19,14 @@ const mutations = {
   setSuppliers(state, suppliers) {
     state.suppliers = suppliers;
   },
-  setSortedSuppliers(state, sortedSuppliers) {
-    state.sortedSuppliers = sortedSuppliers;
-  },
   setSuppliersTypes(state, suppliersTypes) {
     state.suppliersTypes = suppliersTypes;
   },
   setSelectedType(state, selected) {
     state.selectedType = selected;
+  },
+  setSelectedSupplier(state, selectedId) {
+    state.selectedSupplierId = selectedId;
   },
   setErrors(state, errors) {
     state.errors = errors;
@@ -40,67 +42,55 @@ const actions = {
     axios
       .get(context.getters.getSupplierURL)
       .then((res) => {
-        let types = [];
-        for (let i = 0; i < res.data.length; i++) {
-          if (types.includes(res.data[i].type) === false)
-            types.push(res.data[i].type);
-          for (let j = 0; j < res.data[i].menu.length; j++) {
-            res.data[i].menu[j].counter = 0;
-            res.data[i].menu[j].supplier_id = res.data[i].id;
-            res.data[i].menu[j].supplier_name = res.data[i].name;
-            res.data[i].menu[j].supplier_image = res.data[i].image;
-          }
-        }
-        context.commit("setSuppliers", res.data);
-        context.commit("setSortedSuppliers", res.data);
-        context.commit("setSuppliersTypes", types);
+        context.commit("setSuppliers", res.data.Suppliers);
+        context.commit("setSuppliersTypes", res.data.Types);
       })
       .catch((err) => [context.commit("setErrors", [err])])
       .finally(() => context.commit("setLoaded", true));
   },
-  sortByType(context, type) {
+  getByType(context, type) {
     context.commit("setSelectedType", type);
-    let suppliers = context.getters.getSuppliers;
-    if (type !== "все")
-      suppliers = suppliers.filter((supplier) => supplier.type === type);
-    context.commit("setSortedSuppliers", suppliers);
-    return suppliers;
+    context.commit("setSelectedSupplier", 0);
+    if (type === "все") type = "";
+    if (type === "Открыто") type = "workingHours";
+    axios
+      .get(context.getters.getByTypeURL, {
+        params: { type: type },
+      })
+      .then((res) => context.commit("setSuppliers", res.data))
+      .catch((err) => context.commit("setErrors", err))
+      .finally(() => context.commit("setLoaded", true));
   },
-  sortByWorkingHours(context) {
-    context.commit("setSelectedType", "Открыто");
-    let suppliers = context.getters.getSuppliers;
-    let time = new Date();
-    let hours = time.getHours();
-    let minutes = time.getMinutes();
-    let sorted = [];
-
-    if (hours < 10) hours = "0" + hours;
-    if (minutes < 10) minutes = "0" + minutes;
-
-    let timestamp = hours + ":" + minutes;
-    for (let i = 0; i < suppliers.length; i++)
-      if (
-        timestamp >= suppliers[i].workingHours.opening &&
-        timestamp < suppliers[i].workingHours.closing
-      )
-        sorted.push(suppliers[i]);
-    context.commit("setSortedSuppliers", sorted);
-    return sorted;
-  },
+  // getByWorkingHours(context) {
+  //   axios
+  //     .get(context.getters.getByWorkingHoursURL)
+  //     .then((res) => context.commit("setSuppliers", res.data))
+  //     .catch((err) => context.commit("setErrors", err))
+  //     .finally(() => context.commit("setLoaded", true));
+  // },
 };
 
 const getters = {
   getSupplierURL: (state) => {
     return state.url;
   },
+  getByTypeURL: (state) => {
+    return state.urlGetByType;
+  },
+  getByWorkingHoursURL: (state) => {
+    return state.urlGetByWorkingHours;
+  },
   getSuppliers: (state) => {
     return state.suppliers;
   },
-  getSortedSuppliers: (state) => {
-    return state.sortedSuppliers;
-  },
   getSuppliersTypes: (state) => {
     return state.suppliersTypes;
+  },
+  getSelectedType: (state) => {
+    return state.selectedType;
+  },
+  getSelectedSupplier: (state) => {
+    return state.selectedSupplierId;
   },
 };
 

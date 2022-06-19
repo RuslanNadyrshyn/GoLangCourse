@@ -20,20 +20,25 @@ type ITokenService interface {
 }
 
 type IUserService interface {
-	Insert(u *models.User) (id int64, err error)
-	GetByEmail(email string) (user *models.User, err error)
-	GetById(id int64) (user *models.User, err error)
-	Update(u *models.User) (id int64, err error)
+	Insert(u *models.User) (int64, error)
+	GetByEmail(email string) (*models.User, error)
+	GetById(id int64) (*models.User, error)
+	Update(u *models.User) (int64, error)
 }
 
 type ISupplierService interface {
 	Insert(s *requests.SupplierRequest) (int64, error)
-	GetAll() (*[]requests.SupplierRequest, error)
+	GetAll() (*[]models.Supplier, error)
+	GetByType(t string) (*[]models.Supplier, error)
+	GetByProductId(prodId int64) (*models.Supplier, error)
+	GetTypes() (*[]string, error)
 }
 
 type IProductService interface {
 	GetAll() (*[]models.Product, error)
-	GetById(id int64) (*responses.ProductResponse, error)
+	GetById(id int64) (*models.Product, error)
+	GetByParams(params requests.SortRequest) (*[]models.Product, error)
+	GetTypes(params requests.SortRequest) (*[]string, error)
 	UpdatePrice(p *models.Product) (int64, error)
 }
 

@@ -44,3 +44,9 @@ type OrderRequest struct {
 		Counter      int64   `json:"counter"`
 	} `json:"products"`
 }
+
+type SortRequest struct {
+	SupplierId   int64  `json:"supplier_id" json:"sup_id"`
+	SupplierType string `json:"supplier_type" json:"sup_type"`
+	ProductType  string `json:"product_type" json:"prod_type"`
+}

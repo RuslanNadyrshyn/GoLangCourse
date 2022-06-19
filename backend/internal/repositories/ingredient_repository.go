@@ -52,14 +52,6 @@ func (r *IngredientRepo) Insert(name string) (ingredientId int64, err error) {
 	return ingredientId, nil
 }
 
-func (r *IngredientRepo) GetById(id int64) (ingredient string, err error) {
-	err = r.DB.QueryRow("SELECT name FROM ingredients WHERE id = (?)", id).Scan(&ingredient)
-	if err != nil {
-		return "", err
-	}
-	return ingredient, nil
-}
-
 func (r *IngredientRepo) GetByProductId(ProductId int64) ([]string, error) {
 	var ingredients []string
 	var ingredient string

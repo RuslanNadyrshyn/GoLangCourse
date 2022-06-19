@@ -2,7 +2,7 @@
   <div class="intro">
     <div class="section">
       <div class="container">
-        <template v-if="$store.state.products.loaded">
+        <template v-if="this.loaded">
           <template v-if="$store.state.products.errors.length">
             <div
               v-for="(error, index) in $store.state.products.errors"
@@ -12,8 +12,8 @@
             </div>
           </template>
           <ProductBlock
-            :product="$store.state.products.product.Product"
-            :supplier="$store.state.products.product.Supplier"
+            :product="this.product.Product"
+            :supplier="this.product.Supplier"
           ></ProductBlock>
         </template>
         <label v-else class="loading">Загрузка...</label>
@@ -24,14 +24,31 @@
 
 <script>
 import ProductBlock from "@/components/ProductBlock";
+import axios from "axios";
 
 export default {
   name: "ProductView",
   components: { ProductBlock },
+  data() {
+    return {
+      product: [],
+      loaded: false,
+    };
+  },
   mounted() {
     if (JSON.parse(localStorage.getItem("delivery_basket")) == null)
       localStorage.setItem("delivery_basket", JSON.stringify([]));
-    this.$store.dispatch("products/fetchById", this.$route.params.id);
+
+    this.loaded = false;
+    axios
+      .get(this.$store.getters["products/getByIdURL"], {
+        params: { id: this.$route.params.id },
+      })
+      .then((res) => {
+        this.product = res.data;
+      })
+      .catch((err) => console.log(err))
+      .finally(() => (this.loaded = true));
   },
 };
 </script>

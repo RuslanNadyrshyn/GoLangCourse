@@ -3,7 +3,8 @@ package services
 import (
 	"Delivery/backend/internal/repositories"
 	"Delivery/backend/internal/repositories/models"
-	"Delivery/backend/internal/repositories/responses"
+	"Delivery/backend/internal/repositories/requests"
+	"fmt"
 )
 
 type ProductService struct {
@@ -17,22 +18,21 @@ func NewProductService(store *repositories.Store) *ProductService {
 }
 
 func (r *ProductService) GetAll() (*[]models.Product, error) {
-
 	products, err := r.store.ProductRepo.GetAll()
 	if err != nil {
 		return nil, err
 	}
-	for _, p := range *products {
-		p.Ingredients, err = r.store.IngredientRepo.GetByProductId(p.Id)
+	for i, p := range products {
+		products[i].Ingredients, err = r.store.IngredientRepo.GetByProductId(p.Id)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	return products, nil
+	return &products, nil
 }
 
-func (r *ProductService) GetById(id int64) (*responses.ProductResponse, error) {
+func (r *ProductService) GetById(id int64) (*models.Product, error) {
 	product, err := r.store.ProductRepo.GetById(id)
 	if err != nil {
 		return nil, err
@@ -43,21 +43,92 @@ func (r *ProductService) GetById(id int64) (*responses.ProductResponse, error) {
 		return nil, err
 	}
 
-	supplierId, err := r.store.MenuRepo.GetSupIdById(product.MenuId)
-	if err != nil {
-		return nil, err
+	//supplierId, err := r.store.MenuRepo.GetSupIdById(product.MenuId)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//supplier, err := r.store.SupplierRepo.GetById(supplierId)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//resp := responses.ProductResponse{
+	//	Product:  *product,
+	//	Supplier: *supplier,
+	//}
+	return product, nil
+}
+
+func (r *ProductService) GetByParams(params requests.SortRequest) (*[]models.Product, error) {
+	var prod []models.Product
+	var products []models.Product
+	var err error
+
+	if params.ProductType != "" && params.SupplierType != "" {
+		params.ProductType = fmt.Sprintf(" AND type = '%s'", params.ProductType)
 	}
 
-	supplier, err := r.store.SupplierRepo.GetById(supplierId)
-	if err != nil {
-		return nil, err
+	switch {
+	case params.SupplierId != 0: // SupplierId != 0
+		products, err = r.store.ProductRepo.GetBySupId(params.SupplierId, params.ProductType)
+		if err != nil {
+			return nil, err
+		}
+	case params.SupplierType == "workingHours": // SupplierId == 0 && SupplierType == "WorkingHours"
+		products, err = r.store.ProductRepo.GetByWorkingHours(params.ProductType)
+		if err != nil {
+			return nil, err
+		}
+	case params.SupplierType != "": // SupplierId == 0 && SupplierType != ""
+		products, err = r.store.ProductRepo.GetBySupType(params.SupplierType, params.ProductType)
+		if err != nil {
+			return nil, err
+		}
+	case params.ProductType != "": // SupplierId == 0 && SupplierType == "" && ProductType != 0
+		products, err = r.store.ProductRepo.GetByType(params.ProductType)
+		if err != nil {
+			return nil, err
+		}
+	case params.ProductType == "": // SupplierId == 0 && SupplierType == "" && ProductType == 0
+		products, err = r.store.ProductRepo.GetAll()
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	resp := responses.ProductResponse{
-		Product:  *product,
-		Supplier: *supplier,
+	for i, p := range products {
+		products[i].Ingredients, err = r.store.IngredientRepo.GetByProductId(p.Id)
+		if err != nil {
+			return nil, err
+		}
+		prod = append(prod, p)
 	}
-	return &resp, nil
+
+	return &products, nil
+}
+
+func (r *ProductService) GetTypes(params requests.SortRequest) (t *[]string, err error) {
+	var types []string
+
+	switch {
+	case params.SupplierId != 0: // SupplierId == 0
+		types, err = r.store.ProductRepo.GetTypesBySupId(params.SupplierId)
+		if err != nil {
+			return nil, err
+		}
+	case params.SupplierType != "": // SupplierId == 0 && SupplierType != 0
+		types, err = r.store.ProductRepo.GetTypesBySupType(params.SupplierType)
+		if err != nil {
+			return nil, err
+		}
+	case params.SupplierType == "": // SupplierId == 0 && SupplierType == 0
+		types, err = r.store.ProductRepo.GetAllTypes()
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &types, nil
 }
 
 func (r *ProductService) UpdatePrice(p *models.Product) (productId int64, err error) {

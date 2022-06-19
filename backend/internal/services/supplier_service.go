@@ -94,40 +94,42 @@ func (r *SupplierService) Insert(s *requests.SupplierRequest) (id int64, err err
 	return supplier.Id, nil
 }
 
-func (r *SupplierService) GetAll() (*[]requests.SupplierRequest, error) {
+func (r *SupplierService) GetAll() (*[]models.Supplier, error) {
 	suppliers, err := r.store.SupplierRepo.GetAll()
 	if err != nil {
 		return nil, err
 	}
+	return suppliers, nil
+}
 
-	var resp []requests.SupplierRequest
-	for _, s := range *suppliers {
-		menuId, err := r.store.MenuRepo.GetIdBySupId(s.Id)
-		menu, err := r.store.ProductRepo.GetByMenuId(menuId)
-		if err != nil {
-			return nil, err
-		}
-		for i, p := range menu {
-			menu[i].Ingredients, err = r.store.IngredientRepo.GetByProductId(p.Id)
-			if err != nil {
-				return nil, err
-			}
-		}
-
-		resp = append(resp, requests.SupplierRequest{
-			Id:    s.Id,
-			Name:  s.Name,
-			Type:  s.Type,
-			Image: s.Image,
-			WorkingHours: struct {
-				Opening string `json:"opening"`
-				Closing string `json:"closing"`
-			}{
-				Opening: s.WorkingHours.Opening,
-				Closing: s.WorkingHours.Closing,
-			},
-			Menu: menu,
-		})
+func (r *SupplierService) GetTypes() (*[]string, error) {
+	types, err := r.store.SupplierRepo.GetTypes()
+	if err != nil {
+		return nil, err
 	}
-	return &resp, nil
+	return &types, nil
+}
+
+func (r *SupplierService) GetByType(supType string) (suppliers *[]models.Supplier, err error) {
+	switch {
+	case supType == "":
+		suppliers, err = r.store.SupplierRepo.GetAll()
+	case supType == "workingHours":
+		suppliers, err = r.store.SupplierRepo.GetByWorkingHours()
+	case supType != "":
+		suppliers, err = r.store.SupplierRepo.GetByType(supType)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+	return suppliers, nil
+}
+
+func (r *SupplierService) GetByProductId(prodId int64) (*models.Supplier, error) {
+	supplier, err := r.store.SupplierRepo.GetByProductId(prodId)
+	if err != nil {
+		return nil, err
+	}
+	return supplier, nil
 }

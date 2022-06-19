@@ -1,9 +1,5 @@
 <template>
   <div class="product_item">
-    <div class="product_item_title">
-      <img class="item_title_logo" :src="product.supplier_image" />
-      <label class="title_name">{{ product.supplier_name }}</label>
-    </div>
     <div class="product_img">
       <img
         class="product_logo"
@@ -88,8 +84,8 @@ export default {
   flex-direction: column;
   color: #222;
   width: 250px;
-  height: 420px;
-  margin: 5px;
+  height: 370px;
+  margin: 5px auto;
   padding: 10px 10px 0 10px;
   border-radius: 10px;
 }
@@ -98,15 +94,6 @@ export default {
   color: #d3c7c7;
 }
 
-.product_item_title {
-  display: flex;
-  flex-direction: row;
-  text-transform: uppercase;
-  align-items: center;
-  justify-content: center;
-  width: 90%;
-  height: 40px;
-}
 .product_counter {
   position: absolute;
   background-color: #333;
@@ -117,18 +104,6 @@ export default {
   right: 10px;
   bottom: 0;
   font-size: 28px;
-}
-
-.item_title_logo {
-  display: block;
-  border-radius: 5px;
-  margin-right: 5px;
-  max-height: 100%;
-  max-width: 100%;
-}
-
-.title_name {
-  font-size: 18px;
 }
 
 .product_logo {
@@ -146,25 +121,35 @@ export default {
   justify-content: space-between;
   width: 100%;
   margin: auto;
-  min-height: 100px;
+  height: 100px;
 }
 .product_name {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   text-transform: uppercase;
   font-size: 18px;
   font-weight: 700;
+  text-align: center;
+  overflow: hidden;
 }
 .product_name:hover {
   cursor: pointer;
 }
 .product_price_container {
   display: flex;
-  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
 }
 .product_type {
   font-size: 16px;
   text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: min-content;
+}
+.product_type:hover {
+  overflow: visible;
 }
 .product_price_block {
   display: flex;
@@ -191,7 +176,7 @@ export default {
 @media (max-width: 560px) {
   .product_item {
     width: 200px;
-    height: 300px;
+    height: 280px;
   }
   .product_img {
     max-height: 150px;
@@ -202,20 +187,14 @@ export default {
   .product_counter {
     font-size: 16px;
   }
-  .product_item_title {
-    display: none;
-  }
   .product_name {
     font-size: 16px;
   }
   .product_text {
-    min-height: 90px;
-  }
-  .product_price_container {
-    justify-content: right;
+    height: 80px;
   }
   .product_type {
-    display: none;
+    font-size: 12px;
   }
   .product_btn {
     font-size: 14px;

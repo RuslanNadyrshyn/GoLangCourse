@@ -17,66 +17,49 @@
                 Пользователь №{{ $store.state.auth.user.id }}
               </label>
             </div>
-            <div class="user_container">
-              <button class="logout_btn" @click="Logout">Logout</button>
-              <label class="user_text">
-                Id: {{ $store.state.auth.user.id }}
-              </label>
-              <label class="user_text">
-                Имя: {{ $store.state.auth.user.name }}
-              </label>
-              <label class="user_text">
-                Email: {{ $store.state.auth.user.email }}
-              </label>
-              <label class="user_text">
-                Заказов: {{ $store.state.auth.orders.length }}
-              </label>
-            </div>
+            <table>
+              <tr>
+                <th class="user_header">Id:</th>
+                <td>{{ $store.state.auth.user.id }}</td>
+              </tr>
+              <tr>
+                <th class="user_header">Имя:</th>
+                <td>{{ $store.state.auth.user.name }}</td>
+              </tr>
+              <tr>
+                <th class="user_header">Email:</th>
+                <td>{{ $store.state.auth.user.email }}</td>
+              </tr>
+              <tr>
+                <th class="user_header">Заказов:</th>
+                <td>{{ $store.state.auth.orders.length }}</td>
+              </tr>
+            </table>
             <template v-if="$store.state.auth.orders.length > 0">
-              <div class="orders_container">
-                <div class="order_nav">
-                  <div class="order_cell">
-                    <label class="cell_text">Заказ:</label>
-                  </div>
-                  <div class="order_cell">
-                    <label class="cell_text">Цена:</label>
-                  </div>
-                  <div class="order_cell wide">
-                    <label class="cell_text">Адрес:</label>
-                  </div>
-                  <div class="order_cell wide">
-                    <label class="cell_text">Дата:</label>
-                  </div>
-                </div>
-                <div
+              <table class="orders">
+                <tr style="background-color: #444">
+                  <th>Заказ:</th>
+                  <th>Цена:</th>
+                  <th>Адрес:</th>
+                  <th>Дата:</th>
+                </tr>
+                <tr
+                  class="cells"
                   v-for="order in $store.getters['auth/getOrders']"
                   :key="order.id"
+                  @click="
+                    $router.push({
+                      path: `/order/${order.id}`,
+                    })
+                  "
                 >
-                  <a
-                    class="order_item"
-                    @click="
-                      $router.push({
-                        path: `/order/${order.id}`,
-                      })
-                    "
-                  >
-                    <div class="order_cell">
-                      <label class="cell_text">{{ order.id }}</label>
-                    </div>
-                    <div class="order_cell">
-                      <label class="cell_text">{{ order.price }}</label>
-                    </div>
-                    <div class="order_cell wide">
-                      <label class="cell_text small">{{ order.address }}</label>
-                    </div>
-                    <div class="order_cell wide">
-                      <label class="cell_text small">
-                        {{ order.created_at }}
-                      </label>
-                    </div>
-                  </a>
-                </div>
-              </div>
+                  <td>{{ order.id }}</td>
+                  <td>{{ order.price }}$</td>
+                  <td>{{ order.address }}</td>
+                  <td>{{ order.created_at }}</td>
+                </tr>
+              </table>
+              <button class="logout_btn" @click="Logout">Logout</button>
             </template>
           </template>
           <label v-else class="loading">Загрузка...</label>
@@ -104,91 +87,55 @@ export default {
 </script>
 
 <style scoped>
-.user_container {
-  position: relative;
-  font-size: 20px;
-  background-color: #686e65;
-  display: flex;
-  flex-direction: column;
-  margin: 20px auto;
-  width: 700px;
-  border: solid #222 2px;
-  overflow-x: scroll;
-}
-.user_text {
-  margin: 5px 0 5px 10px;
-}
 .logout_btn {
   position: absolute;
-  top: 5px;
-  right: 5px;
+  top: 50px;
+  right: 10px;
   padding: 5px;
 }
-
-.orders_container {
-  display: flex;
-  flex-direction: column;
-  height: max-content;
-  max-height: 500px;
-  width: 700px;
-  max-width: 1200px;
+table {
   margin: 0 auto;
-  border: 1px #222 solid;
+  width: 700px;
+  border: solid #222 2px;
   background-color: #686e65;
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+th {
+  padding: 5px 0;
+}
+.user_header {
+  width: 100px;
+  text-align: left;
+  padding: 5px 10px;
+}
+
+.orders {
   overflow-y: auto;
   scroll-behavior: smooth;
+  text-align: center;
 }
-
-.order_item {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  max-height: min-content;
+.cells {
+  border: solid #222 1px;
 }
-
-.order_item:hover {
+.cells:hover {
   cursor: pointer;
   background-color: #333;
 }
-
-.order_nav {
-  background-color: #444;
-  cursor: default;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  max-height: min-content;
-  font-size: 18px;
-}
-
-.order_cell {
-  display: flex;
-  width: 20%;
-  overflow: auto;
-  align-items: center;
-  border: solid #222 1px;
-}
-
-.wide {
-  width: 30%;
-}
-.cell_text {
-  font-size: 16px;
-  margin: 3px;
-}
-.cell_text.small {
-  font-size: 12px;
+td {
+  max-width: 70px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 5px 0;
 }
 
 @media (max-width: 810px) {
-  .user_container {
+  table {
     width: 90%;
   }
-  .orders_container {
+  .orders {
     width: 90%;
-  }
-  .cell_text {
-    font-size: 12px;
   }
 }
 </style>

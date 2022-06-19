@@ -38,14 +38,3 @@ func (suite *IngredientRepoTestSuite) TestInsert() {
 	_, err := suite.IngredientRepo.Insert(i.Name)
 	assert.NoError(suite.T(), err)
 }
-
-func (suite *IngredientRepoTestSuite) TestGetById() {
-	query := "SELECT name FROM ingredients WHERE id = (?)"
-
-	rows := sqlmock.NewRows([]string{"name"}).AddRow(i.Name)
-	suite.mock.ExpectQuery(query).WithArgs(i.Id).WillReturnRows(rows)
-
-	_, err := suite.IngredientRepo.GetById(i.Id)
-
-	assert.NoError(suite.T(), err)
-}

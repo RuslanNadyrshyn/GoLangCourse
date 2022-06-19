@@ -39,3 +39,13 @@ type ProductResponse struct {
 	Product  models.Product
 	Supplier models.Supplier
 }
+
+type ProductsTypesResponse struct {
+	Products []models.Product
+	Types    []string
+}
+
+type SupplierResponse struct {
+	Suppliers []models.Supplier
+	Types     []string
+}

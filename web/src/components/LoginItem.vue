@@ -70,18 +70,33 @@ export default {
     },
   },
   methods: {
+    ValidateEmail(email) {
+      return String(email)
+        .toLowerCase()
+        .match(
+          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        );
+    },
     Login() {
-      if (this.login.email.length !== 0 && this.login.password.length !== 0) {
+      if (this.ValidateEmail(this.login.email) && this.login.password.length) {
         this.$store.dispatch("auth/Login", this.login);
-      } else alert("Введите email и пароль!");
+      } else alert("Неверный ввод!");
     },
     SignUp() {
+      const validateEmail = (email) => {
+        return String(email)
+          .toLowerCase()
+          .match(
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          );
+      };
       if (
-        this.sign_up.name.length !== 0 &&
+        this.sign_up.name.length &&
         this.sign_up.name.length < 20 &&
-        this.sign_up.email.length !== 0 &&
+        this.sign_up.email.length &&
         this.sign_up.email.length < 20 &&
-        this.sign_up.password.length >= 4
+        this.sign_up.password.length >= 4 &&
+        validateEmail(this.sign_up.email)
       ) {
         this.$store.dispatch("auth/SignUp", this.sign_up);
       } else
