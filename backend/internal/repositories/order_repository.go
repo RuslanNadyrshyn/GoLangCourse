@@ -54,7 +54,8 @@ func (r *OrderRepo) GetById(id int64) (*models.Order, error) {
 	if err != nil {
 		return nil, err
 	}
-	o.CreatedAt = createdAt.Format("02-Jan-2006 15:04:05")
+	location, _ := time.LoadLocation("EET")
+	o.CreatedAt = createdAt.In(location).Format("02-Jan-2006 15:04:05")
 	return &o, nil
 }
 
@@ -74,7 +75,8 @@ func (r *OrderRepo) GetByUserId(userId int64) (*[]models.Order, error) {
 		if err != nil {
 			return nil, err
 		}
-		o.CreatedAt = createdAt.Format("02-Jan-2006 15:04:05")
+		location, _ := time.LoadLocation("EET")
+		o.CreatedAt = createdAt.In(location).Format("02-Jan-2006 15:04:05")
 		orders = append(orders, o)
 	}
 
