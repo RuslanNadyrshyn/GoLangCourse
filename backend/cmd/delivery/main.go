@@ -1,8 +1,8 @@
 package main
 
 import (
-	"Delivery/backend/cfg"
-	"Delivery/backend/internal/server"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/cfg"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/server"
 	_ "github.com/go-sql-driver/mysql"
 )
 

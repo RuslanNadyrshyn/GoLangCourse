@@ -1,6 +1,6 @@
 package responses
 
-import "Delivery/backend/internal/repositories/models"
+import "github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/repositories/models"
 
 type LoginResponse struct {
 	AccessToken  string `json:"access_token"`

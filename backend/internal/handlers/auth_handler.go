@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"Delivery/backend/cfg"
-	"Delivery/backend/internal/repositories/requests"
-	"Delivery/backend/internal/repositories/responses"
-	"Delivery/backend/internal/services"
 	"encoding/json"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/cfg"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/repositories/requests"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/repositories/responses"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/services"
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"

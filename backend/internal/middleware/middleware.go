@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	"Delivery/backend/internal/repositories/requests"
-	"Delivery/backend/internal/services"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/repositories/requests"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/services"
 	"net/http"
 )
 

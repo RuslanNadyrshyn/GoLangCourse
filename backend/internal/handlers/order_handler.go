@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	"Delivery/backend/internal/repositories/requests"
-	"Delivery/backend/internal/services"
 	"encoding/json"
 	"fmt"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/repositories/requests"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/services"
 	"log"
 	"net/http"
 	"strconv"

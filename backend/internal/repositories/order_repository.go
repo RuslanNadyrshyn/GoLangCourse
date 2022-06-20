@@ -1,8 +1,8 @@
 package repositories
 
 import (
-	"Delivery/backend/internal/repositories/models"
 	"database/sql"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/repositories/models"
 	"log"
 )
 

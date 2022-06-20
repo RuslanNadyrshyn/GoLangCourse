@@ -1,9 +1,9 @@
 package services
 
 import (
-	"Delivery/backend/cfg"
-	"Delivery/backend/internal/repositories"
 	"errors"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/cfg"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/repositories"
 )
 
 type ServiceManager struct {

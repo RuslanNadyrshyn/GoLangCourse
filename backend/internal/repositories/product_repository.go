@@ -1,9 +1,9 @@
 package repositories
 
 import (
-	"Delivery/backend/internal/repositories/models"
 	"database/sql"
 	"fmt"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/repositories/models"
 	"time"
 )
 

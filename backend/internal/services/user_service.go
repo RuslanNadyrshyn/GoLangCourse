@@ -1,9 +1,9 @@
 package services
 
 import (
-	"Delivery/backend/internal/repositories"
-	"Delivery/backend/internal/repositories/models"
 	"fmt"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/repositories"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/repositories/models"
 	"golang.org/x/crypto/bcrypt"
 )
 

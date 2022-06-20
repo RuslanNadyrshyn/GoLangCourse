@@ -1,7 +1,7 @@
 package requests
 
 import (
-	"Delivery/backend/internal/repositories/models"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/repositories/models"
 	"net/http"
 )
 

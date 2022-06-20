@@ -1,12 +1,12 @@
 package server
 
 import (
-	"Delivery/backend/cfg"
-	"Delivery/backend/internal/handlers"
-	"Delivery/backend/internal/middleware"
-	"Delivery/backend/internal/repositories"
-	"Delivery/backend/internal/repositories/database/Connection"
-	"Delivery/backend/internal/services"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/cfg"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/handlers"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/middleware"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/repositories"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/repositories/database/Connection"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/services"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"net/http"

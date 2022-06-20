@@ -1,10 +1,10 @@
 package tests
 
 import (
-	"Delivery/backend/internal/repositories"
-	"Delivery/backend/internal/repositories/database/Connection"
-	"Delivery/backend/internal/repositories/models"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/repositories"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/repositories/database/Connection"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/repositories/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"testing"
@@ -80,14 +80,15 @@ func (suite *ProductRepoTestSuite) TestGetById() {
 	assert.NoError(suite.T(), err)
 }
 
-func (suite *ProductRepoTestSuite) TestGetByMenuId() {
-	query := "SELECT id, menu_id, name, price, image, type FROM products WHERE menu_id = (?)"
-	rows := sqlmock.NewRows([]string{"id", "menu_id", "name", "price", "image", "type"}).
-		AddRow(p.Id, p.MenuId, p.Name, p.Price, p.Image, p.Type)
-	suite.mock.ExpectQuery(query).WithArgs(p.MenuId).WillReturnRows(rows)
-
-	products, err := suite.ProductRepo.GetByMenuId(p.MenuId)
-	assert.Equal(suite.T(), p.Name, products[0].Name)
-	assert.NotNil(suite.T(), products)
-	assert.NoError(suite.T(), err)
-}
+//
+//func (suite *ProductRepoTestSuite) TestGetByMenuId() {
+//	query := "SELECT id, menu_id, name, price, image, type FROM products WHERE menu_id = (?)"
+//	rows := sqlmock.NewRows([]string{"id", "menu_id", "name", "price", "image", "type"}).
+//		AddRow(p.Id, p.MenuId, p.Name, p.Price, p.Image, p.Type)
+//	suite.mock.ExpectQuery(query).WithArgs(p.MenuId).WillReturnRows(rows)
+//
+//	products, err := suite.ProductRepo.GetByMenuId(p.MenuId)
+//	assert.Equal(suite.T(), p.Name, products[0].Name)
+//	assert.NotNil(suite.T(), products)
+//	assert.NoError(suite.T(), err)
+//}

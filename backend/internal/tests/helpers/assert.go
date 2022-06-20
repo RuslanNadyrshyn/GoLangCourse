@@ -1,9 +1,9 @@
 package helpers
 
 import (
-	"Delivery/backend/internal/helper"
-	"Delivery/backend/internal/repositories/responses"
 	"encoding/json"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/helper"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/repositories/responses"
 	"github.com/stretchr/testify/assert"
 	"net/http/httptest"
 	"testing"

@@ -1,9 +1,9 @@
 package services
 
 import (
-	config "Delivery/backend/cfg"
-	"Delivery/backend/internal/helper"
-	helpers2 "Delivery/backend/internal/tests/helpers"
+	config "github.com/RuslanNadyrshyn/GoLangCourse/backend/cfg"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/helper"
+	helpers2 "github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/tests/helpers"
 	"github.com/golang-jwt/jwt"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"

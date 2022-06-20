@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"Delivery/backend/internal/repositories/models"
-	"Delivery/backend/internal/repositories/requests"
-	"Delivery/backend/internal/repositories/responses"
-	"Delivery/backend/internal/services"
 	"encoding/json"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/repositories/models"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/repositories/requests"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/repositories/responses"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/services"
 	"log"
 	"net/http"
 	"net/mail"

@@ -1,10 +1,10 @@
 package services
 
 import (
-	"Delivery/backend/cfg"
-	"Delivery/backend/internal/helper"
 	"errors"
 	"fmt"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/cfg"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/helper"
 	"github.com/golang-jwt/jwt"
 	"strings"
 	"time"

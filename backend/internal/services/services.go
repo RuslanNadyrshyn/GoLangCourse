@@ -1,10 +1,10 @@
 package services
 
 import (
-	"Delivery/backend/internal/helper"
-	"Delivery/backend/internal/repositories/models"
-	"Delivery/backend/internal/repositories/requests"
-	"Delivery/backend/internal/repositories/responses"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/helper"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/repositories/models"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/repositories/requests"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/repositories/responses"
 )
 
 type ITokenService interface {

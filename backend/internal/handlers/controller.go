@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"Delivery/backend/cfg"
-	"Delivery/backend/internal/services"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/cfg"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/services"
 )
 
 type Controller struct {

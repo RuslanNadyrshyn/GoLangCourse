@@ -1,10 +1,10 @@
 package tests
 
 import (
-	"Delivery/backend/internal/repositories"
-	"Delivery/backend/internal/repositories/database/Connection"
-	"Delivery/backend/internal/repositories/models"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/repositories"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/repositories/database/Connection"
+	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/repositories/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"testing"
