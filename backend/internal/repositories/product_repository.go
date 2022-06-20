@@ -106,7 +106,8 @@ func (r *ProductRepo) GetByType(t string) ([]models.Product, error) {
 
 func (r *ProductRepo) GetByWorkingHours(prodType string) ([]models.Product, error) {
 	var products []models.Product
-	timeNow := time.Now().Format("15:04")
+	location, _ := time.LoadLocation("EET")
+	timeNow := time.Now().In(location).Format("15:04")
 	rows, err := r.DB.Query(fmt.Sprintf("SELECT id, menu_id, name, price, image, type "+
 		"FROM products WHERE menu_id IN "+
 		"(SELECT id FROM menus WHERE supplier_id IN "+
