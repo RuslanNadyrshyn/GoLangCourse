@@ -103,7 +103,8 @@ func (r *SupplierRepo) GetByType(t string) (*[]models.Supplier, error) {
 
 func (r *SupplierRepo) GetByWorkingHours() (*[]models.Supplier, error) {
 	var suppliers []models.Supplier
-	time := time.Now().Format("15:04")
+	location, _ := time.LoadLocation("EET")
+	time := time.Now().In(location).Format("15:04")
 
 	rows, err := r.DB.Query("SELECT id, name, type, image, opening, closing "+
 		"FROM suppliers WHERE (SELECT CONVERT(closing, TIME)) >= (?) "+
