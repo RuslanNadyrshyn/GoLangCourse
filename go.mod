@@ -1,4 +1,4 @@
-module Delivery
+module GoLangCourse
 
 go 1.17
 
