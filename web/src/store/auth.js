@@ -1,13 +1,12 @@
 import axios from "axios";
-//const ip = "http://45.148.29.14:8080";
-const ip = "http://localhost:8080";
+import config from "./config.js";
 
 const state = {
-  urlLogin: ip + "/login",
-  urlSignUp: ip + "/sign_up",
-  urlUser: ip + "/profile",
-  urlOrders: ip + "/orders",
-  urlRefresh: ip + "/refresh",
+  urlLogin: config.hostname + "/login",
+  urlSignUp: config.hostname + "/sign_up",
+  urlUser: config.hostname + "/profile",
+  urlOrders: config.hostname + "/orders",
+  urlRefresh: config.hostname + "/refresh",
   Access: false,
   user: [],
   orders: [],
@@ -38,14 +37,7 @@ const actions = {
     console.log(user);
     axios
       .post(context.getters.getSignUpURL, user)
-      .then(() => {
-        // let login = {
-        //   email: user.email,
-        //   password: user.password,
-        // };
-        alert("Вы успешно зарегистрировались!");
-        // actions.Login(context, login);
-      })
+      .then(() => alert("Вы успешно зарегистрировались!"))
       .catch((err) => {
         if (err.response.status === 400)
           alert(
@@ -77,7 +69,6 @@ const actions = {
     context.commit("setLoaded", false);
     context.commit("setAccess", false);
     context.commit("setErrors", []);
-
     if (
       localStorage.getItem("delivery_tokens") !== null &&
       localStorage.getItem("delivery_tokens").length

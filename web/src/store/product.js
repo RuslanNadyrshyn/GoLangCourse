@@ -1,13 +1,10 @@
 import axios from "axios";
-
-//const ip = "http://45.148.29.14:8080";
-const ip = "http://localhost:8080";
+import config from "./config.js";
 
 const state = {
-  url: ip + "/get_products",
-  urlGetTypes: ip + "/get_prod_types",
-  urlGetById: ip + "/get_prod_by_id",
-  urlGetByType: ip + "/get_prod_by_type",
+  url: config.hostname + "/get_products",
+  urlGetById: config.hostname + "/get_prod_by_id",
+  urlGetByParams: config.hostname + "/get_prod_by_params",
   products: [],
   productsTypes: [],
   selectedType: "все",
@@ -45,31 +42,13 @@ const actions = {
       .catch((err) => [context.commit("setErrors", [err])])
       .finally(() => context.commit("setLoaded", true));
   },
-  getByType(context, type) {
-    if (type === "все") {
-      actions.fetchProducts(context);
-    } else {
-      axios
-        .get(context.getters.getByTypeURL, {
-          params: { type: type },
-        })
-        .then((res) => context.commit("setProducts", res.data))
-        .catch((err) => context.commit("setErrors", err))
-        .finally(() => context.commit("setLoaded", true));
-    }
-  },
   getByParams(context, params) {
-    console.log("getting by params ", params);
     context.commit("setSelectedType", params.prodType);
-
-    if (params.supType === "все") {
-      params.supType = "";
-      // actions.getByType(context, params.prodType);
-    }
+    if (params.supType === "все") params.supType = "";
     if (params.prodType === "все") params.prodType = "";
     if (params.supType === "Открыто") params.supType = "workingHours";
     axios
-      .get("http://localhost:8080/get_prod_by_params", {
+      .get(context.getters.getByParamsURL, {
         params: {
           sup_id: params.supId,
           sup_type: params.supType,
@@ -77,7 +56,6 @@ const actions = {
         },
       })
       .then((res) => {
-        console.log(res.data);
         context.commit("setProducts", res.data.Products);
         context.commit("setProductsTypes", res.data.Types);
       })
@@ -93,8 +71,8 @@ const getters = {
   getByIdURL: (state) => {
     return state.urlGetById;
   },
-  getByTypeURL: (state) => {
-    return state.urlGetByType;
+  getByParamsURL: (state) => {
+    return state.urlGetByParams;
   },
   getProducts: (state) => {
     return state.products;

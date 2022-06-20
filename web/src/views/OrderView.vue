@@ -95,7 +95,7 @@ export default {
         this.order.user.name.length !== 0 &&
         this.order.user.name.length < 20
       ) {
-        this.$store.dispatch("orders/fetchOrderPOST", this.order).then(() => {
+        this.$store.dispatch("orders/postOrder", this.order).then(() => {
           this.errors = this.$store.getters["orders/getErrors"];
           if (!this.errors.length) {
             this.$store.commit("basket/clearBasket");

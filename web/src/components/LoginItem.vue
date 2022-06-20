@@ -83,20 +83,13 @@ export default {
       } else alert("Неверный ввод!");
     },
     SignUp() {
-      const validateEmail = (email) => {
-        return String(email)
-          .toLowerCase()
-          .match(
-            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-          );
-      };
       if (
         this.sign_up.name.length &&
         this.sign_up.name.length < 20 &&
         this.sign_up.email.length &&
         this.sign_up.email.length < 20 &&
         this.sign_up.password.length >= 4 &&
-        validateEmail(this.sign_up.email)
+        this.ValidateEmail(this.sign_up.email)
       ) {
         this.$store.dispatch("auth/SignUp", this.sign_up);
       } else

@@ -1,12 +1,10 @@
 import axios from "axios";
-
-//const ip = "http://45.148.29.14:8080";
-const ip = "http://localhost:8080";
+import config from "./config.js";
 
 const state = {
-  url: ip + "/get_suppliers",
-  urlGetByType: ip + "/get_sup_by_type",
-  urlGetByWorkingHours: ip + "/get_sup_by_working_hours",
+  url: config.hostname + "/get_suppliers",
+  urlGetByType: config.hostname + "/get_sup_by_type",
+  urlGetByWorkingHours: config.hostname + "/get_sup_by_working_hours",
   suppliers: [],
   suppliersTypes: [],
   selectedType: "все",
@@ -61,13 +59,6 @@ const actions = {
       .catch((err) => context.commit("setErrors", err))
       .finally(() => context.commit("setLoaded", true));
   },
-  // getByWorkingHours(context) {
-  //   axios
-  //     .get(context.getters.getByWorkingHoursURL)
-  //     .then((res) => context.commit("setSuppliers", res.data))
-  //     .catch((err) => context.commit("setErrors", err))
-  //     .finally(() => context.commit("setLoaded", true));
-  // },
 };
 
 const getters = {
@@ -76,9 +67,6 @@ const getters = {
   },
   getByTypeURL: (state) => {
     return state.urlGetByType;
-  },
-  getByWorkingHoursURL: (state) => {
-    return state.urlGetByWorkingHours;
   },
   getSuppliers: (state) => {
     return state.suppliers;

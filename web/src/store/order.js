@@ -1,11 +1,9 @@
 import axios from "axios";
-
-//const ip = "http://45.148.29.14:8080";
-const ip = "http://localhost:8080";
+import config from "./config.js";
 
 const state = {
-  orderURL: ip + "/get_order",
-  postOrderURL: ip + "/post_order",
+  orderURL: config.hostname + "/get_order",
+  postOrderURL: config.hostname + "/post_order",
   order: Object,
   errors: [],
   loaded: false,
@@ -25,7 +23,7 @@ const mutations = {
 };
 
 const actions = {
-  fetchOrderPOST(context, order) {
+  postOrder(context, order) {
     console.log("start_fetch");
     axios
       .post(context.getters.getPostOrderURL, order)

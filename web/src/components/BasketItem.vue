@@ -87,17 +87,20 @@ export default {
   },
   watch: {
     counter(newValue) {
-      if (newValue > 0) {
+      if (newValue > 0 && Number.isInteger(newValue)) {
         let basket = this.$store.getters["basket/getBasket"];
         for (let i = 0; i < basket.length; i++)
           if (basket[i].id === this.product.id) {
             basket[i].counter = newValue;
-            this.$store.dispatch("basket/updateProduct", basket[i]);
             this.summary = this.product.price * this.product.counter;
+            this.$store.dispatch("basket/updateProduct", basket[i]);
             this.$store.dispatch("basket/calcTotalPrice");
           }
-      } else if (newValue !== "") this.counter = 1;
-      else if (newValue === "") this.summary = this.product.price;
+      } else if (newValue !== "") {
+        if (!Number.isInteger(newValue)) {
+          this.counter = Math.floor(newValue);
+        } else this.counter = 1;
+      } else if (newValue === "") this.summary = this.product.price;
     },
   },
   methods: {

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/RuslanNadyrshyn/GoLangCourse/backend/internal/repositories/models"
 	"log"
+	"time"
 )
 
 type OrderRepo struct {
@@ -47,11 +48,13 @@ func (r *OrderRepo) Insert(o *models.Order) (orderId int64, err error) {
 
 func (r *OrderRepo) GetById(id int64) (*models.Order, error) {
 	var o models.Order
+	var createdAt time.Time
 	err := r.DB.QueryRow("SELECT id, price, user_id, address, created_at FROM orders WHERE id = (?)", id).
-		Scan(&o.Id, &o.Price, &o.UserId, &o.Address, &o.CreatedAt)
+		Scan(&o.Id, &o.Price, &o.UserId, &o.Address, &createdAt)
 	if err != nil {
 		return nil, err
 	}
+	o.CreatedAt = createdAt.Format("02-Jan-2006 15:04:05")
 	return &o, nil
 }
 
@@ -66,10 +69,12 @@ func (r *OrderRepo) GetByUserId(userId int64) (*[]models.Order, error) {
 
 	for rows.Next() {
 		var o models.Order
-		err = rows.Scan(&o.Id, &o.Price, &o.UserId, &o.Address, &o.CreatedAt)
+		var createdAt time.Time
+		err = rows.Scan(&o.Id, &o.Price, &o.UserId, &o.Address, &createdAt)
 		if err != nil {
 			return nil, err
 		}
+		o.CreatedAt = createdAt.Format("02-Jan-2006 15:04:05")
 		orders = append(orders, o)
 	}
 
