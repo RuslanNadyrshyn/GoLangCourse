@@ -1,4 +1,4 @@
-module GoLangCourse
+module github.com/RuslanNadyrshyn/GoLangCourse
 
 go 1.17
 
